@@ -1,0 +1,2 @@
+This cache contains also packages from Staging and Testing, don't install blindly a newer version, 
+just because the pkg is available, wait for your pacman to get you the right update at the right time.
