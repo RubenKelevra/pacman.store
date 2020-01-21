@@ -74,5 +74,3 @@ rsync_cmd \
 	"${rsync_url}" \
 	"${rsync_mirror}"
 
-
-#echo "Last sync was $(date -d @$(cat ${target}/lastsync))"
