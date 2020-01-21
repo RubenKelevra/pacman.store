@@ -51,7 +51,7 @@ exec 9>"${lock}"
 flock -n 9 || exit
 
 rsync_cmd() {
-	local -a cmd=(rsync -rtlH --safe-links --delete-after ${VERBOSE} "--log-file=${log}" --log-file-format='%i %n%L' "--timeout=600" "--contimeout=60" -p \
+	local -a cmd=(rsync -rtlH --safe-links --delete-after "${VERBOSE}" "--log-file=${log}" --log-file-format='%i %n%L' "--timeout=600" "--contimeout=60" -p \
 		--delay-updates --no-motd "--temp-dir=${tmp}")
 
 	if stty &>/dev/null; then
