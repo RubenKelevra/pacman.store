@@ -1,0 +1,19 @@
+#main page
+
+pacman.store
+ 
+# cluster setup domain
+cluster.pacman.store 
+
+# current pacman pkgs (all standard repos + testing/staging)
+pkg.pacman.store/arch/x86_64/default/
+
+# current pacman databases (all standard repos + testing/staging)
+db.pacman.store/arch/x86_64/default/
+
+# pacman pkg archive (all standard repos + testing/staging)
+old.pkg.pacman.store/arch/x86_64/default/{ISO-8601-Timestamp}/
+
+# current isos stored on the mirrors
+iso.pacman.store/arch/x86_64/default/
+
