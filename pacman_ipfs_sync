@@ -71,6 +71,7 @@ echo "pacman-ipfs-sync started..."
 
 # check config
 
+
 [ -z "$pacman_cache" ] && fail "pacman cache dir config string is empty" 10
 [ -z "$pacman_db" ] && fail "pacman db dir config string is empty" 11
 [ -z "$ipfs_user" ] && fail "ipfs user config string is empty" 12
@@ -79,6 +80,8 @@ echo "pacman-ipfs-sync started..."
 [ -z "$repo_id" ] && fail "repository identifier config string is empty" 14
 [ ! -d "$pacman_cache" ] && fail "pacman cache dir could not be located" 50
 [ ! -d "$ipns_mount" ] && fail "ipns mount dir could not be located" 51
+
+[ "$(whoami)" == 'root' ] || fail "this script must be run by root"
 
 id -u "$ipfs_user" > /dev/null 2>&1 || fail "configured local user '$ipfs_user' does not exist" 150
 
