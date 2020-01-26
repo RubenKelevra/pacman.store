@@ -133,7 +133,11 @@ grep '^\[' < "$pacman_conf" | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's/\
 	[ "$old_size" -eq "$new_size" ] && continue
 	printf "receiving '%s'..." "$new_db_filename"
 	cp -ax "$new_db_filename" "${old_db_fullpath}.part" || fail "error while receiving db file for '$new_db_filename' from ipfs" -n
+	chmod --reference="$old_db_fullpath" "${old_db_fullpath}.part"
+	sync "${old_db_fullpath}.part"
 	mv "$old_db_fullpath" "${old_db_fullpath}.old"
+	sync "$old_db_fullpath" "${old_db_fullpath}.old"
 	mv "${old_db_fullpath}.part" "$old_db_fullpath"
+	sync "${old_db_fullpath}.part" "$old_db_fullpath"
 	echo "completed."
 done
