@@ -1,0 +1,130 @@
+#!/bin/bash
+
+set -e
+
+# install in /root/bin
+#
+# purpose of this script is to refresh the database files for pacman
+# from an ipns mount, to circumvent the limitation of pacman to be unable to
+# read databases from multiple folders
+#
+# all files located in the local pacman cache will be added to ipfs to clean
+# up the local pkg cache and also share non-standard packages with ipfs
+#
+# available arguments:
+# --skip-db-sync = skips the update of db files from IPFS
+
+### config ###
+
+# pacman cache dir
+pacman_cache="/var/cache/pacman/pkg"
+
+# pacman db dir
+pacman_db="/var/lib/pacman"
+
+# folder where the ipns is mounted
+ipns_mount='/ipns'
+
+# user which runs the ipfs daemon
+ipfs_user='ipfs'
+
+# linux distribution identifier
+dist_id="arch"
+
+# architecture identifier
+arch_id="x86_64"
+
+# repo identifier
+repo_id="default"
+
+repos_to_sync=("core" "extra" "community")
+
+### end of config ###
+
+
+
+# argument variables
+SKIP_DB_SYNC=0
+
+# simple one argument decoding
+
+if [ -n "$1" ]; then
+	if [ "$1" == '--skip-db-sync' ]; then
+		SKIP_DB_SYNC=1
+	else
+		fail "unexpected first argument" 100
+	fi
+fi
+
+
+# local functions
+
+function fail {
+	[ -n "$3" ] && [ "$3" == '-n' ] && printf '\n'
+	[ -n "$3" ] && [ "$3" == '-2n' ] && printf '\n\n'
+    printf 'Error: %s\n' "$1" >&2
+    exit "${2-1}"
+}
+
+# startup message
+echo "pacman-ipfs-sync started..."
+
+# check config
+
+[ -z "$pacman_cache" ] && fail "pacman cache dir config string is empty" 10
+[ -z "$pacman_db" ] && fail "pacman db dir config string is empty" 11
+[ -z "$ipfs_user" ] && fail "ipfs user config string is empty" 12
+[ -z "$dist_id" ] && fail "distribution identifier config string is empty" 13
+[ -z "$arch_id" ] && fail "architecture identifier config string is empty" 14
+[ -z "$repo_id" ] && fail "repository identifier config string is empty" 14
+[ ! -d "$pacman_cache" ] && fail "pacman cache dir could not be located" 50
+[ ! -d "$ipns_mount" ] && fail "ipns mount dir could not be located" 51
+
+id -u "$ipfs_user" > /dev/null 2>&1 || fail "configured local user '$ipfs_user' does not exist" 150
+
+su "$ipfs_user" --login -c "which 'ipfs' > /dev/null 2>&1" || fail "ipfs is not installed for user '$ipfs_user'" 150
+[ "$(ps aux | grep "^${ipfs_user}" | grep '/usr/bin/ipfs daemon' | wc -l)" -gt 0 ] || fail "ipfs is not running for user '$ipfs_user'" 151
+[ "$(mount -l | grep "/dev/fuse on \"$ipns_mount\" type fuse" | wc -l)" -eq 1 ] || fail "ipns is not mounted on configured location" 152
+
+# end of config check
+
+
+cd "$pacman_cache"
+
+find . -maxdepth 1 -type f  -print0 | while IFS= read -r -d $'\0' filename; do
+	[ -z "$filename" ] && continue
+	[[ "$filename" == *.part ]] && continue #skip partial downloads
+	echo "adding pkg from local cache to ipfs: $filename"
+	su "$ipfs_user" --login -c "ipfs add --silent --raw-leaves --wrap-with-directory --pin=0 \"$pacman_cache/$filename\" > /dev/null 2>&1" 
+	rm "$filename"
+done
+
+[ $SKIP_DB_SYNC -eq 1 ] && exit 0
+
+printf "accessing db.pacman.store on ipfs, this might take a while..." 
+	cd "$ipns_mount/db.pacman.store/$dist_id/$arch_id/$repo_id/" >/dev/null 2>&1 || fail "could not access the configured subdirectory of /ipns/db.pacman.store" 200 -2n
+echo " completed."
+
+grep '^\[' < /etc/pacman.conf | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's/\]//g' | while IFS= read -r active_repo; do
+	[[ ! " ${repos_to_sync[*]} " =~ $active_repo ]] && continue
+	
+	old_db_fullpath="${pacman_db}/sync/${active_repo}.db"
+	new_db_filename="${active_repo}.db"
+	
+	[ ! -f "$old_db_fullpath" ] && fail "could not locate '$new_db_filename' in pacman's db path"
+	
+	if [ ! -f "$new_db_filename" ]; then
+		echo "Warning: could not locate db file '$new_db_filename' on ipfs, SKIPPING sync"
+		continue
+	fi
+	
+	old_size="$(wc -c "$old_db_fullpath" | awk '{print $1}')"
+	new_size="$(wc -c "$new_db_filename" | awk '{print $1}')" || fail "error while fetching filesize for '$new_db_filename' from ipfs"
+	
+	[ "$old_size" -eq "$new_size" ] && continue
+	printf "receiving '%s'..." "$new_db_filename"
+	cp -ax "$new_db_filename" "${old_db_fullpath}.part" || fail "error while receiving db file for '$new_db_filename' from ipfs" -n
+	mv "$old_db_fullpath" "${old_db_fullpath}.old"
+	mv "${old_db_fullpath}.part" "$old_db_fullpath"
+	echo "completed."
+done
