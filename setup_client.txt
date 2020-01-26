@@ -1,0 +1,159 @@
+# setup client
+
+# known limitations:
+# - when accessing ipns via fuse, you're unable to publish new ipns records (last checked ipfs v0.4.22)
+#   you can temporarily unmount /ipfn to publish a new record and remount it afterwards
+# - since IPFS is just mirroring off mirrors already existing, we add delay to updates
+# - the current implementation of fuse mounts in IPFS is considered unstable (last checked ipfs v0.4.22)
+# - IPFS is considered alpha software (last checked ipfs v0.4.22)
+# - the caching algorithm currently implemented in IPFS might not be optimal (last checked ipfs v0.4.22)
+# - currently only the arch x86_64 is available on the cluster
+# - all pkgs/dbs/isos are only hold for two month inside the cluster, so entries in the archive might not be available afterwards (true@2020-01-24)
+#   you can help make them available for longer by just pinning individual files on your client
+#   you can become a cluster follower, if you want to also share active data (creates a lot of traffic)
+#      this allows us to set the pin expire dates on the cluster as a whole longer, since we have more space available
+
+#install:
+bindfs
+ipfs
+
+# edit /etc/fuse.conf
+uncomment "user_allow_other" 
+
+# you might want to setup the following with a custom user like 'ipfs'
+
+sudo mkdir /ipfs
+sudo mkdir /ipns
+
+sudo chown <username> /ipfs
+sudo chown <username> /ipns
+
+create a user service
+
+### store as ~/.config/systemd/user/ipfs.service
+[Install]
+WantedBy=default.target
+
+[Unit]
+Description=IPFS daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/ipfs daemon --mount --enable-pubsub-experiment --enable-namesys-pubsub --enable-mplex-experiment 
+Restart=on-failure
+###
+
+# custom options in service file:
+# - pubsub-experiment       = a service to exchange messages inside ipfs, subscription based (similar to multicast)
+# - namesys-pubsub          = uses pubsub messages to speed-up name-lookups (something similar to dns (with dnssec) on the internet)
+# - mount                   = automatically mounts ipfs and ipfn to the filesystem via fuse
+# - enable-mplex-experiment = FIXME: some pixie magic
+
+#load the service file
+systemctl --user daemon-reload
+
+
+### first of ipfs to init the settings and databases ###
+
+ipfs init --empty-repo --profile=badgerds  | 
+
+# custom options on first start:
+# - empty-repo       = no help files as default content
+# - profile=badgerds = use badgerds v1 database for storing files (instead of many many files in folders = flatfs)
+
+# change the default config for best performance
+
+# enable support for large directories
+ipfs config --json Experimental.ShardingEnabled true
+
+# faster name resolution
+ipfs config Pubsub.Router gossipsub
+
+# more secure handshakes (perfect forward secrecy) - next major version will remove the less secure variant
+ipfs config --json Experimental.PreferTLS true
+
+# use QUIC/ip if possible instead of tcp - allows for multiplexing and lower overhead
+ipfs config --json Experimental.QUIC true
+
+#FIXME: create a description
+ipfs config --json Mounts.FuseAllowOther true #FIXME: show how to change this
+
+#FIXME: create a description
+Libp2pStreamMounting true #FIXME: show how to change this
+
+# if you going to use more than one IPFS node on a network, enable mdns
+#FIXME: show how to change this
+
+# default data storage size is 10G in the folder ~/.ipfs if you prefer to store ~/.ipfs somewhere else, move the folder now.
+# change the .service file created earlier - add the definition of the envoiment variable under [Service]:
+Environment=IPFS_PATH=/your/custom/path/
+
+#if you added the envoironment variable make sure to reload the service file:
+systemctl --user daemon-reload
+
+# change the default storage size if needed: 
+datastore StorageMax default 10G #FIXME: show how to change this
+
+# increase the GracePeriod (minimum time before a new connection gets terminated)
+Swarm ConnMgr GracePeriod 3m #FIXME: show how to change this
+
+# enable nat traversal if you use NAT
+Swarm EnableAutoNATService true #FIXME: show how to enable this
+
+# use a relay (a proxy server if no direct connection can be established between you and a peer you like to use (both peers behind nat and STUN fails)
+swarm EnableAutoRelay true #FIXME: show how to enable this
+
+# standard path for ipfs-fileaccess (unneccary for this setup)
+/ipfs #FIXME: show how to change this
+
+# standard path for ipfn-fileaccess (this one is used)
+/ipfn #FIXME: show how to change this
+
+
+### time to start and enable the service ###
+
+systemctl --user enable --now ipfs
+
+
+# now add the content of the pacman local cache to your ipfs for caching purposes:
+# - this allows you and other people to access your already downloaded files via IPFS
+
+# you might need to customize the program's settings for your installation
+
+run as root: ./pacman_ipfs_sync --skip-db-sync
+
+# create a folder where pacman should access the ipfs
+sudo mkdir /pacman_cache/
+sudo chown $user /pacman_cache/
+
+# use binfs to mount the path presented by ipfs in '/ipfn' to a custom path (necessary because of pacman limitations: Pacman refuses to change into a directory which doesn't exist)
+
+bindfs /ipfn/pkg.pacman.store/arch/x86_64/default/ /pacman_cache
+
+# add /pacman_cache to /etc/pacman.conf - a line above the regular cache dir
+CacheDir = /pacman_cache/
+
+### receive database updates from ipfs ###
+# - this avoids having slightly newer db files which don't match the pkg files stored on IPFS yet
+# - allows for distributed shared of db files
+# - allows computers on your local network (which all runs IPFS) to receive the db files locally too)
+
+# regular sync of the repos available on db.pacman.store need to be deactivated:
+# - add to e.g. [core], [extra], [community] and [multilib] this line
+
+Usage = Search Install Upgrade
+
+# Because alpm-hooks don't allow hooks to be triggered on sync, we have to build a wrapper around the pacman call
+# This script needs to be placed in the ~/.bashrc of the root user.
+#
+# ONLY USE THIS OPTION WHEN YOU UNDERSTAND THE SOURCE CODE OF THIS SCRIPTS
+# AND IF YOU'RE FULLY AWARE THAT A BUG MIGHT SET YOUR KITTY ON FIRE!
+
+# install pacman ipfs sync script in /root/bin/
+sudo mkdir /root/bin/
+sudo cp ./pacman_ipfs_sync /root/bin/
+
+# install pacman wrapper in root's bashrc:
+cat ./pacmanwrapper-for-bashrc.sh | sudo tee -a /root/.bashrc
+
+
