@@ -9,7 +9,7 @@ cluster.pacman.store
 pkg.pacman.store/arch/x86_64/default/
 
 # current pacman databases (all standard repos + testing/staging)
-db.pacman.store/arch/x86_64/default/
+pkg.pacman.store/arch/x86_64/default/db/
 
 # pacman pkg archive (all standard repos + testing/staging)
 old.pkg.pacman.store/arch/x86_64/default/{ISO-8601-Timestamp}/
