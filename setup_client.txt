@@ -138,7 +138,7 @@ CacheDir = /pacman_cache/
 # - allows for distributed shared of db files
 # - allows computers on your local network (which all runs IPFS) to receive the db files locally too)
 
-# regular sync of the repos available on db.pacman.store need to be deactivated:
+# regular sync of the repos available on pkg.pacman.store need to be deactivated:
 # - add to e.g. [core], [extra], [community] and [multilib] this line
 
 Usage = Search Install Upgrade
