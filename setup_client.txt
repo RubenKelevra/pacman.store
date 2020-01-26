@@ -130,7 +130,7 @@ sudo chown $user /pacman_cache/
 
 bindfs /ipfn/pkg.pacman.store/arch/x86_64/default/ /pacman_cache
 
-# add /pacman_cache to /etc/pacman.conf - a line above the regular cache dir
+# add /pacman_cache to /etc/pacman.conf - a line below the regular cache dir
 CacheDir = /pacman_cache/
 
 ### receive database updates from ipfs ###
