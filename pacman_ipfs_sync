@@ -68,7 +68,7 @@ function fail {
 }
 
 # startup message
-echo "pacman-ipfs-sync started..."
+echo "starting pacman-ipfs-sync..."
 
 # check config
 
@@ -94,6 +94,8 @@ id -u "$ipfs_user" > /dev/null 2>&1 || fail "configured local user '$ipfs_user' 
 su "$ipfs_user" --login -c "which 'ipfs' > /dev/null 2>&1" || fail "ipfs is not installed for user '$ipfs_user'" 150
 [ "$(ps aux | grep "^${ipfs_user}" | grep '/usr/bin/ipfs daemon' | wc -l)" -gt 0 ] || fail "ipfs is not running for user '$ipfs_user'" 151
 [ "$(mount -l | grep "/dev/fuse on "$ipns_mount" type fuse" | wc -l)" -eq 1 ] || fail "ipns is not mounted on configured location" 152
+
+#FIXME get pacman db lock
 
 # end of config check
 
@@ -141,3 +143,5 @@ grep '^\[' < "$pacman_conf" | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's/\
 	sync "${old_db_fullpath}.part" "$old_db_fullpath"
 	echo "completed."
 done
+
+#FIXME remove pacman db lock
