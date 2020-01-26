@@ -28,7 +28,7 @@ sudo mkdir /ipns
 sudo chown <username> /ipfs
 sudo chown <username> /ipns
 
-create a user service
+# create a user service
 
 ### store as ~/.config/systemd/user/ipfs.service
 [Install]
