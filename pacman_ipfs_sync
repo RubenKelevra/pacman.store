@@ -29,7 +29,7 @@ pacman_conf='/etc/pacman.conf'
 ipns_mount='/ipns'
 
 # user which runs the ipfs daemon
-ipfs_user='ruben' #FIXME
+ipfs_user='ipfs'
 
 # linux distribution identifier
 dist_id='arch'
