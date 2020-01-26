@@ -48,8 +48,9 @@ pacman() {
                         shift
                 done
                 if [[ $REFRESH -eq 1 ]]; then
-                        /bin/pacman_ipfs_sync
+			echo "starting sync"
+                        /root/bin/pacman_ipfs_sync
                 fi
         fi
-pacman "${CMDLINE_ARGS[@]}"
+/bin/pacman "${CMDLINE_ARGS[@]}"
 }
