@@ -143,6 +143,15 @@ CacheDir = /pacman_cache/
 
 Usage = Search Install Upgrade
 
+# add custom configuration line to your pacman.conf, which defines which dbs will be synced from ipfs
+# - make sure to start the line with exactly '#IPFS_SYNC'
+
+# make sure to update the dbs EITHER via http OR ipfs
+# - USING BOTH WILL LEAD TO VERSIONS JUMPING FORWARDS AND BACKWARDS
+# - USING NONE WILL CUT YOU OFF OF ANY UPDATES INCLUDING SECURITY UPDATES
+
+echo "#IPFS_SYNC = core extra community multilib" > sudo tee -a /etc/pacman.conf
+
 # Because alpm-hooks don't allow hooks to be triggered on sync, we have to build a wrapper around the pacman call
 # This script needs to be placed in the ~/.bashrc of the root user.
 #
