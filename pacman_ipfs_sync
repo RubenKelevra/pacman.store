@@ -17,27 +17,28 @@ set -e
 ### config ###
 
 # pacman cache dir
-pacman_cache="/var/cache/pacman/pkg"
+pacman_cache='/var/cache/pacman/pkg'
 
 # pacman db dir
-pacman_db="/var/lib/pacman"
+pacman_db='/var/lib/pacman'
+
+# pacman configuration file
+pacman_conf='/etc/pacman.conf'
 
 # folder where the ipns is mounted
 ipns_mount='/ipns'
 
 # user which runs the ipfs daemon
-ipfs_user='ipfs'
+ipfs_user='ruben' #FIXME
 
 # linux distribution identifier
-dist_id="arch"
+dist_id='arch'
 
 # architecture identifier
-arch_id="x86_64"
+arch_id='x86_64'
 
 # repo identifier
-repo_id="default"
-
-repos_to_sync=("core" "extra" "community")
+repo_id='default'
 
 ### end of config ###
 
@@ -77,17 +78,22 @@ echo "pacman-ipfs-sync started..."
 [ -z "$ipfs_user" ] && fail "ipfs user config string is empty" 12
 [ -z "$dist_id" ] && fail "distribution identifier config string is empty" 13
 [ -z "$arch_id" ] && fail "architecture identifier config string is empty" 14
-[ -z "$repo_id" ] && fail "repository identifier config string is empty" 14
-[ ! -d "$pacman_cache" ] && fail "pacman cache dir could not be located" 50
-[ ! -d "$ipns_mount" ] && fail "ipns mount dir could not be located" 51
+[ -z "$repo_id" ] && fail "repository identifier config string is empty" 15
+[ -z "$pacman_conf" ] && fail "pacman configuration file config string is empty" 16
+[ -d "$pacman_cache" ] || fail "pacman cache dir could not be located" 50
+[ -d "$ipns_mount" ] || fail "ipns mount dir could not be located" 51
+[ -f "$pacman_conf" ] || fail "pacman configuration file could not be located" 52
 
 [ "$(whoami)" == 'root' ] || fail "this script must be run by root"
+
+# read '#IPFS_SYNC' line from pacman config
+repos_to_sync=("$(grep '^#IPFS_SYNC' < "$pacman_conf" | cut -d'=' -f2)")
 
 id -u "$ipfs_user" > /dev/null 2>&1 || fail "configured local user '$ipfs_user' does not exist" 150
 
 su "$ipfs_user" --login -c "which 'ipfs' > /dev/null 2>&1" || fail "ipfs is not installed for user '$ipfs_user'" 150
 [ "$(ps aux | grep "^${ipfs_user}" | grep '/usr/bin/ipfs daemon' | wc -l)" -gt 0 ] || fail "ipfs is not running for user '$ipfs_user'" 151
-[ "$(mount -l | grep "/dev/fuse on \"$ipns_mount\" type fuse" | wc -l)" -eq 1 ] || fail "ipns is not mounted on configured location" 152
+[ "$(mount -l | grep "/dev/fuse on "$ipns_mount" type fuse" | wc -l)" -eq 1 ] || fail "ipns is not mounted on configured location" 152
 
 # end of config check
 
@@ -108,7 +114,7 @@ printf "accessing pkg.pacman.store on ipfs, this might take a while..."
 	cd "$ipns_mount/pkg.pacman.store/$dist_id/$arch_id/$repo_id/db/" >/dev/null 2>&1 || fail "could not access the configured subdirectory of /ipns/pkg.pacman.store" 200 -2n
 echo " completed."
 
-grep '^\[' < /etc/pacman.conf | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's/\]//g' | while IFS= read -r active_repo; do
+grep '^\[' < "$pacman_conf" | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's/\]//g' | while IFS= read -r active_repo; do
 	[[ ! " ${repos_to_sync[*]} " =~ $active_repo ]] && continue
 	
 	old_db_fullpath="${pacman_db}/sync/${active_repo}.db"
@@ -117,7 +123,7 @@ grep '^\[' < /etc/pacman.conf | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's
 	[ ! -f "$old_db_fullpath" ] && fail "could not locate '$new_db_filename' in pacman's db path"
 	
 	if [ ! -f "$new_db_filename" ]; then
-		echo "Warning: could not locate db file '$new_db_filename' on ipfs, SKIPPING sync"
+		echo "Warning: could not locate db file '$new_db_filename' on ipfs, SKIPPING"
 		continue
 	fi
 	
