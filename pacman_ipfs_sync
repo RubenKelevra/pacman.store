@@ -129,8 +129,8 @@ grep '^\[' < "$pacman_conf" | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's/\
 		continue
 	fi
 	
-	old_size="$(wc -c "$old_db_fullpath" | awk '{print $1}')"
-	new_size="$(wc -c "$new_db_filename" | awk '{print $1}')" || fail "error while fetching filesize for '$new_db_filename' from ipfs"
+	old_size="$(du --apparent-size --block-size=1 "$old_db_fullpath" | awk '{print $1}')"
+	new_size="$(du --apparent-size --block-size=1 "$new_db_filename" | awk '{print $1}')" || fail "error while fetching filesize for '$new_db_filename' from ipfs"
 	
 	[ "$old_size" -eq "$new_size" ] && continue
 	printf "receiving '%s'..." "$new_db_filename"
