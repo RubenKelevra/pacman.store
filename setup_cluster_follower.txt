@@ -1,3 +1,1 @@
-#ipfs-cluster-follow gutenberg_es run --init gutenberg-es.collab.ipfscluster.io
-
 ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store
