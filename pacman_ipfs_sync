@@ -124,7 +124,7 @@ done
 
 [ $SKIP_DB_SYNC -eq 1 ] && exit 0
 
-printf "accessing pkg.pacman.store on ipfs, this might take a while..." 
+printf "accessing dbs on ipfs://pkg.pacman.store, this might take a while..." 
 	cd "$ipns_mount/pkg.pacman.store/$dist_id/$arch_id/$repo_id/db/" >/dev/null 2>&1 || fail "could not access the configured subdirectory of /ipns/pkg.pacman.store" 200 -2n
 echo " completed."
 
