@@ -159,7 +159,7 @@ function add_expiredate_to_clusterpin() {
 		fail "unexpected first argument '$2' on add_expiredate_to_clusterpin()" 210
 	fi
 	
-	ipfs-cluster-ctl pin add --expire-in "$_expire" --name "$_name" --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_cid" --no-status > /dev/null
+	ipfs-cluster-ctl pin add --no-status --expire-in "$_expire" --name "$_name" --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_cid" --no-status > /dev/null
 	if [ $? -eq 0 ]; then
 		exit 0
 	else
@@ -198,10 +198,13 @@ function add_file_to_cluster() {
 		fail "unexpected first argument '$1' on add_file_to_cluster()" 200
 	fi
 
+	if [ ! -f "$_filepath" ]; then
+		echo "Warning: Skipping file because it could not be located: '$_filepath'"
+	fi
 	if [ -z "$_chunker" ]; then
-		_new_cid=$(ipfs-cluster-ctl add --raw-leaves --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
+		_new_cid=$(ipfs-cluster-ctl add --no-status --raw-leaves --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
 	else
-		_new_cid=$(ipfs-cluster-ctl add --raw-leaves $_chunker --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
+		_new_cid=$(ipfs-cluster-ctl add --no-status --raw-leaves $_chunker --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
 	fi
 	if [ $? -eq 0 ]; then
 		echo "$_new_cid"
@@ -499,6 +502,14 @@ else # FULL_ADD is set - full add mechanism
 	cd "$rsync_target"
 	
 	while IFS= read -r -d $'\0' filename; do
+		if [[ "$filename" =~ "~" ]]; then
+			echo "Warning: Skipped file with '~' in path: $filename"  >&2
+			continue
+		fi
+		if [[ "$filename" =~ "/." ]]; then
+			echo "Warning: Skipped hidden file/folder: $filename"  >&2
+			continue
+		fi
 		if [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
 			pkg_name=$(echo "$filename" | cut -d'/' -f4)
 			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f3)
