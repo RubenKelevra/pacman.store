@@ -14,6 +14,9 @@ set -e
 # available arguments:
 # --skip-db-sync = skips the update of db files from IPFS
 
+# dependencies:
+# - a running ipfs
+
 ### config ###
 
 # pacman cache dir
@@ -24,6 +27,9 @@ pacman_db='/var/lib/pacman'
 
 # pacman configuration file
 pacman_conf='/etc/pacman.conf'
+
+# pacman lock file
+pacman_lock='/var/lib/pacman/db.lck'
 
 # folder where the ipns is mounted
 ipns_mount='/ipns'
@@ -80,6 +86,7 @@ echo "starting pacman-ipfs-sync..."
 [ -z "$arch_id" ] && fail "architecture identifier config string is empty" 14
 [ -z "$repo_id" ] && fail "repository identifier config string is empty" 15
 [ -z "$pacman_conf" ] && fail "pacman configuration file config string is empty" 16
+[ -z "$pacman_lock" ] && fail "pacman lock file config string is empty" 17
 [ -d "$pacman_cache" ] || fail "pacman cache dir could not be located" 50
 [ -d "$ipns_mount" ] || fail "ipns mount dir could not be located" 51
 [ -f "$pacman_conf" ] || fail "pacman configuration file could not be located" 52
@@ -95,10 +102,15 @@ su "$ipfs_user" --login -c "which 'ipfs' > /dev/null 2>&1" || fail "ipfs is not 
 [ "$(ps aux | grep "^${ipfs_user}" | grep '/usr/bin/ipfs daemon' | wc -l)" -gt 0 ] || fail "ipfs is not running for user '$ipfs_user'" 151
 [ "$(mount -l | grep "/dev/fuse on "$ipns_mount" type fuse" | wc -l)" -eq 1 ] || fail "ipns is not mounted on configured location" 152
 
-#FIXME get pacman db lock
-
 # end of config check
 
+# get a lock on pacman's database
+if { set -C; 2>/dev/null >$pacman_lock; }; then
+	trap "rm -f $pacman_lock" EXIT
+else
+	echo "pacman_ipfs_sync: pacman's db lock is already set" >&2
+	exit
+fi
 
 cd "$pacman_cache"
 
@@ -143,5 +155,3 @@ grep '^\[' < "$pacman_conf" | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's/\
 	sync "${old_db_fullpath}.part" "$old_db_fullpath"
 	echo "completed."
 done
-
-#FIXME remove pacman db lock
