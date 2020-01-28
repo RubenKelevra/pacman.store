@@ -202,9 +202,9 @@ function add_file_to_cluster() {
 		echo "Warning: Skipping file because it could not be located: '$_filepath'"
 	fi
 	if [ -z "$_chunker" ]; then
-		_new_cid=$(ipfs-cluster-ctl add --no-status --raw-leaves --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
+		_new_cid=$(ipfs-cluster-ctl add --raw-leaves --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
 	else
-		_new_cid=$(ipfs-cluster-ctl add --no-status --raw-leaves $_chunker --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
+		_new_cid=$(ipfs-cluster-ctl add --raw-leaves $_chunker --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
 	fi
 	if [ $? -eq 0 ]; then
 		echo "$_new_cid"
