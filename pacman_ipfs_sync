@@ -106,7 +106,7 @@ su "$ipfs_user" --login -c "which 'ipfs' > /dev/null 2>&1" || fail "ipfs is not 
 
 # get a lock on pacman's database
 if { set -C; 2>/dev/null >$pacman_lock; }; then
-	trap "rm -f $pacman_lock" EXIT
+	trap 'rm -f "$pacman_lock"' EXIT
 else
 	echo "pacman_ipfs_sync: pacman's db lock is already set" >&2
 	exit

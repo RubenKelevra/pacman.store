@@ -163,7 +163,7 @@ function add_expiredate_to_clusterpin() {
 	if [ $? -eq 0 ]; then
 		exit 0
 	else
-		fail "ipfs-cluster-ctl returned an error while adding an expire time to a cluster pin:\n  cid: '$_cid'\n  filetype: '$2'\n  name: '$_name'" 211
+		fail "ipfs-cluster-ctl returned an error while adding an expire time to a cluster pin: cid: '$_cid' filetype: '$2' name: '$_name'" 211
 	fi
 
 }
@@ -198,12 +198,16 @@ function add_file_to_cluster() {
 		fail "unexpected first argument '$1' on add_file_to_cluster()" 200
 	fi
 
-	_new_cid=$(ipfs-cluster-ctl add --raw-leaves "$_chunker" --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
+	if [ -z "$_chunker" ]; then
+		_new_cid=$(ipfs-cluster-ctl add --raw-leaves --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
+	else
+		_new_cid=$(ipfs-cluster-ctl add --raw-leaves $_chunker --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath")
+	fi
 	if [ $? -eq 0 ]; then
 		echo "$_new_cid"
 		exit 0
 	else
-		fail "ipfs-cluster-ctl returned an error while adding a file to the cluster:\n  filetype: '$1'\n  name: '$_name'\n  filepath: '$_filepath'" 201
+		fail "ipfs-cluster-ctl returned an error while adding a file to the cluster filetype: '$1' name: '$_name' filepath: '$_filepath'" 201
 	fi
 }
 
@@ -258,28 +262,31 @@ ipfs_db_folder="/$ipfs_pkg_folder/$dist_id/$arch_id/$repo_id/db/"
 #check for ipfs-mfs folders
 
 if [ $FULL_ADD -eq 1 ]; then
-	printf "creating ipfs folder for pkg..."
+	echo "creating ipfs folder for pkg..."
+	ipfs files rm -r "/$ipfs_pkg_folder" > /dev/null 2>&1 || true
 	ipfs files mkdir "/$ipfs_pkg_folder" > /dev/null 2>&1 || fail "ipfs folder for pkg couldn't be created" 100 -n
 elif not [ ipfs files stat "/$ipfs_pkg_folder/" > /dev/null 2>&1 ]; then
 	fail "ipfs folder for pkg does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 300 -n
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
-	printf "creating ipfs subfolder (down to db) for pkg..."
+	echo "creating ipfs subfolder (down to db) for pkg..."
 	ipfs files mkdir -p "/$ipfs_db_folder" > /dev/null 2>&1 || fail "ipfs subfolder (down to db) for pkg couldn't be created" 101 -n
 elif not [ ipfs files stat "$ipfs_db_folder" > /dev/null 2>&1 ]; then
 	fail "ipfs subfolder (down to db) does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 301 -n
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
-	printf "creating ipfs archive folder for repo..."
+	echo "creating ipfs archive folder for repo..."
+	ipfs files rm -r "/$ipfs_pkg_archive_folder" > /dev/null 2>&1 || true
 	ipfs files mkdir "/$ipfs_pkg_archive_folder" > /dev/null 2>&1 || fail "ipfs folder for repo archive couldn't be created" 102 -n
 elif not [ ipfs files stat "/$ipfs_pkg_archive_folder/" > /dev/null 2>&1 ]; then
 	fail "ipfs folder for repo archive does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 302 -n
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
-	printf "creating ipfs folder for iso..."
+	echo "creating ipfs folder for iso..."
+	ipfs files rm -r "/$ipfs_iso_folder" > /dev/null 2>&1 || true
 	ipfs files mkdir "/$ipfs_iso_folder" > /dev/null 2>&1 || fail "ipfs folder for iso couldn't be created" 103 -n
 elif not [ ipfs files stat "$ipfs_iso_folder" > /dev/null 2>&1 ]; then
 	fail "ipfs folder for iso does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 302 -n
@@ -298,7 +305,7 @@ else
 fi
 
 #don't update when recovering from the last update
-if [ "$RECOVER" -eq 0 ]; then 
+if [ "$RECOVER" -eq 1 ]; then #fixme should be 0
 
 	# only run when there are changes
 	if [[ -f "$rsync_target/lastupdate" ]] && diff -b <(curl -Ls "$lastupdate_url") "$rsync_target/lastupdate" >/dev/null; then
@@ -381,7 +388,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$pkg_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path"
+			ipfs files cp "/ipfs/$pkg_cid" "/$pkg_dest_path"
 			unset pkg_name pkg_pool_folder pkg_cid pkg_dest_path
 			
 		elif [ "${new_file:0:5}" == 'iso/' ]; then #that's everything in iso/
@@ -396,7 +403,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$iso_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$iso_cid" "$iso_dest_path"
+			ipfs files cp "/ipfs/$iso_cid" "/$iso_dest_path"
 			unset iso_file_name iso_file_folder iso_cid iso_folder_path iso_dest_path
 			
 		elif [ "${new_file: -3}" == '.db' ]; then # that's a database file
@@ -406,7 +413,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$db_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
+			ipfs files cp "/ipfs/$db_cid" "/$db_dest_path"
 			unset db_repo_name db_cid db_dest_path
 			
 		else
@@ -426,7 +433,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			pkg_pool_folder=$(echo "$changed_file" | cut -d'/' -f2)
 			pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_pool_folder" "$pkg_name")
 			ipfs files rm "$pkg_dest_path"
-			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path"
+			ipfs files cp "/ipfs/$pkg_cid" "/$pkg_dest_path"
 			unset pkg_name pkg_dest_path pkg_old_cid pkg_pool_folder pkg_cid
 			
 		elif [ "${changed_file:0:5}" == 'iso/' ]; then #that's everything in iso/
@@ -438,7 +445,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			add_expiredate_to_clusterpin "$iso_old_cid" 'iso' "$iso_file_folder" "$iso_file_name"
 			iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name")
 			ipfs files rm "$iso_dest_path"
-			ipfs files cp "/ipfs/$iso_cid" "$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder"
+			ipfs files cp "/ipfs/$iso_cid" "/$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder"
 			unset iso_file_name iso_file_folder iso_dest_path iso_old_cid iso_cid
 			
 		elif [ "${changed_file: -3}" == '.db' ]; then # that's a database file
@@ -448,7 +455,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
 			db_cid=$(add_file_to_cluster 'db' "$db_repo_name")
 			ipfs files rm "$db_dest_path"
-			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
+			ipfs files cp "/ipfs/$db_cid" "/$db_dest_path"
 			unset db_repo_name db_dest_path db_old_cid db_cid
 			
 		else
@@ -492,18 +499,18 @@ else # FULL_ADD is set - full add mechanism
 	cd "$rsync_target"
 	
 	while IFS= read -r -d $'\0' filename; do
-		if [ "${filename:0:5}" == 'pool/' ]; then #that's a pkg
-			pkg_name=$(echo "$filename" | cut -d'/' -f3)
-			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f2)
+		if [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
+			pkg_name=$(echo "$filename" | cut -d'/' -f4)
+			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f3)
 			pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_pool_folder" "$pkg_name")
 			pkg_dest_path="$ipfs_pkg_folder/$dist_id/$arch_id/$repo_id/$pkg_name"
 			ipfs files rm "$pkg_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
-			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path"
+			ipfs files cp "/ipfs/$pkg_cid" "/$pkg_dest_path"
 			unset pkg_name pkg_pool_folder pkg_cid pkg_dest_path
 			
-		elif [ "${filename:0:5}" == 'iso/' ]; then #that's everything in iso/
-			iso_file_name=$(echo "$filename" | cut -d'/' -f3)
-			iso_file_folder=$(echo "$filename" | cut -d'/' -f2)
+		elif [ "${filename:0:7}" == './iso/' ]; then #that's everything in iso/
+			iso_file_name=$(echo "$filename" | cut -d'/' -f4)
+			iso_file_folder=$(echo "$filename" | cut -d'/' -f3)
 			iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name")
 			iso_folder_path="$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder"
 			if not [ ipfs files stat "$iso_folder_path" > /dev/null 2>&1 ]; then
@@ -511,7 +518,7 @@ else # FULL_ADD is set - full add mechanism
 			fi
 			iso_dest_path="$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder/$iso_file_name"
 			ipfs files rm "$iso_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
-			ipfs files cp "/ipfs/$iso_cid" "$iso_dest_path"
+			ipfs files cp "/ipfs/$iso_cid" "/$iso_dest_path"
 			unset iso_file_name iso_file_folder iso_cid iso_folder_path iso_dest_path
 			
 		elif [ "${filename: -3}" == '.db' ]; then # that's a database file
@@ -519,17 +526,17 @@ else # FULL_ADD is set - full add mechanism
 			db_cid=$(add_file_to_cluster 'db' "$db_repo_name")
 			db_dest_path="$ipfs_db_folder/${db_repo_name}.db"
 			ipfs files rm "$db_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
-			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
+			ipfs files cp "/ipfs/$db_cid" "/$db_dest_path"
 			unset db_repo_name db_cid db_dest_path
 			
 		else
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
 			
 		fi
-	done < <(find "$rsync_target" -type f -print0)	
+	done < <(find . -type f -print0)	
 fi
 
-ipfs files cp "$ipfs_pkg_folder archive.pkg.pacman.store/$(date --utc -Iseconds)/"
+ipfs files cp "$ipfs_pkg_folder" "/archive.pkg.pacman.store/$(date --utc -Iseconds)/"
 
 cat "$rsync_log" >> "$rsync_log_archive"
 rm -f "$rsync_log"
