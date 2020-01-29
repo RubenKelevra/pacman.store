@@ -119,7 +119,7 @@ function fail {
 }
 
 function rsync_cmd() {
-	local -a cmd=(rsync -rtlH -LK --safe-links --delete-excluded --delete --delete-after "--log-file=${log}" "--log-file-format='%i %n%L'" "--timeout=600" "--contimeout=60" -p \
+	local -a cmd=(rsync -rtlH -LK --safe-links --delete-excluded --delete --delete-after "--log-file=${rsync_log}" "--timeout=600" "--contimeout=60" -p \
 		--delay-updates --no-motd "--temp-dir=${rsync_tmp}")
 
 	if stty &>/dev/null; then
@@ -161,7 +161,7 @@ function add_expiredate_to_clusterpin() {
 	
 	ipfs-cluster-ctl pin add --no-status --expire-in "$_expire" --name "$_name" --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_cid" --no-status > /dev/null
 	if [ $? -eq 0 ]; then
-		exit 0
+		return 0
 	else
 		fail "ipfs-cluster-ctl returned an error while adding an expire time to a cluster pin: cid: '$_cid' filetype: '$2' name: '$_name'" 211
 	fi
@@ -208,7 +208,7 @@ function add_file_to_cluster() {
 	fi
 	if [ $? -eq 0 ]; then
 		echo "$_new_cid"
-		exit 0
+		return 0
 	else
 		fail "ipfs-cluster-ctl returned an error while adding a file to the cluster filetype: '$1' name: '$_name' filepath: '$_filepath'" 201
 	fi
@@ -308,7 +308,7 @@ else
 fi
 
 #don't update when recovering from the last update
-if [ "$RECOVER" -eq 1 ]; then #fixme should be 0
+if [ "$RECOVER" -eq 0 ]; then
 
 	# only run when there are changes
 	if [[ -f "$rsync_target/lastupdate" ]] && diff -b <(curl -Ls "$lastupdate_url") "$rsync_target/lastupdate" >/dev/null; then
@@ -370,7 +370,7 @@ fi
 
 if [ $FULL_ADD -eq 0 ]; then 
 	#fix broken rsync logs
-	dos2unix -c mac "${rsync_log}" > /dev/null 2>&1
+	dos2unix -c mac "${rsync_log}" # > /dev/null 2>&1
 else #delete rsync log (we won't use it anyway)
 	rm -f "$rsync_log"
 	sync
@@ -391,7 +391,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$pkg_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$pkg_cid" "/$pkg_dest_path"
+			ipfs files cp "/ipfs/$pkg_cid" "/$pkg_dest_path" > /dev/null 2>&1 || echo "Warning: New pkg file $pkg_name already existed on IPFS"  >&2
 			unset pkg_name pkg_pool_folder pkg_cid pkg_dest_path
 			
 		elif [ "${new_file:0:5}" == 'iso/' ]; then #that's everything in iso/
@@ -402,28 +402,28 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			if not [ ipfs files stat "$iso_folder_path" > /dev/null 2>&1 ]; then
 				ipfs files mkdir "$iso_folder_path" > /dev/null 2>&1
 			fi
-			iso_dest_path="$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder/$iso_file_name"
+			iso_dest_path="$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder/$iso_file_name" 
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$iso_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$iso_cid" "/$iso_dest_path"
+			ipfs files cp "/ipfs/$iso_cid" "/$iso_dest_path" > /dev/null 2>&1 || echo "Warning: New iso file $iso_file_name already existed on IPFS"  >&2
 			unset iso_file_name iso_file_folder iso_cid iso_folder_path iso_dest_path
 			
 		elif [ "${new_file: -3}" == '.db' ]; then # that's a database file
-			db_repo_name=$(echo "$new_file" | cut -d'/' -f2)
+			db_repo_name=$(echo "$new_file" | cut -d'/' -f1)
 			db_cid=$(add_file_to_cluster 'db' "$db_repo_name")
 			db_dest_path="$ipfs_db_folder/${db_repo_name}.db"
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$db_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$db_cid" "/$db_dest_path"
+			ipfs files cp "/ipfs/$db_cid" "/$db_dest_path" > /dev/null 2>&1 || echo "Warning: New db file $db_repo_name already existed on IPFS"  >&2
 			unset db_repo_name db_cid db_dest_path
 			
 		else
 			echo "Warning: Couldn't process new file '$new_file', unknown file type"  >&2
 			
 		fi
-	done < <(grep ' >f+++++++++' "${rsync_log}" | awk '{ print $5 }')
+	done < <(grep ' >f+++++++++' "${rsync_log}" | awk '{ print $5 }' | grep -v '^lastupdate$')
 
 	#changed files
 	while IFS= read -r -d $'\n' changed_file; do
@@ -452,7 +452,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			unset iso_file_name iso_file_folder iso_dest_path iso_old_cid iso_cid
 			
 		elif [ "${changed_file: -3}" == '.db' ]; then # that's a database file
-			db_repo_name=$(echo "$changed_file" | cut -d'/' -f2)
+			db_repo_name=$(echo "$changed_file" | cut -d'/' -f1)
 			db_dest_path="$ipfs_db_folder/${db_repo_name}.db"
 			db_old_cid=$(ipfs files stat --hash "$db_dest_path")
 			add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
@@ -487,7 +487,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			
 		elif [ "${deleted_file: -3}" == '.db' ]; then # that's a database file
 			db_dest_path="$ipfs_db_folder/${db_repo_name}.db"
-			db_repo_name=$(echo "$deleted_file" | cut -d'/' -f2)
+			db_repo_name=$(echo "$deleted_file" | cut -d'/' -f1)
 			db_old_cid=$(ipfs files stat --hash "$db_dest_path")
 			add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
 			ipfs files rm "$db_dest_path"
@@ -496,7 +496,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 		else
 			echo "Warning: Couldn't process deleted file '$deleted_file', unknown file type"  >&2
 		fi
-	done < <(grep ' *deleting' "${rsync_log}" | awk '{ print $5 }')
+	done < <(grep ' *deleting' "${rsync_log}" | awk '{ print $5 }' | grep -v '^lastupdate$')
 
 else # FULL_ADD is set - full add mechanism
 	cd "$rsync_target"
@@ -547,7 +547,7 @@ else # FULL_ADD is set - full add mechanism
 	done < <(find . -type f -print0)	
 fi
 
-ipfs files cp "$ipfs_pkg_folder" "/archive.pkg.pacman.store/$(date --utc -Iseconds)/"
+ipfs files cp "/$ipfs_pkg_folder" "/$ipfs_pkg_archive_folder/$(date --utc -Iseconds)"
 
 cat "$rsync_log" >> "$rsync_log_archive"
 rm -f "$rsync_log"
@@ -561,7 +561,7 @@ if [ $LOCAL_IPFS_MOUNT -eq 1 ]; then
 		# get a lock on pacman's database
 		if { set -C; 2>/dev/null >$pacman_lock; }; then
 			# mount /ipfs and /ipns again on exit, then remove the lock on pacman's database
-			trap 'ipfs mount | true;rm -f "$pacman_lock"' EXIT
+			trap 'rm -f "$pacman_lock"' EXIT #ipfs mount || true;
 			break
 		else
 			echo "pacman_ipfs_sync: pacman's db lock is already set, waiting one second for retry" >&2
@@ -574,12 +574,12 @@ if [ $LOCAL_IPFS_MOUNT -eq 1 ]; then
 fi
 
 #get new CIDs
-ipfs_pkg_folder_cid=$(ipfs files stat --hash "$ipfs_pkg_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
-ipfs_pkg_archive_folder_cid=$(ipfs files stat --hash "$ipfs_pkg_archive_folder") || fail 'repo archive folder (IPFS) CID could not be determined after update is completed' 401
-ipfs_iso_folder_cid=$(ipfs files stat --hash "$ipfs_iso_folder")  || fail 'iso folder (IPFS) CID could not be determined after update is completed' 402 
+ipfs_pkg_folder_cid=$(ipfs files stat --hash "/$ipfs_pkg_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
+ipfs_pkg_archive_folder_cid=$(ipfs files stat --hash "/$ipfs_pkg_archive_folder") || fail 'repo archive folder (IPFS) CID could not be determined after update is completed' 401
+ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder")  || fail 'iso folder (IPFS) CID could not be determined after update is completed' 402 
 # publish new ipns records
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="pkg.pacman.store" "/ipfs/$ipfs_pkg_folder_cid" || echo 'repo folder (IPFS) IPNS could not be published after update' >&2
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="old.pkg.pacman.store" "/ipfs/$ipfs_pkg_archive_folder_cid" || echo 'warning repo archive folder (IPFS) IPNS could not be published after update' >&2
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="iso.pacman.store" "/ipfs/$ipfs_iso_folder_cid" || echo 'iso folder (IPFS) IPNS could not be published after update' >&2
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" || echo 'repo folder (IPFS) IPNS could not be published after update' >&2
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_archive_folder" "/ipfs/$ipfs_pkg_archive_folder_cid" || echo 'warning repo archive folder (IPFS) IPNS could not be published after update' >&2
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" || echo 'iso folder (IPFS) IPNS could not be published after update' >&2
 
 
