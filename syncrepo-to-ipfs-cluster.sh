@@ -25,14 +25,12 @@ set -e
 # rolling hash to get diff compression if possible
 #
 # available arguments:
-# FIXME: implement the following argument(s)
 # --force-full-add = will add all files again to ipfs even if locally the
 #                    ipfs-mfs folders already exist
 
 # dependencies:
 # - dos2unix
 # - ipfs-cluster-ctl
-# - lockfile-progs
 # - a running ipfs-cluster-service
 # - a running ipfs
 # - more than twice the storage currently in the repo (deduplicated)
@@ -42,33 +40,32 @@ set -e
 ### config ###
 
 # Directory where the repo is permanently locally mirrored as rsync target.
-# Example: ~/rsync_repo/data
-rsync_target='/data_160/repo/' #FIXME change dir
+rsync_target='/mnt/data/ifps/repo/'
 
 # temporary rsync storage (on same mount as rsync_target)
 # Example: ~/rsync_repo/tmp
-rsync_tmp='/data_160/tmp' #FIXME change dir
+rsync_tmp='/mnt/data/ifps/tmp/'
 
 # Lockfile path
 # Example: ~/rsync_repo/rsync-to-ipfs.lock
-lock='/data_160/rsync-to-ipfs.lock' #FIXME change dir
+lock='/mnt/data/ifps/rsync-to-ipfs/rsync-to-ipfs.lock'
 
 # pacman lock file
 pacman_lock='/var/lib/pacman/db.lck'
 
 #Logfile filename
 # Example: ~/rsync_repo/rsync-to-ipfs.log
-rsync_log='/data_160/rsync-to-ipfs.log' #FIXME change dir
+rsync_log='/mnt/data/ifps/rsync-to-ipfs/rsync-to-ipfs.log'
 
 #Logfile archive file
 # Example: ~/rsync_repo/rsync-to-ipfs.log
-rsync_log_archive='/data_160/rsync-to-ipfs_archive.log' #FIXME change dir
+rsync_log_archive='/mnt/data/ifps/rsync-to-ipfs/rsync-to-ipfs_archive.log'
 
 # rsync url
-rsync_url='rsync://mirror.f4st.host/archlinux/' #FIXME change url
+rsync_url='rsync://mirror.f4st.host/archlinux/'
 
 # http/https url to the lastupdate file on the same server, to skip unnecessary rsync syncs 
-lastupdate_url='https://mirror.f4st.host/archlinux/lastupdate' #FIXME change url
+lastupdate_url='https://mirror.f4st.host/archlinux/lastupdate'
 
 # ipfs-mfs repository folder + domain
 ipfs_pkg_folder='pkg.pacman.store'
@@ -89,10 +86,10 @@ arch_id='x86_64'
 repo_id='default'
 
 # folder where the ipns is mounted
-ipns_mount='/ipns'
+ipns_mount='/mnt/ipns'
 
 # folder where the ipfs is mounted
-ipfs_mount='/ipfs'
+ipfs_mount='/mnt/ipfs'
 
 cluster_pin_pkg_expire="5184000s" #2 month
 cluster_pin_pkg_folder_expire="5184000s" #2 month
@@ -299,7 +296,6 @@ fi
 if [ $FULL_ADD -eq 0 ]; then
 	if [ -f "$rsync_log" ]; then
 		echo "Warning: Last sync with ipfs incomplete, reread the last transmission log" >&2
-		echo "Warning: Currently recovering might fail in certain situations..." >&2 #FIXME: develop more error resiliance if items are missing in ipfs
 		RECOVER=1
 	fi
 else
