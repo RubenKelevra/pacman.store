@@ -78,8 +78,9 @@ ipfs config --json Experimental.QUIC true
 #FIXME: create a description
 ipfs config --json Mounts.FuseAllowOther true #FIXME: show how to change this
 
-# if you going to use more than one IPFS node on a network, enable mdns
-#FIXME: show how to change this
+# by default IPFS will search for other computers in your network and connect to them
+# in rare cases you might want to deactivate this by running:
+ipfs config --json Discovery.MDNS.Enabled false
 
 # default data storage size is 10G in the folder ~/.ipfs if you prefer to store ~/.ipfs somewhere else, move the folder now.
 # change the .service file created earlier - add the definition of the envoiment variable under [Service]:
