@@ -92,7 +92,7 @@ systemctl --user daemon-reload
 ipfs config --json Datastore.StorageMax '"50GB"'
 
 # increase the GracePeriod (minimum time before a new connection gets terminated)
-Swarm ConnMgr GracePeriod 3m #FIXME: show how to change this
+ipfs config --json Swarm.ConnMgr.GracePeriod '"3m"'
 
 # enable nat traversal if you use NAT
 Swarm EnableAutoNATService true #FIXME: show how to enable this
