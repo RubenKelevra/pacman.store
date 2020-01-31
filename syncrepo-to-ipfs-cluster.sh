@@ -40,26 +40,26 @@ set -e
 ### config ###
 
 # Directory where the repo is permanently locally mirrored as rsync target.
-rsync_target='/mnt/data/ifps/repo/'
+rsync_target='/mnt/data/ipfs/repo/'
 
 # temporary rsync storage (on same mount as rsync_target)
 # Example: ~/rsync_repo/tmp
-rsync_tmp='/mnt/data/ifps/tmp/'
+rsync_tmp='/mnt/data/ipfs/tmp/'
 
 # Lockfile path
 # Example: ~/rsync_repo/rsync-to-ipfs.lock
-lock='/mnt/data/ifps/rsync-to-ipfs/rsync-to-ipfs.lock'
+lock='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs.lock'
 
 # pacman lock file
 pacman_lock='/var/lib/pacman/db.lck'
 
 #Logfile filename
 # Example: ~/rsync_repo/rsync-to-ipfs.log
-rsync_log='/mnt/data/ifps/rsync-to-ipfs/rsync-to-ipfs.log'
+rsync_log='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs.log'
 
 #Logfile archive file
 # Example: ~/rsync_repo/rsync-to-ipfs.log
-rsync_log_archive='/mnt/data/ifps/rsync-to-ipfs/rsync-to-ipfs_archive.log'
+rsync_log_archive='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs_archive.log'
 
 # rsync url
 rsync_url='rsync://mirror.f4st.host/archlinux/'
