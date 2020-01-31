@@ -78,9 +78,6 @@ ipfs config --json Experimental.QUIC true
 #FIXME: create a description
 ipfs config --json Mounts.FuseAllowOther true #FIXME: show how to change this
 
-#FIXME: create a description
-Libp2pStreamMounting true #FIXME: show how to change this
-
 # if you going to use more than one IPFS node on a network, enable mdns
 #FIXME: show how to change this
 
