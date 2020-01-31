@@ -88,8 +88,8 @@ Environment=IPFS_PATH=/your/custom/path/
 #if you added the envoironment variable make sure to reload the service file:
 systemctl --user daemon-reload
 
-# change the default storage size if needed: 
-datastore StorageMax default 10G #FIXME: show how to change this
+# change the default storage size if needed (in this example to 50 GB)
+ipfs config --json Datastore.StorageMax '"50GB"'
 
 # increase the GracePeriod (minimum time before a new connection gets terminated)
 Swarm ConnMgr GracePeriod 3m #FIXME: show how to change this
