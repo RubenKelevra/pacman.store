@@ -22,11 +22,11 @@ uncomment "user_allow_other"
 
 # you might want to setup the following with a custom user like 'ipfs'
 
-sudo mkdir /ipfs
-sudo mkdir /ipns
+sudo mkdir /mnt/ipfs
+sudo mkdir /mnt/ipns
 
-sudo chown <username> /ipfs
-sudo chown <username> /ipns
+sudo chown <username> /mnt/ipfs
+sudo chown <username> /mnt/ipns
 
 # create a user service
 
@@ -95,16 +95,16 @@ ipfs config --json Datastore.StorageMax '"50GB"'
 ipfs config --json Swarm.ConnMgr.GracePeriod '"3m"'
 
 # enable nat traversal if you use NAT
-Swarm EnableAutoNATService true #FIXME: show how to enable this
+ipfs config --json Swarm.EnableAutoNATService 'true'
 
 # use a relay (a proxy server if no direct connection can be established between you and a peer you like to use (both peers behind nat and STUN fails)
-swarm EnableAutoRelay true #FIXME: show how to enable this
+ipfs config --json Swarm.EnableAutoRelay 'true'
 
-# standard path for ipfs-fileaccess (unneccary for this setup)
-/ipfs #FIXME: show how to change this
+# change standard path for ipfn-fileaccess
+ipfs config --json Mounts.IPFS '"/mnt/ipfs"'
 
-# standard path for ipfn-fileaccess (this one is used)
-/ipfn #FIXME: show how to change this
+# change standard path for ipfn-fileaccess
+ipfs config --json Mounts.IPNS '"/mnt/ipns"'
 
 
 ### time to start and enable the service ###
@@ -120,15 +120,15 @@ systemctl --user enable --now ipfs
 run as root: ./pacman_ipfs_sync --skip-db-sync
 
 # create a folder where pacman should access the ipfs
-sudo mkdir /pacman_cache/
-sudo chown $user /pacman_cache/
+sudo mkdir /mnt/pacman_cache/
+sudo chown $user /mnt/pacman_cache/
 
 # use binfs to mount the path presented by ipfs in '/ipfn' to a custom path (necessary because of pacman limitations: Pacman refuses to change into a directory which doesn't exist)
 
-bindfs /ipfn/pkg.pacman.store/arch/x86_64/default/ /pacman_cache
+bindfs /mnt/ipfn/pkg.pacman.store/arch/x86_64/default/ /mnt/pacman_cache
 
 # add /pacman_cache to /etc/pacman.conf - a line below the regular cache dir
-CacheDir = /pacman_cache/
+CacheDir = /mnt/pacman_cache/
 
 ### receive database updates from ipfs ###
 # - this avoids having slightly newer db files which don't match the pkg files stored on IPFS yet
