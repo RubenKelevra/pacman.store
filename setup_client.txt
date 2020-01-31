@@ -2,7 +2,7 @@
 
 # known limitations:
 # - when accessing ipns via fuse, you're unable to publish new ipns records (last checked ipfs v0.4.22)
-#   you can temporarily unmount /ipfn to publish a new record and remount it afterwards
+#   you can temporarily unmount /mnt/ipfn to publish a new record and remount it afterwards
 # - since IPFS is just mirroring off mirrors already existing, we add delay to updates
 # - the current implementation of fuse mounts in IPFS is considered unstable (last checked ipfs v0.4.22)
 # - IPFS is considered alpha software (last checked ipfs v0.4.22)
@@ -28,29 +28,24 @@ sudo mkdir /mnt/ipns
 sudo chown <username> /mnt/ipfs
 sudo chown <username> /mnt/ipns
 
-# create a user service
+# to run ipfs your user account edit the ipfs@.service file as root:
 
-### store as ~/.config/systemd/user/ipfs.service
-[Install]
-WantedBy=default.target
+systemctl edit ipfs@.service
 
+# add the following lines to the empty file:
 [Unit]
-Description=IPFS daemon
 After=network.target
 
 [Service]
+ExecStart=
 ExecStart=/usr/bin/ipfs daemon --mount --enable-pubsub-experiment --enable-namesys-pubsub --enable-mplex-experiment 
-Restart=on-failure
-###
+#
 
 # custom options in service file:
 # - pubsub-experiment       = a service to exchange messages inside ipfs, subscription based (similar to multicast)
 # - namesys-pubsub          = uses pubsub messages to speed-up name-lookups (something similar to dns (with dnssec) on the internet)
 # - mount                   = automatically mounts ipfs and ipfn to the filesystem via fuse
 # - enable-mplex-experiment = FIXME: some pixie magic
-
-#load the service file
-systemctl --user daemon-reload
 
 
 ### first of ipfs to init the settings and databases ###
@@ -60,7 +55,7 @@ ipfs init --empty-repo
 # custom options on first start:
 # - empty-repo       = no help files as default content
 
-# change the default config for best performance
+# change the default config for best performance:
 
 # enable support for large directories
 ipfs config --json Experimental.ShardingEnabled true
@@ -88,16 +83,14 @@ Environment=IPFS_PATH=/your/custom/path/
 #if you added the envoironment variable make sure to reload the service file:
 systemctl --user daemon-reload
 
-# change the default storage size if needed (in this example to 50 GB)
-ipfs config --json Datastore.StorageMax '"50GB"'
+# change the default storage size if needed (in this example to 100 GB)
+ipfs config --json Datastore.StorageMax '"100GB"'
 
 # increase the GracePeriod (minimum time before a new connection gets terminated)
 ipfs config --json Swarm.ConnMgr.GracePeriod '"3m"'
 
-# enable nat traversal if you use NAT
+# enable nat traversal and relay services if you use NAT
 ipfs config --json Swarm.EnableAutoNATService 'true'
-
-# use a relay (a proxy server if no direct connection can be established between you and a peer you like to use (both peers behind nat and STUN fails)
 ipfs config --json Swarm.EnableAutoRelay 'true'
 
 # change standard path for ipfn-fileaccess
@@ -109,7 +102,7 @@ ipfs config --json Mounts.IPNS '"/mnt/ipns"'
 
 ### time to start and enable the service ###
 
-systemctl --user enable --now ipfs
+systemctl enable --now ipfs@<username>
 
 
 # now add the content of the pacman local cache to your ipfs for caching purposes:
