@@ -59,7 +59,6 @@ ipfs init --empty-repo
 
 # custom options on first start:
 # - empty-repo       = no help files as default content
-# - profile=badgerds = use badgerds v1 database for storing files (instead of many many files in folders = flatfs)
 
 # change the default config for best performance
 
