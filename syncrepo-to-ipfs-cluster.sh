@@ -578,7 +578,7 @@ else # FULL_ADD is set - full add mechanism
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
 			
 		fi
-	done < <(find . -type f -print0 | | grep -v './lastupdate')	
+	done < <(find . -type f -print0 | grep -v './lastupdate')	
 fi
 
 ipfs files cp "/$ipfs_pkg_folder" "/$ipfs_pkg_archive_folder/$(date --utc -Iseconds)"
