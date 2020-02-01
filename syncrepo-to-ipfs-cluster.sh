@@ -573,7 +573,7 @@ else # FULL_ADD is set - full add mechanism
 			iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name")
 			iso_folder_path="/$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder"
 			if ! ipfs files stat "$iso_folder_path" > /dev/null 2>&1; then
-				ipfs files mkdir "$iso_folder_path" > /dev/null 2>&1
+				ipfs files mkdir -p "$iso_folder_path" > /dev/null 2>&1
 			fi
 			iso_dest_path="/$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder/$iso_file_name"
 			ipfs files rm "$iso_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
