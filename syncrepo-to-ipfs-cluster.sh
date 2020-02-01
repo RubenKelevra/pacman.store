@@ -548,13 +548,13 @@ else # FULL_ADD is set - full add mechanism
 	no_of_adds=1
 	
 	while IFS= read -r -d $'\0' filename; do
-		if [[ "$filename" =~ "~" ]]; then
-			echo "Warning: Skipped file with '~' in path: $filename"  >&2
+		if [[ $filename =~ "/~" ]]; then
+			echo "Warning: Skipped file with '/~' in path: $filename"  >&2
 			continue
-		elif [[ "$filename" =~ '/.' ]]; then
+		elif [[ $filename =~ '/.' ]]; then
 			echo "Warning: Skipped hidden file/folder: $filename"  >&2
 			continue
-		elif [ "$filename" = "./lastupdate" ]; then
+		elif [ "$filename" == "./lastupdate" ]; then
 			continue
 		fi
 		if [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
@@ -597,11 +597,6 @@ fi
 
 ipfs files cp "/$ipfs_pkg_folder" "/$ipfs_pkg_archive_folder/$(date --utc -Iseconds)"
 
-if [ $FULL_ADD -eq 0 ]; then 
-	cat "$rsync_log" >> "$rsync_log_archive"
-	rm -f "$rsync_log"
-fi
-
 #check if ipns_mount is mounted
 [ "$(mount -l | grep -c "/dev/fuse on $ipns_mount type fuse")" -eq 1 ] && LOCAL_IPFS_MOUNT=1
 
@@ -635,3 +630,8 @@ ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_
 ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" > /dev/null || echo '\nWarning: ISO folder (IPFS) IPNS could not be published after update' >&2
 
 echo "\n:: operation successfully completed @ $(date -Iseconds)"
+
+if [ $FULL_ADD -eq 0 ]; then 
+	cat "$rsync_log" >> "$rsync_log_archive"
+	rm -f "$rsync_log"
+fi
