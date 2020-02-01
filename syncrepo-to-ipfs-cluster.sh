@@ -543,6 +543,8 @@ else # FULL_ADD is set - full add mechanism
 		elif [[ "$filename" =~ '/.' ]]; then
 			echo "Warning: Skipped hidden file/folder: $filename"  >&2
 			continue
+		elif [[ "$filename" =~ "lastupdate" ]]; then
+			continue
 		elif [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
 			pkg_name=$(echo "$filename" | cut -d'/' -f4)
 			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f3)
@@ -576,7 +578,7 @@ else # FULL_ADD is set - full add mechanism
 		else
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
 		fi
-	done < <(find . -type f -print0 | grep -v './lastupdate')	
+	done < <(find . -type f -print0)	
 fi
 
 ipfs files cp "/$ipfs_pkg_folder" "/$ipfs_pkg_archive_folder/$(date --utc -Iseconds)"
