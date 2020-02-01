@@ -450,7 +450,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path"
 			unset pkg_name pkg_dest_path pkg_old_cid pkg_pool_folder pkg_cid
 			
-		elif [ "${changed_file:0:5}" == 'iso/' ]; then #that's everything in iso/
+		elif [ "${changed_file:0:4}" == 'iso/' ]; then #that's everything in iso/
 			echo "Warning: the file in /iso '$changed_file' was changed on mirror, this is unexpected!" >&2
 			iso_file_name=$(echo "$changed_file" | cut -d'/' -f3)
 			iso_file_folder=$(echo "$changed_file" | cut -d'/' -f2)
@@ -504,7 +504,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			ipfs files rm "$pkg_dest_path"
 			unset pkg_name pkg_dest_path pkg_old_cid
 			
-		elif [ "${deleted_file:0:5}" == 'iso/' ]; then #that's everything in iso/
+		elif [ "${deleted_file:0:4}" == 'iso/' ]; then #that's everything in iso/
 			iso_file_name=$(echo "$deleted_file" | cut -d'/' -f3)
 			iso_file_folder=$(echo "$deleted_file" | cut -d'/' -f2)
 			iso_dest_path="/$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder/$iso_file_name"
@@ -583,8 +583,10 @@ fi
 
 ipfs files cp "/$ipfs_pkg_folder" "/$ipfs_pkg_archive_folder/$(date --utc -Iseconds)"
 
-cat "$rsync_log" >> "$rsync_log_archive"
-rm -f "$rsync_log"
+if [ $FULL_ADD -eq 0 ]; then 
+	cat "$rsync_log" >> "$rsync_log_archive"
+	rm -f "$rsync_log"
+fi
 
 #check if ipns_mount is mounted
 [ "$(mount -l | grep -c "/dev/fuse on $ipns_mount type fuse")" -eq 1 ] && LOCAL_IPFS_MOUNT=1
