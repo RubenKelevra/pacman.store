@@ -536,7 +536,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 else # FULL_ADD is set - full add mechanism
 	cd "$rsync_target"
 
-	no_of_adds=1
+	no_of_adds=0
 	
 	while IFS= read -r -d $'\0' filename; do
 		if [[ "$filename" =~ "~" ]]; then
@@ -548,7 +548,6 @@ else # FULL_ADD is set - full add mechanism
 		elif [[ "$filename" = "./lastupdate" ]]; then
 			continue
 		fi
-		(( $no_of_adds % 1000 )) || echo "$(( $no_of_adds - 1)) processed..."
 		if [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
 			pkg_name=$(echo "$filename" | cut -d'/' -f4)
 			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f3)
@@ -583,6 +582,7 @@ else # FULL_ADD is set - full add mechanism
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
 		fi
 		let no_of_adds++
+		(( $no_of_adds % 100 )) || echo "$no_of_adds files processed..."
 	done < <(find . -type f -print0)	
 fi
 
