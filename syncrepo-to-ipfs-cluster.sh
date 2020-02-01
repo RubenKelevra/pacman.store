@@ -626,10 +626,12 @@ fi
 #get new CIDs
 ipfs_pkg_folder_cid=$(ipfs files stat --hash "/$ipfs_pkg_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
 ipfs_pkg_archive_folder_cid=$(ipfs files stat --hash "/$ipfs_pkg_archive_folder") || fail 'repo archive folder (IPFS) CID could not be determined after update is completed' 401
-ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder")  || fail 'iso folder (IPFS) CID could not be determined after update is completed' 402 
-# publish new ipns records
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" || echo 'repo folder (IPFS) IPNS could not be published after update' >&2
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_archive_folder" "/ipfs/$ipfs_pkg_archive_folder_cid" || echo 'warning repo archive folder (IPFS) IPNS could not be published after update' >&2
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" || echo 'iso folder (IPFS) IPNS could not be published after update' >&2
+ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder")  || fail 'iso folder (IPFS) CID could not be determined after update is completed' 402
 
-echo ":: operation successfully completed @ $(date -Iseconds)"
+echo -ne "start publishing new ipfs..."
+# publish new ipns records
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" > /dev/null || echo '\nWarning: Repo folder (IPFS) IPNS could not be published after update' >&2
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_archive_folder" "/ipfs/$ipfs_pkg_archive_folder_cid" > /dev/null || echo '\nWarning: repo archive folder (IPFS) IPNS could not be published after update' >&2
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" > /dev/null || echo '\nWarning: ISO folder (IPFS) IPNS could not be published after update' >&2
+
+echo "\n:: operation successfully completed @ $(date -Iseconds)"
