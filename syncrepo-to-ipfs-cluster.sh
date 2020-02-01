@@ -441,13 +441,16 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				echo "Warning: rsync log inconsistent! changed file '$changed_file' could not be located, skipping" >&2
 				continue
 			fi
-			pkg_old_cid=$(ipfs files stat --hash "$pkg_dest_path")
-			if [ "$pkg_cid" == "$pkg_old_cid" ]; then
-				echo "Warning: changed file got the same content as the old one. Old CID: '$pkg_old_cid' path: '$pkg_dest_path'. SKIPPING" >&2
-				continue
+			if ! pkg_old_cid=$(ipfs files stat --hash "$pkg_dest_path"); then
+				echo "Warning: ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file" >&2
+			else
+				if [ "$pkg_cid" == "$pkg_old_cid" ]; then
+					echo "Warning: changed file got the same content as the old one. Old CID: '$pkg_old_cid' path: '$pkg_dest_path'. SKIPPING" >&2
+					continue
+				fi
+				add_expiredate_to_clusterpin "$pkg_old_cid" 'pkg' "$pkg_name"
+				ipfs files rm "$pkg_dest_path"
 			fi
-			add_expiredate_to_clusterpin "$pkg_old_cid" 'pkg' "$pkg_name"
-			ipfs files rm "$pkg_dest_path"
 			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path"
 			unset pkg_name pkg_dest_path pkg_old_cid pkg_pool_folder pkg_cid
 			
@@ -460,13 +463,16 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				echo "Warning: rsync log inconsistent! changed file '$changed_file' could not be located, skipping" >&2
 				continue
 			fi
-			iso_old_cid=$(ipfs files stat --hash "$iso_dest_path")
-			if [ "$iso_cid" == "$iso_old_cid" ]; then
-				echo "Warning: changed file got the same content as the old one. Old CID: '$iso_old_cid' path: '$iso_dest_path'. SKIPPING" >&2
-				continue
+			if ! iso_old_cid=$(ipfs files stat --hash "$iso_dest_path"); then
+				echo "Warning: ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file" >&2
+			else
+				if [ "$iso_cid" == "$iso_old_cid" ]; then
+					echo "Warning: changed file got the same content as the old one. Old CID: '$iso_old_cid' path: '$iso_dest_path'. SKIPPING" >&2
+					continue
+				fi
+				add_expiredate_to_clusterpin "$iso_old_cid" 'iso' "$iso_file_folder" "$iso_file_name"
+				ipfs files rm "$iso_dest_path"
 			fi
-			add_expiredate_to_clusterpin "$iso_old_cid" 'iso' "$iso_file_folder" "$iso_file_name"
-			ipfs files rm "$iso_dest_path"
 			ipfs files cp "/ipfs/$iso_cid" "$iso_dest_path"
 			unset iso_file_name iso_file_folder iso_dest_path iso_old_cid iso_cid
 			
@@ -477,13 +483,16 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				echo "Warning: rsync log inconsistent! changed file '$changed_file' could not be located, skipping" >&2
 				continue
 			fi
-			db_old_cid=$(ipfs files stat --hash "$db_dest_path")
-			if [ "$db_cid" == "$db_old_cid" ]; then
-				echo "Warning: changed file got the same content as the old one. Old CID: '$db_old_cid' path: '$db_dest_path'. SKIPPING" >&2
-				continue
+			if ! db_old_cid=$(ipfs files stat --hash "$db_dest_path"); then
+				echo "Warning: ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file" >&2
+			else			
+				if [ "$db_cid" == "$db_old_cid" ]; then
+					echo "Warning: changed file got the same content as the old one. Old CID: '$db_old_cid' path: '$db_dest_path'. SKIPPING" >&2
+					continue
+				fi
+				add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
+				ipfs files rm "$db_dest_path"
 			fi
-			add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
-			ipfs files rm "$db_dest_path"
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
 			unset db_repo_name db_dest_path db_old_cid db_cid
 			
