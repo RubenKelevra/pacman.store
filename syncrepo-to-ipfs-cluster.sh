@@ -43,22 +43,18 @@ set -e
 rsync_target='/mnt/data/ipfs/repo/'
 
 # temporary rsync storage (on same mount as rsync_target)
-# Example: ~/rsync_repo/tmp
 rsync_tmp='/mnt/data/ipfs/tmp/'
 
 # Lockfile path
-# Example: ~/rsync_repo/rsync-to-ipfs.lock
 lock='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs.lock'
 
 # pacman lock file
 pacman_lock='/var/lib/pacman/db.lck'
 
 #Logfile filename
-# Example: ~/rsync_repo/rsync-to-ipfs.log
 rsync_log='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs.log'
 
 #Logfile archive file
-# Example: ~/rsync_repo/rsync-to-ipfs.log
 rsync_log_archive='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs_archive.log'
 
 # rsync url
@@ -173,16 +169,16 @@ function add_file_to_cluster() {
 	if [ "$1" == "pkg" ]; then
 		# expect 2: to be subfolder
 		# expect 3: to be the filename
-		local _filepath="$rsync_target/pool/$2/$3"
+		local _filepath="${rsync_target}pool/$2/$3"
 		local _name="$ipfs_pkg_folder/$dist_id/$arch_id/$repo_id/$3"
 	elif [ "$1" == "db" ]; then
 		# expect 2: to be repository-name
-		local _filepath="$rsync_target/$2/os/$arch_id/$2.db"
+		local _filepath="${rsync_target}$2/os/$arch_id/$2.db"
 		local _name="$ipfs_pkg_folder/$dist_id/$arch_id/$repo_id/db/$2.db"
 	elif [ "$1" == "iso" ]; then
 		# expect 2: to be a foldername
 		# expect 3: to be a filename
-		local _filepath="$rsync_target/iso/$2/$3"
+		local _filepath="${rsync_target}iso/$2/$3"
 		local _name="$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$2/$3"
 		local _chunker="$cluster_chunker_iso"
 	elif [ "$1" == "note" ]; then
@@ -307,7 +303,7 @@ fi
 if [ "$RECOVER" -eq 0 ]; then
 
 	# only run when there are changes
-	if [[ -f "$rsync_target/lastupdate" ]] && diff -b <(curl -Ls "$lastupdate_url") "$rsync_target/lastupdate" >/dev/null; then
+	if [[ -f "${rsync_target}lastupdate" ]] && diff -b <(curl -Ls "$lastupdate_url") "${rsync_target}lastupdate" >/dev/null; then
 		[ $FULL_ADD -eq 1 ] || exit 0 # only exit here if we should not do a full add
 	fi
 
