@@ -553,7 +553,7 @@ else # FULL_ADD is set - full add mechanism
 			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path"
 			unset pkg_name pkg_pool_folder pkg_cid pkg_dest_path
 			
-		elif [ "${filename:0:7}" == './iso/' ]; then #that's everything in iso/
+		elif [ "${filename:0:6}" == './iso/' ]; then #that's everything in iso/
 			iso_file_name=$(echo "$filename" | cut -d'/' -f4)
 			iso_file_folder=$(echo "$filename" | cut -d'/' -f3)
 			iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name")
@@ -578,7 +578,7 @@ else # FULL_ADD is set - full add mechanism
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
 			
 		fi
-	done < <(find . -type f -print0)	
+	done < <(find . -type f -print0 | | grep -v './lastupdate')	
 fi
 
 ipfs files cp "/$ipfs_pkg_folder" "/$ipfs_pkg_archive_folder/$(date --utc -Iseconds)"
