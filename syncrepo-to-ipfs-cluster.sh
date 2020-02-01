@@ -545,13 +545,11 @@ else # FULL_ADD is set - full add mechanism
 		elif [[ "$filename" =~ '/.' ]]; then
 			echo "Warning: Skipped hidden file/folder: $filename"  >&2
 			continue
-		fi
-		if [[ "$filename" = "./lastupdate" ]]; then
+		elif [[ "$filename" = "./lastupdate" ]]; then
 			continue
 		fi
 		(( $no_of_adds % 1000 )) || echo "$(( $no_of_adds - 1)) processed..."
-		
-		elif [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
+		if [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
 			pkg_name=$(echo "$filename" | cut -d'/' -f4)
 			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f3)
 			pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_pool_folder" "$pkg_name")
