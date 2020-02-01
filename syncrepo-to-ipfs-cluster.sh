@@ -398,7 +398,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			fi
 			iso_folder_path="/$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder"
 			if ! ipfs files stat "$iso_folder_path" > /dev/null 2>&1; then
-				ipfs files mkdir "$iso_folder_path" > /dev/null 2>&1
+				ipfs files mkdir -p "$iso_folder_path" > /dev/null 2>&1
 			fi
 			iso_dest_path="/$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$iso_file_folder/$iso_file_name" 
 			if [ "$RECOVER" -eq 1 ]; then
