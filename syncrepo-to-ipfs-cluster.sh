@@ -183,7 +183,7 @@ function add_file_to_cluster() {
 		# expect 2: to be a foldername
 		# expect 3: to be a filename
 		local _filepath="$rsync_target/iso/$2/$3"
-		local _name="$ipfs_iso_folder/$2/$3"
+		local _name="$ipfs_iso_folder/$dist_id/$arch_id/$repo_id/$2/$3"
 		local _chunker="$cluster_chunker_iso"
 	elif [ "$1" == "note" ]; then
 		# expect 2: a full path
