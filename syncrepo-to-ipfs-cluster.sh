@@ -218,7 +218,6 @@ LOCAL_IPFS_MOUNT=0
 # simple one argument decoding
 
 if [ -n "$1" ]; then
-	echo "$1"
 	if [ "$1" == '--force-full-add' ]; then
 		echo "running full add..."
 		FULL_ADD=1
@@ -263,7 +262,7 @@ ipfs_db_folder="$ipfs_pkg_folder/$dist_id/$arch_id/$repo_id/db/"
 #check for ipfs-mfs folders
 
 if [ $FULL_ADD -eq 1 ]; then
-	echo "creating ipfs folder for pkg..."
+	echo "creating empty ipfs folder for pkg..."
 	ipfs files rm -r "/$ipfs_pkg_folder" > /dev/null 2>&1 || true
 	ipfs files mkdir "/$ipfs_pkg_folder" > /dev/null 2>&1 || fail "ipfs folder for pkg couldn't be created" 100 -n
 elif ! ipfs files stat "/$ipfs_pkg_folder/" > /dev/null 2>&1; then
@@ -271,14 +270,14 @@ elif ! ipfs files stat "/$ipfs_pkg_folder/" > /dev/null 2>&1; then
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
-	echo "creating ipfs subfolder (down to db) for pkg..."
+	echo "creating empty ipfs subfolder (down to db) for pkg..."
 	ipfs files mkdir -p "/$ipfs_db_folder" > /dev/null 2>&1 || fail "ipfs subfolder (down to db) for pkg couldn't be created" 101 -n
 elif  ! ipfs files stat "/$ipfs_db_folder" > /dev/null 2>&1; then
 	fail "ipfs subfolder (down to db) does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 301 -n
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
-	echo "creating ipfs archive folder for repo..."
+	echo "creating empty ipfs archive folder for repo..."
 	ipfs files rm -r "/$ipfs_pkg_archive_folder" > /dev/null 2>&1 || true
 	ipfs files mkdir "/$ipfs_pkg_archive_folder" > /dev/null 2>&1 || fail "ipfs folder for repo archive couldn't be created" 102 -n
 elif ! ipfs files stat "/$ipfs_pkg_archive_folder/" > /dev/null 2>&1; then
@@ -286,7 +285,7 @@ elif ! ipfs files stat "/$ipfs_pkg_archive_folder/" > /dev/null 2>&1; then
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
-	echo "creating ipfs folder for iso..."
+	echo "creating empty ipfs folder for iso..."
 	ipfs files rm -r "/$ipfs_iso_folder" > /dev/null 2>&1 || true
 	ipfs files mkdir "/$ipfs_iso_folder" > /dev/null 2>&1 || fail "ipfs folder for iso couldn't be created" 103 -n
 elif ! ipfs files stat "/$ipfs_iso_folder" > /dev/null 2>&1; then
@@ -541,12 +540,10 @@ else # FULL_ADD is set - full add mechanism
 		if [[ "$filename" =~ "~" ]]; then
 			echo "Warning: Skipped file with '~' in path: $filename"  >&2
 			continue
-		fi
-		if [[ "$filename" =~ '/.' ]]; then
+		elif [[ "$filename" =~ '/.' ]]; then
 			echo "Warning: Skipped hidden file/folder: $filename"  >&2
 			continue
-		fi
-		if [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
+		elif [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
 			pkg_name=$(echo "$filename" | cut -d'/' -f4)
 			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f3)
 			pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_pool_folder" "$pkg_name")
@@ -578,7 +575,6 @@ else # FULL_ADD is set - full add mechanism
 			
 		else
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
-			
 		fi
 	done < <(find . -type f -print0 | grep -v './lastupdate')	
 fi
