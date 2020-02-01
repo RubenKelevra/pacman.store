@@ -392,7 +392,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path" > /dev/null 2>&1 || echo "Warning: New pkg file $pkg_name already existed on IPFS"  >&2
 			unset pkg_name pkg_pool_folder pkg_cid pkg_dest_path
 			
-		elif [ "${new_file:0:5}" == 'iso/' ]; then #that's everything in iso/
+		elif [ "${new_file:0:4}" == 'iso/' ]; then #that's everything in iso/
 			iso_file_name=$(echo "$new_file" | cut -d'/' -f3)
 			iso_file_folder=$(echo "$new_file" | cut -d'/' -f2)
 			if ! iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name"); then
