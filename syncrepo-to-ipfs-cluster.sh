@@ -218,7 +218,9 @@ LOCAL_IPFS_MOUNT=0
 # simple one argument decoding
 
 if [ -n "$1" ]; then
+	echo "$1"
 	if [ "$1" == '--force-full-add' ]; then
+		echo "running full add..."
 		FULL_ADD=1
 	else
 		fail "unexpected first argument" 150
