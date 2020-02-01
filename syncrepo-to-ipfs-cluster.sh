@@ -551,13 +551,14 @@ else # FULL_ADD is set - full add mechanism
 		if [[ $filename =~ "/~" ]]; then
 			echo "Warning: Skipped file with '/~' in path: $filename"  >&2
 			continue
-		elif [[ $filename =~ '/.' ]]; then
+		elif [[ $filename =~ "/." ]]; then
 			echo "Warning: Skipped hidden file/folder: $filename"  >&2
 			continue
 		elif [ "$filename" == "./lastupdate" ]; then
 			continue
 		fi
 		if [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
+			continue
 			pkg_name=$(echo "$filename" | cut -d'/' -f4)
 			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f3)
 			pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_pool_folder" "$pkg_name")
@@ -580,6 +581,7 @@ else # FULL_ADD is set - full add mechanism
 			unset iso_file_name iso_file_folder iso_cid iso_folder_path iso_dest_path
 			
 		elif [ "${filename: -3}" == '.db' ]; then # that's a database file
+			continue
 			db_repo_name=$(echo "$filename" | cut -d'/' -f2)
 			db_cid=$(add_file_to_cluster 'db' "$db_repo_name")
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
@@ -590,8 +592,8 @@ else # FULL_ADD is set - full add mechanism
 		else
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
 		fi
-		(( $no_of_adds % 100 )) || echo "$no_of_adds files processed..."
-		let no_of_adds++
+		(( no_of_adds % 100 )) || echo "$no_of_adds files processed..."
+		(( no_of_adds++ ))
 	done < <(find . -type f -print0)	
 fi
 
@@ -625,11 +627,11 @@ ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder")  || fail 'iso 
 
 echo -ne "start publishing new ipfs..."
 # publish new ipns records
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" > /dev/null || echo '\nWarning: Repo folder (IPFS) IPNS could not be published after update' >&2
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_archive_folder" "/ipfs/$ipfs_pkg_archive_folder_cid" > /dev/null || echo '\nWarning: repo archive folder (IPFS) IPNS could not be published after update' >&2
-ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" > /dev/null || echo '\nWarning: ISO folder (IPFS) IPNS could not be published after update' >&2
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" > /dev/null || printf '\nWarning: Repo folder (IPFS) IPNS could not be published after update\n' >&2
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_pkg_archive_folder" "/ipfs/$ipfs_pkg_archive_folder_cid" > /dev/null || printf '\nWarning: repo archive folder (IPFS) IPNS could not be published after update\n' >&2
+ipfs name publish --allow-offline --ttl '10m' --lifetime "48h" --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" > /dev/null || printf '\nWarning: ISO folder (IPFS) IPNS could not be published after update\n' >&2
 
-echo "\n:: operation successfully completed @ $(date -Iseconds)"
+printf "\n:: operation successfully completed @ %s\n" "$(date -Iseconds)"
 
 if [ $FULL_ADD -eq 0 ]; then 
 	cat "$rsync_log" >> "$rsync_log_archive"
