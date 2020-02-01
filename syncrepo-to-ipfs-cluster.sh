@@ -582,7 +582,7 @@ else # FULL_ADD is set - full add mechanism
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
 		fi
 		(( $no_of_adds % 100 )) || echo "$no_of_adds files processed..."
-		let $no_of_adds++
+		let no_of_adds++
 	done < <(find . -type f -print0)	
 fi
 
