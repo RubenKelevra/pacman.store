@@ -548,10 +548,10 @@ else # FULL_ADD is set - full add mechanism
 	no_of_adds=1
 	
 	while IFS= read -r -d $'\0' filename; do
-		if [[ $filename =~ "/~" ]]; then
+		if [[ $filename = *"/~"* ]]; then
 			echo "Warning: Skipped file with '/~' in path: $filename"  >&2
 			continue
-		elif [[ $filename =~ "/." ]]; then
+		elif [[ $filename = *"/."* ]]; then
 			echo "Warning: Skipped hidden file/folder: $filename"  >&2
 			continue
 		elif [ "$filename" == "./lastupdate" ]; then
@@ -580,7 +580,7 @@ else # FULL_ADD is set - full add mechanism
 			ipfs files cp "/ipfs/$iso_cid" "$iso_dest_path"
 			unset iso_file_name iso_file_folder iso_cid iso_folder_path iso_dest_path
 			
-		elif [ "${filename: -3}" == '.db' ]; then # that's a database file
+		elif [ "${filename: -3}" == '.db' ]; then #that's a database file
 			continue
 			db_repo_name=$(echo "$filename" | cut -d'/' -f2)
 			db_cid=$(add_file_to_cluster 'db' "$db_repo_name")
