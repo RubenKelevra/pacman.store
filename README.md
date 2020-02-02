@@ -8,7 +8,7 @@ This setup runs on a collaborative clusters, not only my machines will hold and 
 
 ## Join the Cluster
 
-If you want to join and contribute bandwidth and hard drive space, feel free to do so. The cluster is listed on the [collab cluster](https://collab.ipfscluster.io/) website.
+If you want to join and contribute bandwidth and hard drive space, feel free to do so. The cluster will be listed on the [collab cluster](https://collab.ipfscluster.io/) website.
 
 *TL;DR:*
 
@@ -28,9 +28,13 @@ All currently available ISOs and bootstrap files for ArchLinux are also stored o
 
 ## Find an old pkg
 
-We hold old pkgs (disappeared from the mirrors) for another 2 month in the cluster as snapshots in the cluster. Corrisponding db snapshots can be found in the db subfolder. Snapshots older than 2 month might not be accessible any longer. This depending on the garbage collection runs on the cluster-members and other clients of the IPFS network.
+*Before you use a pkg, make sure to read the WARNING.txt!*
+
+We hold old pkgs (disappeared from the mirrors) for another 2 month as snapshots in the cluster. Corrisponding db snapshots can be found in the *db* subfolder. Older pkgs might not be accessible any longer. This depends on the garbage collections on the cluster-members and how long other clients in the network hold the files.
 
 If you want to keep a snapshot indefinitely, feel free to do so. Just pin the timestamp subfolder in your client.
+
+
 
 [pkg archive](http://old.pkg.pacman.store/)
 
