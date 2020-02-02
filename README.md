@@ -10,9 +10,11 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 
 If you want to join and contribute bandwidth and hard drive space, feel free to do so. A 24/7 internet connection will be greatly appreciated.
 
+Depending on your network setup, you may want to have mDNS enabled or disabled. Choose either the `default.json` or the `mdns_enabled.json` accordingly.
+
 The cluster will be listed on the [collab cluster](https://collab.ipfscluster.io/) website.
 
-*tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://dist.ipfs.io/#ipfs-cluster-follow), then run: ```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store```
+*tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://dist.ipfs.io/#ipfs-cluster-follow), then run: ```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/default.json``` or ```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/mdns_enabled.json```
 
 
 ## Use the pkg cache with Pacman
@@ -42,7 +44,7 @@ If you want to keep a snapshot indefinitely, feel free to do so. Just pin the ti
 
 | IPFS-URL | Content |
 | - | - |
-| `/ipns/cluster.pacman.store` | cluster setup domain |
+| `/ipns/cluster.pacman.store` | cluster setup domain which holds the default.json and mdns_enabled.json |
 | `/ipns/pkg.pacman.store/arch/x86_64/default/` | current Pacman pkgs for ArchLinux (all standard repos + testing/staging) |
 | `/ipns/pkg.pacman.store/arch/x86_64/default/db/` | current Pacman databases for ArchLinux  (all standard repos + testing/staging) |
 | `/ipns/old.pkg.pacman.store/{ISO-8601-Timestamp}/` | archive of Pacman pkgs for ArchLinux  (all standard repos + testing/staging) |
