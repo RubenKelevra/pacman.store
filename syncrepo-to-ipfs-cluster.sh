@@ -556,7 +556,6 @@ else # FULL_ADD is set - full add mechanism
 			continue
 		fi
 		if [ "${filename:0:7}" == './pool/' ]; then #that's a pkg
-			continue
 			pkg_name=$(echo "$filename" | cut -d'/' -f4)
 			pkg_pool_folder=$(echo "$filename" | cut -d'/' -f3)
 			pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_pool_folder" "$pkg_name")
@@ -579,7 +578,6 @@ else # FULL_ADD is set - full add mechanism
 			unset iso_file_name iso_file_folder iso_cid iso_folder_path iso_dest_path
 			
 		elif [ "${filename: -3}" == '.db' ]; then #that's a database file
-			continue
 			db_repo_name=$(echo "$filename" | cut -d'/' -f2)
 			db_cid=$(add_file_to_cluster 'db' "$db_repo_name")
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
