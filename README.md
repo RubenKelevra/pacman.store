@@ -1,10 +1,10 @@
 # pacman.store
 
-The domain [pkg.pacman.store](http://pkg.pacman.store) offers pkgs for Pacman. You can mount to access it as Pacman cache through your local IPFS daemon. All files accessed this way will be downloaded to your IPFS cache and shared with the network.
+The domain [pkg.pacman.store](http://pkg.pacman.store) offers pkgs for Pacman you can mount to access it as Pacman cache through your local IPFS daemon. All files accessed this way will be downloaded to your IPFS cache and shared with the network.
 
 If you run on multiple machines in your local network IPFS can exchange the files locally rather than downloading the same file multiple times from the internet.
 
-The data is hold and shared from a collaborative cluster, where everyone can participate.
+The data is hold and shared by a collaborative cluster, where everyone can participate.
 
 ## Join the Cluster
 
