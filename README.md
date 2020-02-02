@@ -14,7 +14,13 @@ Depending on your network setup, you may want to have mDNS enabled or disabled. 
 
 The cluster will be listed on the [collab cluster](https://collab.ipfscluster.io/) website.
 
-*tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://dist.ipfs.io/#ipfs-cluster-follow), then run: ```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/default.json``` or ```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/mdns_enabled.json```
+*tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://dist.ipfs.io/#ipfs-cluster-follow), then run:
+
+```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/default.json```
+
+or
+
+```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/mdns_enabled.json```
 
 
 ## Use the pkg cache with Pacman
