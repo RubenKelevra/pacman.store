@@ -12,6 +12,8 @@ If you want to join and contribute bandwidth and hard drive space, feel free to 
 
 Depending on your network setup, you may want to have mDNS enabled or disabled. Choose either the `default.json` or the `mdns_enabled.json` accordingly.
 
+If you're running your cluster follower on a computer with a static ip or a static domain name: Feel free to add it to the list of ```peer_addresses``` in the JSON config files, found in [collab-cluster-config](./collab-cluster-config). Then send a pull request.
+
 The cluster will be listed on the [collab cluster](https://collab.ipfscluster.io/) website.
 
 *tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://dist.ipfs.io/#ipfs-cluster-follow), then run:
