@@ -35,7 +35,7 @@ If you want to keep a snapshot indefinitely, feel free to do so. Just pin the ti
 
 
 
-[pkg archive](http://old.pkg.pacman.store/) (SLOW)
+[pkg archive](http://old.pkg.pacman.store/) (listing will be SLOW)
 
 
 ---
