@@ -34,7 +34,7 @@ set -e
 # - a running ipfs-cluster-service
 # - a running ipfs
 # - more than twice the storage currently in the repo (deduplicated)
-# - rights to run `sudo umount` on "$ipfs_mount" and "$ipns_mount" (if they are mounted)
+# - "$ipfs_mount" and "$ipns_mount" needs to be unmounted to run this script
 # - need to be run with the same user account which runs the ipfs daemon and the ipfs-cluster-service daemon
 
 ### config ###
@@ -253,6 +253,10 @@ fi
 # check/create directories
 [ ! -d "${rsync_target}" ] && mkdir -p "${rsync_target}"
 [ ! -d "${rsync_tmp}" ] && mkdir -p "${rsync_tmp}"
+
+# check if $ipfs_mount / $ipns_mount are mounted
+[ "$(mount -l | grep -c "/dev/fuse on $ipns_mount type fuse")" -eq 1 ] && fail "ipns mount dir is mounted" 52
+[ "$(mount -l | grep -c "/dev/fuse on $ipfs_mount type fuse")" -eq 1 ] && fail "ipfs mount dir is mounted" 53
 
 # create local vars:
 ipfs_db_folder="$ipfs_pkg_folder/$dist_id/$arch_id/$repo_id/db/"
@@ -594,27 +598,6 @@ else # FULL_ADD is set - full add mechanism
 fi
 
 ipfs files cp "/$ipfs_pkg_folder" "/$ipfs_pkg_archive_folder/$(date --utc -Iseconds)"
-
-#check if ipns_mount is mounted
-[ "$(mount -l | grep -c "/dev/fuse on $ipns_mount type fuse")" -eq 1 ] && LOCAL_IPFS_MOUNT=1
-
-if [ $LOCAL_IPFS_MOUNT -eq 1 ]; then
-	# lock pacman dbs (to stop the pacman_ipfs_sync from accessing /ipns)
-	while true; do 
-		# get a lock on pacman's database
-		if { set -C; 2>/dev/null >$pacman_lock; }; then
-			# mount /ipfs and /ipns again on exit, then remove the lock on pacman's database
-			trap 'ipfs mount || true; rm -f "$pacman_lock"' EXIT
-			break
-		else
-			echo "pacman_ipfs_sync: pacman's db lock is already set, waiting ten seconds for retry" >&2
-			sleep 10
-			continue
-		fi
-	done
-	sudo umount "$ipfs_mount"
-	sudo umount "$ipns_mount"
-fi
 
 #get new CIDs
 ipfs_pkg_folder_cid=$(ipfs files stat --hash "/$ipfs_pkg_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
