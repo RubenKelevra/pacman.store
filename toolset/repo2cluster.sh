@@ -93,8 +93,8 @@ cluster_pin_iso_expire="1209600s" #14 days
 
 cluster_chunker_iso='--chunker=rabin-2048-16384-1048576'
 
-cluster_replication_min="1"
-cluster_replication_max="10"
+cluster_replication_min="-1"
+cluster_replication_max="-1"
 
 #### END CONFIG
 
