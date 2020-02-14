@@ -1,4 +1,7 @@
-# pacman.store
+# NOTICE: Temporary outage because of rollout of a new version
+
+
+# pacman.store 
 
 The domain [pkg.pacman.store](http://pkg.pacman.store) offers pkgs for Pacman you can mount to access it as Pacman cache through your local IPFS daemon. All files accessed this way will be downloaded to your IPFS cache and shared with the network.
 
