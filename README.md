@@ -37,8 +37,6 @@ ISO and bootstrap files are also stored on the cluster:
 
 ## Find an old pkg
 
-*Before you use a pkg, make sure to read the WARNING.txt!*
-
 We hold old pkgs (disappeared from the mirrors) for another 2 month as snapshots in the cluster. Corresponding db snapshots can be found in the *db* subfolder. Older pkgs or snapshots might not be accessible any longer. This depends on the garbage collections on the cluster-members and how long other clients in the network hold the files.
 
 If you want to keep a snapshot indefinitely, feel free to do so. Just pin the CID listed in the list-file in your client.
