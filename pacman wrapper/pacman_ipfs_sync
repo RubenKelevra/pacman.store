@@ -52,17 +52,29 @@ repo_id='default'
 
 # argument variables
 SKIP_DB_SYNC=0
+SKIP_CACHE_WIPE=0
 
 # simple one argument decoding
 
 if [ -n "$1" ]; then
 	if [ "$1" == '--skip-db-sync' ]; then
 		SKIP_DB_SYNC=1
+	elif [ "$1" == '--db-sync' ]; then
+		SKIP_DB_SYNC=0
 	else
 		fail "unexpected first argument" 100
 	fi
 fi
 
+if [ -n "$2" ]; then
+	if [ "$2" == '--skip-cache-wipe' ]; then
+		SKIP_CACHE_WIPE=1
+	elif [ "$2" == '--cache-wipe' ]; then
+		SKIP_CACHE_WIPE=0
+	else
+		fail "unexpected first argument" 100
+	fi
+fi
 
 # local functions
 
@@ -100,7 +112,7 @@ id -u "$ipfs_user" > /dev/null 2>&1 || fail "configured local user '$ipfs_user' 
 
 su "$ipfs_user" --login -c "which 'ipfs' > /dev/null 2>&1" || fail "ipfs is not installed for user '$ipfs_user'" 150
 [ "$(ps aux | grep "^${ipfs_user}" | grep '/usr/bin/ipfs daemon' | wc -l)" -gt 0 ] || fail "ipfs is not running for user '$ipfs_user'" 151
-[ "$(mount -l | grep "/dev/fuse on "$ipns_mount" type fuse" | wc -l)" -eq 1 ] || fail "ipns is not mounted on configured location" 152
+[ $(mount -l | grep "/dev/fuse on "$ipns_mount" type fuse" | wc -l) -eq 1 ] || fail "ipns is not mounted on configured location" 152
 
 # end of config check
 
@@ -114,36 +126,39 @@ fi
 
 cd "$pacman_cache"
 
-find . -maxdepth 1 -type f  -print0 | while IFS= read -r -d $'\0' filename; do
+while IFS= read -r -d $'\0' filename; do
 	[ -z "$filename" ] && continue
 	[[ "$filename" == *.part ]] && continue #skip partial downloads
+	[[ "$filename" == *.sig ]] && continue #skip signature files
 	echo "adding pkg from local cache to ipfs: $filename"
-	su "$ipfs_user" --login -c "ipfs add --silent --raw-leaves --wrap-with-directory --pin=0 \"$pacman_cache/$filename\" > /dev/null 2>&1" 
-	rm "$filename"
-done
+	su "$ipfs_user" --login -c "ipfs add --silent --raw-leaves --pin=0 \"$pacman_cache/$filename\" > /dev/null 2>&1"
+	if [ $SKIP_CACHE_WIPE -eq 0 ]; then
+		rm "$filename"
+	fi
+done < <(find . -maxdepth 1 -type f  -print0)
 
 [ $SKIP_DB_SYNC -eq 1 ] && exit 0
 
-printf "accessing dbs on ipfs://pkg.pacman.store, this might take a while..." 
+printf "accessing dbs on ipfs://pkg.pacman.store, this might take a while..."
 	cd "$ipns_mount/pkg.pacman.store/$dist_id/$arch_id/$repo_id/db/" >/dev/null 2>&1 || fail "could not access the configured subdirectory of /ipns/pkg.pacman.store" 200 -2n
 echo " completed."
 
 grep '^\[' < "$pacman_conf" | grep -v '^\[options\]$' | sed 's/\[//g' | sed 's/\]//g' | while IFS= read -r active_repo; do
 	[[ ! " ${repos_to_sync[*]} " =~ $active_repo ]] && continue
-	
+
 	old_db_fullpath="${pacman_db}/sync/${active_repo}.db"
 	new_db_filename="${active_repo}.db"
-	
+
 	[ ! -f "$old_db_fullpath" ] && fail "could not locate '$new_db_filename' in pacman's db path"
-	
+
 	if [ ! -f "$new_db_filename" ]; then
 		echo "Warning: could not locate db file '$new_db_filename' on ipfs, SKIPPING"
 		continue
 	fi
-	
+
 	old_size="$(du --apparent-size --block-size=1 "$old_db_fullpath" | awk '{print $1}')"
 	new_size="$(du --apparent-size --block-size=1 "$new_db_filename" | awk '{print $1}')" || fail "error while fetching filesize for '$new_db_filename' from ipfs"
-	
+
 	[ "$old_size" -eq "$new_size" ] && continue
 	printf "receiving '%s'..." "$new_db_filename"
 	cp -ax "$new_db_filename" "${old_db_fullpath}.part" || fail "error while receiving db file for '$new_db_filename' from ipfs" -n

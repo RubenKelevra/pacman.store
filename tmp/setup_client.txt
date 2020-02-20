@@ -18,7 +18,7 @@ bindfs
 ipfs
 
 # edit /etc/fuse.conf
-uncomment "user_allow_other" 
+uncomment "user_allow_other"
 
 # you might want to setup the following with a custom user like 'ipfs'
 
@@ -38,13 +38,12 @@ After=network.target
 
 [Service]
 ExecStart=
-ExecStart=/usr/bin/ipfs daemon --mount --enable-pubsub-experiment --enable-namesys-pubsub --enable-mplex-experiment 
+ExecStart=/usr/bin/ipfs daemon --enable-pubsub-experiment --enable-namesys-pubsub --enable-mplex-experiment
 #
 
 # custom options in service file:
 # - pubsub-experiment       = a service to exchange messages inside ipfs, subscription based (similar to multicast)
 # - namesys-pubsub          = uses pubsub messages to speed-up name-lookups (something similar to dns (with dnssec) on the internet)
-# - mount                   = automatically mounts ipfs and ipfn to the filesystem via fuse
 # - enable-mplex-experiment = FIXME: some pixie magic
 
 
@@ -57,9 +56,6 @@ ipfs init --empty-repo
 
 # change the default config for best performance:
 
-# enable support for large directories
-ipfs config --json Experimental.ShardingEnabled true
-
 # faster name resolution
 ipfs config Pubsub.Router gossipsub
 
@@ -68,9 +64,6 @@ ipfs config --json Experimental.PreferTLS true
 
 # use QUIC/ip if possible instead of tcp - allows for multiplexing and lower overhead
 ipfs config --json Experimental.QUIC true
-
-#FIXME: create a description
-ipfs config --json Mounts.FuseAllowOther true #FIXME: show how to change this
 
 # by default IPFS will search for other computers in your network and connect to them
 # in rare cases you might want to deactivate this by running:
@@ -89,16 +82,9 @@ ipfs config --json Datastore.StorageMax '"100GB"'
 # increase the GracePeriod (minimum time before a new connection gets terminated)
 ipfs config --json Swarm.ConnMgr.GracePeriod '"3m"'
 
-# enable nat traversal and relay services if you use NAT
+# enable nat traversal and relay services if you use NAT (and don't have any IPv6 connectivity)
 ipfs config --json Swarm.EnableAutoNATService 'true'
 ipfs config --json Swarm.EnableAutoRelay 'true'
-
-# change standard path for ipfn-fileaccess
-ipfs config --json Mounts.IPFS '"/mnt/ipfs"'
-
-# change standard path for ipfn-fileaccess
-ipfs config --json Mounts.IPNS '"/mnt/ipns"'
-
 
 ### time to start and enable the service ###
 
@@ -110,7 +96,7 @@ systemctl enable --now ipfs@<username>
 
 # you might need to customize the program's settings for your installation
 
-run as root: ./pacman_ipfs_sync --skip-db-sync
+run as root: ./pacman_ipfs_sync --skip-db-sync --cache-wipe
 
 # create a folder where pacman should access the ipfs
 sudo mkdir /mnt/pacman_cache/
