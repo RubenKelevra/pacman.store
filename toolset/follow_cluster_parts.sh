@@ -123,7 +123,7 @@ fi
 if [ "$last_cid" != "0" ]; then
 	echo -ne "unpin old version, cid: $last_cid..."
 	if ! ipfs pin rm --recursive --timeout "${pin_timeout}h" "/ipfs/$last_cid"; then
-		echo "    warning: pin could not be found, IGNORING"
+		echo "    warning: unpin operation failed, IGNORING"
 	else
 		echo ""
 	fi
