@@ -18,12 +18,7 @@ The cluster will be listed on the [collab cluster](https://collab.ipfscluster.io
 
 *tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://dist.ipfs.io/#ipfs-cluster-follow), then run:
 
-```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/default.json```
-
-or
-
-```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/mdns_enabled.json```
-
+```ipfs-cluster-follow pacman.store run --init cluster.pacman.store```
 
 ## Use the pkg cache with Pacman
 
@@ -36,8 +31,6 @@ ISO and bootstrap files are also stored on the cluster:
 [ArchLinux ISO/bootstrap images](http://iso.pacman.store/arch/x86_64/default/)
 
 ## Find an old pkg
-
-*Before you use a pkg, make sure to read the WARNING.txt!*
 
 We hold old pkgs (disappeared from the mirrors) for another 2 month as snapshots in the cluster. Corresponding db snapshots can be found in the *db* subfolder. Older pkgs or snapshots might not be accessible any longer. This depends on the garbage collections on the cluster-members and how long other clients in the network hold the files.
 

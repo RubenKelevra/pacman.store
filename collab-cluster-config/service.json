@@ -1,6 +1,6 @@
 {
   "cluster": {
-    "secret": "6447828917e3d7d8256eb1f48eb11a699b8fcd28b4c2b3b54089b43bc8bf280e",
+    "secret": "6447828917e3d7d8256eb1f48eb11a699b8fcd28b4c2b3b54089b43bc8bf280f",
     "listen_multiaddress": [
       "/ip4/0.0.0.0/tcp/18556",
       "/ip4/0.0.0.0/udp/18556/quic",
@@ -17,7 +17,7 @@
     "pin_recover_interval": "12m0s",
     "monitor_ping_interval": "15s",
     "peer_watch_interval": "5s",
-    "mdns_interval": "10s",
+    "mdns_interval": "0",
     "disable_repinning": false,
     "follower_mode": true,
     "peer_addresses": [
@@ -29,7 +29,7 @@
   },
   "consensus": {
     "crdt": {
-      "cluster_name": "cluster.pacman.store",
+      "cluster_name": "pacman.store",
       "trusted_peers": [
         "12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf"
       ]
