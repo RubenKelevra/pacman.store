@@ -18,12 +18,7 @@ The cluster will be listed on the [collab cluster](https://collab.ipfscluster.io
 
 *tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://dist.ipfs.io/#ipfs-cluster-follow), then run:
 
-```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/default.json```
-
-or
-
-```ipfs-cluster-follow cluster.pacman.store run --init cluster.pacman.store/mdns_enabled.json```
-
+```ipfs-cluster-follow pacman.store run --init cluster.pacman.store```
 
 ## Use the pkg cache with Pacman
 
