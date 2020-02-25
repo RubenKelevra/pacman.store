@@ -188,7 +188,7 @@ function add_file_to_cluster() {
 	local _cluster_replication_min="$cluster_replication_min"
 	local _cluster_replication_max="$cluster_replication_max"
 	local _new_cid=""
-	local _chunker="size-262144"
+	local _chunker="size-1048576"
 	local _layout="balanced"
 
 	if [ "$1" == "pkg" ]; then
