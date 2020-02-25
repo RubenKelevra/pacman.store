@@ -749,8 +749,16 @@ else # FULL_ADD is set - full add mechanism
 			pkg_dest_path="/$pkg_folder_path/$pkg_name"
 			pkg_pacmanstore_dest_path="/$ipfs_pkg_cache_folder/$pkg_name"
 			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path" > /dev/null 2>&1
-			ipfs files cp "/ipfs/$pkg_cid" "$pkg_pacmanstore_dest_path" > /dev/null 2>&1 || fail "Conflicting package name: new pkg file $pkg_name already existed in pkg cache folder" 2001 -n
-			unset pkg_name pkg_repo_folder pkg_folder_path pkg_cid pkg_dest_path pkg_pacmanstore_dest_path
+			if ! ipfs files cp "/ipfs/$pkg_cid" "$pkg_pacmanstore_dest_path" > /dev/null 2>&1; then
+				pkg_old_cache_cid=$(ipfs files stat --hash "$pkg_pacmanstore_dest_path")
+				if [ "$pkg_cid" == "$pkg_old_cache_cid" ]; then
+					echo "Warning: new pkg file $pkg_name already existed in pkg cache folder, but CID match, IGNORING" >&2
+				else
+					echo "Warning: Conflicting package name, pkg file $pkg_name already existed in pkg cache folder and CID missmatch - deleting cache entry" >&2
+					ipfs files rm "$pkg_pacmanstore_dest_path"
+				fi
+			fi
+			unset pkg_name pkg_repo_folder pkg_folder_path pkg_cid pkg_dest_path pkg_pacmanstore_dest_path pkg_old_cache_cid
 
 		elif [ "${filename:0:6}" == './iso/' ]; then #that's everything in iso/
 			iso_file_name=$(echo "$filename" | cut -d'/' -f4)
