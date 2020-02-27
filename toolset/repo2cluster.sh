@@ -821,9 +821,9 @@ ipfs_pkg_archive_folder_root_cid=$(ipfs files stat --hash "/$ipfs_pkg_archive_fo
 ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder")  || fail 'iso folder (IPFS) CID could not be determined after update is completed' 402
 
 # Pin all folders recursive on the cluster for $cluster_pin_rootfolder_expire (for distributed lookup of folders, while independent of the file-lifetime in the cluster)
-pin_rootfolder_to_cluster "$ipfs_pkg_folder_cid" "$ipfs_pkg_folder" "$timestamp"
-pin_rootfolder_to_cluster "$ipfs_pkg_archive_folder_root_cid" "$ipfs_pkg_archive_folder_root" "$timestamp"
-pin_rootfolder_to_cluster "$ipfs_iso_folder_cid" "$ipfs_iso_folder" "$timestamp"
+#pin_rootfolder_to_cluster "$ipfs_pkg_folder_cid" "$ipfs_pkg_folder" "$timestamp"
+#pin_rootfolder_to_cluster "$ipfs_pkg_archive_folder_root_cid" "$ipfs_pkg_archive_folder_root" "$timestamp"
+#pin_rootfolder_to_cluster "$ipfs_iso_folder_cid" "$ipfs_iso_folder" "$timestamp"
 
 echo -ne "start publishing new ipfs..."
 # publish new ipns records
