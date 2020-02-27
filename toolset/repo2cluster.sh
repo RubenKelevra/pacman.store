@@ -224,7 +224,7 @@ function add_file_to_cluster() {
 		return 1
 	fi
 
-	if ! _new_cid=$(ipfs-cluster-ctl add --layout "$_layout" --cid-version 1 --raw-leaves --chunker "$_chunker" --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath"); then
+	if ! _new_cid=$(ipfs-cluster-ctl add --layout "$_layout" --raw-leaves --chunker "$_chunker" --quieter --name "$_name" --local --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath"); then
 		fail "ipfs-cluster-ctl returned an error while adding a file to the cluster filetype: '$1' name: '$_name' filepath: '$_filepath'" 201
 	fi
 
@@ -303,21 +303,21 @@ ipfs_pkg_cache_folder="$ipfs_repo_folder/cache"
 if [ $FULL_ADD -eq 1 ]; then
 	echo "creating empty ipfs folder for pkg..."
 	ipfs files rm -r "/$ipfs_pkg_folder" > /dev/null 2>&1 || true
-	ipfs files mkdir --cid-version 1 "/$ipfs_pkg_folder" > /dev/null 2>&1 || fail "ipfs folder for pkg couldn't be created" 100 -n
+	ipfs files mkdir "/$ipfs_pkg_folder" > /dev/null 2>&1 || fail "ipfs folder for pkg couldn't be created" 100 -n
 elif ! ipfs files stat "/$ipfs_pkg_folder" > /dev/null 2>&1; then
 	fail "ipfs folder for pkg does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 300 -n
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
 	echo "creating empty ipfs subfolder (down to db) for pkg..."
-	ipfs files mkdir --cid-version 1 -p "/$ipfs_db_folder" > /dev/null 2>&1 || fail "ipfs subfolder (down to db) for pkg couldn't be created" 101 -n
+	ipfs files mkdir -p "/$ipfs_db_folder" > /dev/null 2>&1 || fail "ipfs subfolder (down to db) for pkg couldn't be created" 101 -n
 elif  ! ipfs files stat "/$ipfs_db_folder" > /dev/null 2>&1; then
 	fail "ipfs subfolder (down to db) does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 301 -n
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
 	echo "creating empty ipfs folder for pkg cache..."
-	ipfs files mkdir --cid-version 1 -p "/$ipfs_pkg_cache_folder" > /dev/null 2>&1 || fail "ipfs folder for pkg cache couldn't be created" 101 -n
+	ipfs files mkdir -p "/$ipfs_pkg_cache_folder" > /dev/null 2>&1 || fail "ipfs folder for pkg cache couldn't be created" 101 -n
 elif  ! ipfs files stat "/$ipfs_pkg_cache_folder" > /dev/null 2>&1; then
 	fail "ipfs folder for pkg cache does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 301 -n
 fi
@@ -325,14 +325,14 @@ fi
 if [ $FULL_ADD -eq 1 ]; then
 	echo "creating empty ipfs archive folder for the repo..."
 	ipfs files rm -r "/$ipfs_pkg_archive_folder_root" > /dev/null 2>&1 || true
-	ipfs files mkdir --cid-version 1 "/$ipfs_pkg_archive_folder_root" > /dev/null 2>&1 || fail "ipfs folder for repo archive couldn't be created" 102 -n
+	ipfs files mkdir "/$ipfs_pkg_archive_folder_root" > /dev/null 2>&1 || fail "ipfs folder for repo archive couldn't be created" 102 -n
 elif ! ipfs files stat "/$ipfs_pkg_archive_folder_root" > /dev/null 2>&1; then
 	fail "ipfs folder for repo archive does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 302 -n
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
 	echo "creating empty ipfs archive subfolder for the repo..."
-	ipfs files mkdir --cid-version 1 -p "/$ipfs_pkg_archive_folder" > /dev/null 2>&1 || fail "ipfs archive subfolder for the repo couldn't be created" 103 -n
+	ipfs files mkdir -p "/$ipfs_pkg_archive_folder" > /dev/null 2>&1 || fail "ipfs archive subfolder for the repo couldn't be created" 103 -n
 elif  ! ipfs files stat "/$ipfs_pkg_archive_folder" > /dev/null 2>&1; then
 	fail "ipfs archive subfolder for the repo does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 303 -n
 fi
@@ -340,7 +340,7 @@ fi
 if [ $FULL_ADD -eq 1 ]; then
 	echo "creating empty ipfs folder for iso..."
 	ipfs files rm -r "/$ipfs_iso_folder" > /dev/null 2>&1 || true
-	ipfs files mkdir --cid-version 1 "/$ipfs_iso_folder" > /dev/null 2>&1 || fail "ipfs folder for iso couldn't be created" 104 -n
+	ipfs files mkdir "/$ipfs_iso_folder" > /dev/null 2>&1 || fail "ipfs folder for iso couldn't be created" 104 -n
 elif ! ipfs files stat "/$ipfs_iso_folder" > /dev/null 2>&1; then
 	fail "ipfs folder for iso does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 304 -n
 fi
@@ -533,7 +533,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			pkg_repo_folder=$(echo "$new_file" | cut -d'/' -f1)
 			pkg_folder_path="$ipfs_repo_folder/$pkg_repo_folder"
 			if ! ipfs files stat "/$pkg_folder_path" > /dev/null 2>&1; then
-				ipfs files mkdir --cid-version 1 -p "/$pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$pkg_folder_path" 1000 -n
+				ipfs files mkdir -p "/$pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$pkg_folder_path" 1000 -n
 			fi
 			if ! pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_repo_folder" "$pkg_name"); then
 				echo "Warning: rsync log inconsistent! new file '$new_file' could not be located, skipping" >&2
@@ -556,7 +556,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			iso_file_folder=$(echo "$new_file" | cut -d'/' -f2)
 			iso_folder_path="$ipfs_iso_folder/$distarchrepo_path/$iso_file_folder"
 			if ! ipfs files stat "/$iso_folder_path" > /dev/null 2>&1; then
-				ipfs files mkdir --cid-version 1 -p "/$iso_folder_path" > /dev/null 2>&1 || fail "ipfs folder for iso files could not be created: /$iso_folder_path" 1001 -n
+				ipfs files mkdir -p "/$iso_folder_path" > /dev/null 2>&1 || fail "ipfs folder for iso files could not be created: /$iso_folder_path" 1001 -n
 			fi
 			if ! iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name"); then
 				echo "Warning: rsync log inconsistent! new file '$new_file' could not be located, skipping" >&2
@@ -597,7 +597,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			pkg_folder_path="$ipfs_repo_folder/$pkg_repo_folder"
 			if ! ipfs files stat "/$pkg_folder_path" > /dev/null 2>&1; then
 				echo "Warning: Changed file's ($changed_file) folder wasn't existing, creating a new folder" >&2
-				ipfs files mkdir --cid-version 1 -p "/$pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$pkg_folder_path" 1002 -n
+				ipfs files mkdir -p "/$pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$pkg_folder_path" 1002 -n
 			fi
 
 			if ! pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_repo_folder" "$pkg_name"); then
@@ -744,7 +744,7 @@ else # FULL_ADD is set - full add mechanism
 			pkg_folder_path="$ipfs_repo_folder/$pkg_repo_folder"
 			pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_repo_folder" "$pkg_name")
 			if ! ipfs files stat "/$pkg_folder_path" > /dev/null 2>&1; then
-				ipfs files mkdir --cid-version 1 -p "/$pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$pkg_folder_path" 2000 -n
+				ipfs files mkdir -p "/$pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$pkg_folder_path" 2000 -n
 			fi
 			pkg_dest_path="/$pkg_folder_path/$pkg_name"
 			pkg_pacmanstore_dest_path="/$ipfs_pkg_cache_folder/$pkg_name"
@@ -766,7 +766,7 @@ else # FULL_ADD is set - full add mechanism
 			iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name")
 			iso_folder_path="$ipfs_iso_folder/$distarchrepo_path/$iso_file_folder"
 			if ! ipfs files stat "/$iso_folder_path" > /dev/null 2>&1; then
-				ipfs files mkdir --cid-version 1 -p "/$iso_folder_path" > /dev/null 2>&1
+				ipfs files mkdir -p "/$iso_folder_path" > /dev/null 2>&1
 			fi
 			iso_dest_path="/$iso_folder_path/$iso_file_name"
 			ipfs files cp "/ipfs/$iso_cid" "$iso_dest_path"
@@ -803,7 +803,8 @@ if ! archive_list_cid=$(ipfs files stat --hash "$html_dest_path"); then
 		sed -e "s/+++repo_id+++/$repo_id/g"   \
 	)
 else
-	old_html_file=$(ipfs cat "/ipfs/$archive_list_cid")
+	old_html_file=$(ipfs files read "$html_dest_path")
+	ipfs files rm "$html_dest_path"  || fail 'delete operation to replace the html directory file failed' 398
 fi
 
 ipfs_repo_folder_cid=$(ipfs files stat --hash "/$ipfs_repo_folder")
@@ -812,7 +813,7 @@ new_html_file=$(printf "%s" "$old_html_file" | \
 	sed -e "s/<\!-- +++subfolder+++ -->/<a href=\x22\/ipfs\/$ipfs_repo_folder_cid\x22>ipfs:\/\/$ipfs_repo_folder_cid<\/a>        $timestamp\n<\!-- +++subfolder+++ -->/" \
 )
 
-printf "%s\n" "$new_html_file" | ipfs files write --create --truncate --raw-leaves --cid-version 1 "$html_dest_path"  || fail 'write operation to replace the html directory file failed' 399
+printf "%s\n" "$new_html_file" | ipfs files write --create --raw-leaves "$html_dest_path"  || fail 'write operation to replace the html directory file failed' 399
 
 #get new rootfolder CIDs
 ipfs_pkg_folder_cid=$(ipfs files stat --hash "/$ipfs_pkg_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
