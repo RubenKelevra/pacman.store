@@ -113,7 +113,7 @@ if [ "$last_cid" == "$cur_cid" ]; then
 	exit 0
 fi
 
-if [ "$last_cid" != "0" ]; then
+if [ "$last_cid" == "0" ]; then
 	echo "pinning new version, cid: $cur_cid..."
 	if ! ipfs pin add --recursive --progress --timeout "${pin_timeout}h" "/ipfs/$cur_cid"; then
 		fail "pinning could not be completed" 50 -n
@@ -121,7 +121,7 @@ if [ "$last_cid" != "0" ]; then
 		echo "completed."
 	fi
 else
-	echo "updating pin to new version, cid: cur_cid..."
+	echo "updating pin to new version, cid: $cur_cid..."
 	if ! ipfs pin update --timeout "${pin_timeout}h" "/ipfs/$last_cid" "/ipfs/$cur_cid"; then
 		fail "pinning could not be completed" 50 -n
 	else
