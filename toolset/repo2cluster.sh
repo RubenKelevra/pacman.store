@@ -22,7 +22,7 @@ set -e
 # db files are stored in the db subfolder
 #
 # additionally a archive is kept and iso files are stored with a custom
-# rolling hash to get diff compression if possible
+# hash to get diff compression if possible
 #
 # available arguments:
 # --force-full-add = will add all files again to ipfs even if locally the
@@ -157,6 +157,7 @@ function add_expiredate_to_clusterpin() {
 	if [ "$2" == "pkg" ]; then
 		# expect 3: to be repository-name
 		# expect 4: to be the filename
+		[ -z "$4"] && exit 0 # just the directory, no expire date required
 		local _expire="$cluster_pin_pkg_expire"
 		local _name="$ipfs_repo_folder/$3/$4"
 	elif [ "$2" == "db" ]; then
@@ -166,6 +167,7 @@ function add_expiredate_to_clusterpin() {
 	elif [ "$2" == "iso" ]; then
 		# expect 3: to be a foldername
 		# expect 4: to be a filename
+		[ -z "$4"] && exit 0 # just the directory, no expire date required
 		local _expire="$cluster_pin_iso_expire"
 		local _name="$ipfs_iso_folder/$distarchrepo_path/$3/$4"
 	elif [ "$2" == "note" ]; then
@@ -696,8 +698,12 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				echo "Warning: the file in iso/ '$deleted_file' was already deleted on IPFS" >&2
 				continue
 			fi
-			add_expiredate_to_clusterpin "$iso_old_cid" 'iso' "$iso_file_folder" "$iso_file_name"
-			ipfs files rm "$iso_dest_path"
+			if [ -z "$iso_file_name" ]; then # that's the empty folder
+				ipfs files rm -r "$iso_dest_path"
+			else
+				add_expiredate_to_clusterpin "$iso_old_cid" 'iso' "$iso_file_folder" "$iso_file_name"
+				ipfs files rm "$iso_dest_path"
+			fi
 			unset iso_file_name iso_file_folder iso_dest_path iso_old_cid
 
 		elif [ "${deleted_file: -3}" == '.db' ]; then # that's a database file
