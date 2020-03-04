@@ -705,8 +705,8 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			unset iso_file_name iso_file_folder iso_dest_path iso_old_cid
 
 		elif [ "${deleted_file: -3}" == '.db' ]; then # that's a database file
-			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
 			db_repo_name=$(echo "$deleted_file" | cut -d'/' -f1)
+			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
 			if ! db_old_cid=$(ipfs files stat --hash "$db_dest_path" 2>/dev/null ); then
 				echo "Warning: the .db-file '$deleted_file' was already deleted on IPFS" >&2
 				continue
