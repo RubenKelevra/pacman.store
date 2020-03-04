@@ -576,11 +576,14 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				continue
 			fi
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
+			db_dest_path_pkg="/$ipfs_repo_folder/$db_repo_name/${db_repo_name}.db"
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$db_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
+				ipfs files rm "$db_dest_path_pkg" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path" > /dev/null 2>&1 || echo "Warning: New db file $db_repo_name already existed on IPFS"  >&2
-			unset db_repo_name db_cid db_dest_path
+			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg" > /dev/null 2>&1 || echo "Warning: New db file $db_repo_name already existed on IPFS in repo folder"  >&2
+			unset db_repo_name db_cid db_dest_path db_dest_path_pkg
 
 		else
 			echo "Warning: Couldn't process new file '$new_file', unknown file type"  >&2
@@ -646,6 +649,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 		elif [ "${changed_file: -3}" == '.db' ]; then # that's a database file
 			db_repo_name=$(echo "$changed_file" | cut -d'/' -f1)
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
+			db_dest_path_pkg="/$ipfs_repo_folder/$db_repo_name/${db_repo_name}.db"
 			if ! db_cid=$(add_file_to_cluster 'db' "$db_repo_name"); then
 				echo "Warning: rsync log inconsistent! changed file '$changed_file' could not be located, skipping" >&2
 				continue
@@ -655,13 +659,21 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			else
 				if [ "$db_cid" == "$db_old_cid" ]; then
 					echo "Warning: changed file got the same content as the old one. Old CID: '$db_old_cid' path: '$db_dest_path'. SKIPPING" >&2
+					# ensure copy in repo folder is the same
+					db_old_cid_pkg=$(ipfs files stat --hash "$db_dest_path_pkg") || true
+					if [ "$db_old_cid" != "$db_old_cid_pkg" ]; then
+						ipfs files rm "$db_dest_path_pkg" || true
+						ipfs files cp "$db_dest_path" "$db_dest_path_pkg" || true
+					fi
 					continue
 				fi
 				add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
 				ipfs files rm "$db_dest_path"
+				ipfs files rm "$db_dest_path_pkg"
 			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
-			unset db_repo_name db_dest_path db_old_cid db_cid
+			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg"
+			unset db_repo_name db_dest_path db_dest_path_pkg db_old_cid db_old_cid_pkg db_cid
 
 		else
 			echo "Warning: Couldn't process changed file '$changed_file', unknown file type"  >&2
@@ -707,13 +719,15 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 		elif [ "${deleted_file: -3}" == '.db' ]; then # that's a database file
 			db_repo_name=$(echo "$deleted_file" | cut -d'/' -f1)
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
+			db_dest_path_pkg="/$ipfs_repo_folder/$db_repo_name/${db_repo_name}.db"
 			if ! db_old_cid=$(ipfs files stat --hash "$db_dest_path" 2>/dev/null ); then
 				echo "Warning: the .db-file '$deleted_file' was already deleted on IPFS" >&2
 				continue
 			fi
 			add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
 			ipfs files rm "$db_dest_path"
-			unset db_dest_path db_repo_name db_old_cid
+			ipfs files rm "$db_dest_path_pkg" || true
+			unset db_dest_path db_dest_path_pkg db_repo_name db_old_cid
 
 		else
 			echo "Warning: Couldn't process deleted file '$deleted_file', unknown file type"  >&2
@@ -780,8 +794,10 @@ else # FULL_ADD is set - full add mechanism
 			db_repo_name=$(echo "$filename" | cut -d'/' -f2)
 			db_cid=$(add_file_to_cluster 'db' "$db_repo_name")
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
+			db_dest_path_pkg="/$ipfs_repo_folder/$db_repo_name/${db_repo_name}.db"
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
-			unset db_repo_name db_cid db_dest_path
+			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg"
+			unset db_repo_name db_cid db_dest_path db_dest_path_pkg
 
 		else
 			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
