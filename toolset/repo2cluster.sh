@@ -190,7 +190,7 @@ function add_file_to_cluster() {
 	local _cluster_replication_min="$cluster_replication_min"
 	local _cluster_replication_max="$cluster_replication_max"
 	local _new_cid=""
-	local _chunker="size-1048576"
+	local _chunker="size-262144"
 	local _layout="balanced"
 
 	if [ "$1" == "pkg" ]; then
@@ -198,12 +198,10 @@ function add_file_to_cluster() {
 		# expect 3: to be the filename
 		local _filepath="${rsync_target}$2/os/$arch_id/$3"
 		local _name="$ipfs_repo_folder/$2/$3"
-		_layout="trickle" #compressed archive
 	elif [ "$1" == "db" ]; then
 		# expect 2: to be repository-name
 		local _filepath="${rsync_target}$2/os/$arch_id/$2.db"
 		local _name="$ipfs_repo_folder/db/$2.db"
-		_layout="trickle" #compressed archive
 	elif [ "$1" == "iso" ]; then
 		# expect 2: to be a foldername
 		# expect 3: to be a filename
