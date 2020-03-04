@@ -582,8 +582,12 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				ipfs files rm "$db_dest_path_pkg" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path" > /dev/null 2>&1 || echo "Warning: New db file $db_repo_name already existed on IPFS"  >&2
+			db_pkg_folder_path="/$ipfs_repo_folder/$db_repo_name"
+			if ! ipfs files stat "/$db_pkg_folder_path" > /dev/null 2>&1; then
+				ipfs files mkdir -p "/$db_pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$db_pkg_folder_path" 1000 -n
+			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg" > /dev/null 2>&1 || echo "Warning: New db file $db_repo_name already existed on IPFS in repo folder"  >&2
-			unset db_repo_name db_cid db_dest_path db_dest_path_pkg
+			unset db_repo_name db_cid db_dest_path db_dest_path_pkg pkg_folder_path
 
 		else
 			echo "Warning: Couldn't process new file '$new_file', unknown file type"  >&2
@@ -669,11 +673,16 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				fi
 				add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
 				ipfs files rm "$db_dest_path"
-				ipfs files rm "$db_dest_path_pkg"
+				ipfs files rm "$db_dest_path_pkg" || true
 			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
+			db_pkg_folder_path="/$ipfs_repo_folder/$db_repo_name"
+			if ! ipfs files stat "/$db_pkg_folder_path" > /dev/null 2>&1; then
+				echo "Warning: Changed db file's ($changed_file) repo folder wasn't existing, creating a new folder" >&2
+				ipfs files mkdir -p "/$db_pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$db_pkg_folder_path" 1000 -n
+			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg"
-			unset db_repo_name db_dest_path db_dest_path_pkg db_old_cid db_old_cid_pkg db_cid
+			unset db_repo_name db_dest_path db_dest_path_pkg db_old_cid db_old_cid_pkg db_cid db_pkg_folder_path
 
 		else
 			echo "Warning: Couldn't process changed file '$changed_file', unknown file type"  >&2
@@ -796,6 +805,10 @@ else # FULL_ADD is set - full add mechanism
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
 			db_dest_path_pkg="/$ipfs_repo_folder/$db_repo_name/${db_repo_name}.db"
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
+			db_pkg_folder_path="/$ipfs_repo_folder/$db_repo_name"
+			if ! ipfs files stat "/$db_pkg_folder_path" > /dev/null 2>&1; then
+				ipfs files mkdir -p "/$db_pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$db_pkg_folder_path" 2000 -n
+			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg"
 			unset db_repo_name db_cid db_dest_path db_dest_path_pkg
 
