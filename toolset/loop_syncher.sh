@@ -14,9 +14,10 @@ set -e
 
 
 [ ! -f './repo2cluster.sh' ] && exit 1
-[ ! -f './error_mail.sh' ] && exit 1
+[ ! -f './status_mail.sh' ] && exit 1
 
 perm_logfile="./loop_syncher.log"
+ERR_ON_LAST_RUN=0
 
 while true; do
 	echo -ne "running syncher..."
@@ -25,7 +26,13 @@ while true; do
 	trap "rm -f '$tmp_file'" 0 2 3 15
 
 	if ! bash ./repo2cluster.sh > "$tmp_file" 2>&1; then
-		bash ./error_mail.sh "$tmp_file"
+		echo ""
+		bash ./status_mail.sh "error" "$tmp_file"
+		ERR_ON_LAST_RUN=1
+	elif [ "$ERR_ON_LAST_RUN" -eq 1 ]; then
+		echo ""
+		bash ./status_mail.sh "recover" "$tmp_file"
+		ERR_ON_LAST_RUN=0
 	fi
 	if [ "$1" == "--store-log" ]; then
 		cat "$tmp_file" >> "$perm_logfile"
