@@ -33,7 +33,13 @@ while true; do
 		echo ""
 		bash ./status_mail.sh "recover" "$tmp_file"
 		ERR_ON_LAST_RUN=0
+	else #not recovering and no error
+		if [ $(grep -E "^Warning: " < "$tmp_file" | wc -l) -gt 0 ]; then
+			echo ""
+			bash ./status_mail.sh "warning" "$tmp_file"
+		fi
 	fi
+
 	if [ "$1" == "--store-log" ]; then
 		cat "$tmp_file" >> "$perm_logfile"
 	fi

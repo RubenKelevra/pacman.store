@@ -40,4 +40,16 @@ elif [ "$1" == "recover" ]; then
 	} | sendmail $MAILTO
 
 	logger --stderr --tag "$0" "[REPO2IPFS] Recovering from error mail sent to $MAILTO"
+elif [ "$1" == "warning" ]; then
+	unix2dos --quiet "$2"
+
+	{
+		printf "From:$MAILFROM\r\nTo:$MAILTO\r\nSubject: [REPO2IPFS] Warning messages while doing a successful sync on '$HOSTNAME'\r\n\r\n"
+		printf "### Log:\r\n\r\n"
+		cat "$2"
+		printf "\r\n\r\n"
+
+	} | sendmail $MAILTO
+
+	logger --stderr --tag "$0" "[REPO2IPFS] Recovering from error mail sent to $MAILTO"
 fi
