@@ -84,10 +84,10 @@ ipns_mount='/mnt/ipns'
 # folder where the ipfs is mounted
 ipfs_mount='/mnt/ipfs'
 
-cluster_pin_pkg_expire="5184000s" #2 month
-cluster_pin_pkg_folder_expire="5184000s" #2 month
-cluster_pin_iso_expire="1209600s" #14 days
-cluster_pin_rootfolder_expire="5184000s" #2 month
+cluster_pin_pkg_expire="1209600s" # 14 days
+cluster_pin_pkg_folder_expire="1209600s" # 14 days
+cluster_pin_iso_expire="1209600s" # 14 days
+cluster_pin_rootfolder_expire="1209600s" # 14 days
 
 # 2048 times 4 block size for somewhat useful random access
 cluster_chunker_iso='size-8192'
