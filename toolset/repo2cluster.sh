@@ -829,7 +829,7 @@ ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder")  || fail 'iso 
 #pin_rootfolder_to_cluster "$ipfs_pkg_archive_folder_root_cid" "$ipfs_pkg_archive_folder_root" "$timestamp"
 #pin_rootfolder_to_cluster "$ipfs_iso_folder_cid" "$ipfs_iso_folder" "$timestamp"
 
-echo -ne "start publishing new ipfs..."
+echo -ne "start publishing new ipns..."
 # publish new ipns records
 ipfs name publish --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" > /dev/null || printf '\nWarning: Repo folder (IPFS) IPNS could not be published after update\n' >&2
 ipfs name publish --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_pkg_archive_folder_root" "/ipfs/$ipfs_pkg_archive_folder_root_cid" > /dev/null || printf '\nWarning: repo archive folder (IPFS) IPNS could not be published after update\n' >&2
