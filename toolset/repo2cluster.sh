@@ -39,20 +39,37 @@ set -e
 
 ### config ###
 
+# rsync url
+rsync_url='rsync://mirror.f4st.host/archlinux/'
+
+# http/https url to the lastupdate file on the same server, to skip unnecessary rsync syncs
+lastupdate_url='https://mirror.f4st.host/archlinux/lastupdate'
+
+# linux distribution identifier
+dist_id='arch'
+
+# architecture identifier
+arch_id='x86_64'
+
+# repo identifier
+repo_id='default'
+
+# main config
+
 # Directory where the repo is permanently locally mirrored as rsync target.
-rsync_target='/mnt/data/ipfs/repo/'
+rsync_target="/mnt/data/ipfs/repo-${dist_id}-${arch_id}-${repo_id}/"
 
 # temporary rsync storage (on same mount as rsync_target)
-rsync_tmp='/mnt/data/ipfs/tmp/'
+rsync_tmp="/mnt/data/ipfs/rsync-tmp-${dist_id}-${arch_id}-${repo_id}/"
 
 # Lockfile path
-lock='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs.lock'
+lock="/mnt/data/ipfs/repo2cluster/${dist_id}-${arch_id}-${repo_id}.lock"
 
 #Logfile filename
-rsync_log='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs.log'
+rsync_log="/mnt/data/ipfs/repo2cluster/${dist_id}-${arch_id}-${repo_id}.log"
 
 #Logfile archive file
-rsync_log_archive='/mnt/data/ipfs/rsync-to-ipfs/rsync-to-ipfs_archive.log'
+rsync_log_archive="/mnt/data/ipfs/repo2cluster/${dist_id}-${arch_id}-${repo_id}_archive.log"
 
 # rsync url
 rsync_url='rsync://mirror.f4st.host/archlinux/'
@@ -68,15 +85,6 @@ ipfs_pkg_archive_folder_root='old.pkg.pacman.store'
 
 # ipfs-mfs iso repository folder + domain
 ipfs_iso_folder='iso.pacman.store'
-
-# linux distribution identifier
-dist_id='arch'
-
-# architecture identifier
-arch_id='x86_64'
-
-# repo identifier
-repo_id='default'
 
 # folder where the ipns is mounted
 ipns_mount='/mnt/ipns'
