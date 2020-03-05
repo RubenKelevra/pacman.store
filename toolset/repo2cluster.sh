@@ -837,7 +837,7 @@ printf "\n:: sync completed, start archiving and publishing @ %s\n" "$timestamp"
 
 html_dest_path="/$ipfs_pkg_archive_folder/${repo_id}.html"
 #check if html listing for snapshots of this repo already exist
-if ! archive_list_cid=$(ipfs files stat --hash "$html_dest_path"); then
+if ! ipfs files stat "$html_dest_path" > /dev/null 2>&1; then
 	old_html_file=$(printf "%s" "$HTML_FILE"| \
 		sed -e "s/+++dist_id+++/$dist_id/g" | \
 		sed -e "s/+++arch_id+++/$arch_id/g" | \
