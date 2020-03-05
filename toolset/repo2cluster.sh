@@ -57,10 +57,10 @@ repo_id='default'
 # main config
 
 # Directory where the repo is permanently locally mirrored as rsync target.
-rsync_target="/mnt/data/ipfs/repo-${dist_id}-${arch_id}-${repo_id}/"
+rsync_target="/mnt/data/ipfs/repo-${dist_id}-${arch_id}-${repo_id}/repo/"
 
 # temporary rsync storage (on same mount as rsync_target)
-rsync_tmp="/mnt/data/ipfs/rsync-tmp-${dist_id}-${arch_id}-${repo_id}/"
+rsync_tmp="/mnt/data/ipfs/repo-${dist_id}-${arch_id}-${repo_id}/tmp/"
 
 # Lockfile path
 lock="/mnt/data/ipfs/repo2cluster/${dist_id}-${arch_id}-${repo_id}.lock"
