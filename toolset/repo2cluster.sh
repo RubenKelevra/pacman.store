@@ -165,7 +165,7 @@ function add_expiredate_to_clusterpin() {
 	if [ "$2" == "pkg" ]; then
 		# expect 3: to be repository-name
 		# expect 4: to be the filename
-		[ -z "$4"] && exit 0 # just the directory, no expire date required
+		[ -z "$4" ] && exit 0 # just the directory, no expire date required
 		local _expire="$cluster_pin_pkg_expire"
 		local _name="$ipfs_repo_folder/$3/$4"
 	elif [ "$2" == "db" ]; then
@@ -175,7 +175,7 @@ function add_expiredate_to_clusterpin() {
 	elif [ "$2" == "iso" ]; then
 		# expect 3: to be a foldername
 		# expect 4: to be a filename
-		[ -z "$4"] && exit 0 # just the directory, no expire date required
+		[ -z "$4" ] && exit 0 # just the directory, no expire date required
 		local _expire="$cluster_pin_iso_expire"
 		local _name="$ipfs_iso_folder/$distarchrepo_path/$3/$4"
 	elif [ "$2" == "note" ]; then
