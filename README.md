@@ -20,7 +20,14 @@ The cluster is listed on the [collab cluster](https://collab.ipfscluster.io/) we
 
 ## Use the pkg cache with Pacman
 
-*TBA*
+### Webgateway method:
+Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each on your systems, you need set it up and and start it as a service.
+
+Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
+```
+# IPFS
+Server = http://127.0.0.1:8080/ipns/pkg.pacman.store/arch/$arch/default/$repo
+```
 
 ## Get an ISO/bootstrap image from IPFS
 
