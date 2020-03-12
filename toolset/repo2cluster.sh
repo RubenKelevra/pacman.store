@@ -868,9 +868,9 @@ ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder")  || fail 'iso 
 
 echo -ne "start publishing new ipns..."
 # publish new ipns records
-ipfs name publish --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" > /dev/null || printf '\nWarning: Repo folder (IPFS) IPNS could not be published after update\n' >&2
-ipfs name publish --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_pkg_archive_folder_root" "/ipfs/$ipfs_pkg_archive_folder_root_cid" > /dev/null || printf '\nWarning: repo archive folder (IPFS) IPNS could not be published after update\n' >&2
-ipfs name publish --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" > /dev/null || printf '\nWarning: ISO folder (IPFS) IPNS could not be published after update\n' >&2
+ipfs name publish --timeout 3m --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" > /dev/null || printf '\nWarning: Repo folder (IPFS) IPNS could not be published after update\n' >&2
+ipfs name publish --timeout 3m --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_pkg_archive_folder_root" "/ipfs/$ipfs_pkg_archive_folder_root_cid" > /dev/null || printf '\nWarning: repo archive folder (IPFS) IPNS could not be published after update\n' >&2
+ipfs name publish --timeout 3m --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" > /dev/null || printf '\nWarning: ISO folder (IPFS) IPNS could not be published after update\n' >&2
 
 printf '\n:: operation successfully completed @ %s\n' "$(date -Iseconds)"
 
