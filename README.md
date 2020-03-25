@@ -47,7 +47,7 @@ We hold old pkgs (disappeared from the mirrors) for another 2 weeks as snapshots
 
 | IPFS-URL | Content |
 | - | - |
-| `/ipns/cluster.pacman.store` | cluster setup domain which holds the default.json and mdns_enabled.json |
+| `/ipns/cluster.pacman.store` | cluster setup domain which holds the config file |
 | `/ipns/pkg.pacman.store/arch/x86_64/default/` | current Pacman pkgs for ArchLinux (all standard repos + testing/staging) |
 | `/ipns/pkg.pacman.store/arch/x86_64/default/db/` | current Pacman databases for ArchLinux  (all standard repos + testing/staging) |
 | `/ipns/old.pkg.pacman.store/arch/x86_64/default` | list-file of snapshots of the Pacman pkgs for ArchLinux with ISO-8601-Timestamp (all standard repos + testing/staging/unstable) |
