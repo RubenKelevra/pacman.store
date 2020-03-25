@@ -29,6 +29,8 @@ Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
 Server = http://127.0.0.1:8080/ipns/pkg.pacman.store/arch/$arch/default/$repo
 ```
 
+Since directory lookups may be slower over IPNS, you may need to set the pacman option `--disable-download-timeout` for fetching dbs or packages.
+
 ## Get an ISO/bootstrap image from IPFS
 
 ISO and bootstrap files are also stored on the cluster:
