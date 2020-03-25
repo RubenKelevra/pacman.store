@@ -37,6 +37,8 @@ ISO and bootstrap files are also stored on the cluster:
 
 [ArchLinux ISO/bootstrap images](http://iso.pacman.store/arch/x86_64/default/)
 
+[Manjaro ISO images](http://iso.pacman.store/manjaro/x86_64/)
+
 ## Find an old pkg
 
 We hold old pkgs (disappeared from the mirrors) for another 2 weeks as snapshots in the cluster. Older pkgs or snapshots might not be accessible any longer. This depends on the garbage collections on the cluster-members and how long other clients in the network hold the files.
