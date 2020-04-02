@@ -14,7 +14,7 @@ If you're running your cluster follower on a computer with a static ip or a stat
 
 The cluster is listed on the [collab cluster](https://collab.ipfscluster.io/) website.
 
-*tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://dist.ipfs.io/#ipfs-cluster-follow), then run:
+*tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://aur.archlinux.org/packages/ipfs-cluster-bin/), then run:
 
 ```ipfs-cluster-follow pacman.store run --init cluster.pacman.store```
 
