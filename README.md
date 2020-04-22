@@ -2,17 +2,19 @@
 
 The domain [pkg.pacman.store](http://pkg.pacman.store) offers pkgs for Pacman you can mount to access it as Pacman cache through your local IPFS daemon. All files accessed this way will be downloaded to your IPFS cache and shared with the network.
 
-If you run on multiple machines in your local network IPFS can exchange the files locally rather than downloading the same file multiple times from the internet.
+If you run on multiple machines in your local network IPFS will exchange the files locally rather than downloading the same file multiple times from the internet.
 
 The data is hold and shared by a collaborative cluster, where everyone can participate.
 
 ## Join the Cluster
 
-If you want to join and contribute bandwidth and hard drive space, feel free to do so. A 24/7 internet connection will be greatly appreciated.
+If you want to join and contribute bandwidth and hard drive space, feel free to do so. The repo-size is about 70 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
+
+The default storage size for IPFS needs to be altered in the config file.
 
 If you're running your cluster follower on a computer with a static ip or a static domain name: Feel free to add it to the list of ```peer_addresses``` in the JSON config files, found in [collab-cluster-config](./collab-cluster-config). Then send a pull request.
 
-The cluster is listed on the [collab cluster](https://collab.ipfscluster.io/) website.
+Details how to join the cluster are available on the [collab cluster](https://collab.ipfscluster.io/) website.
 
 *tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://aur.archlinux.org/packages/ipfs-cluster-bin/), then run:
 
