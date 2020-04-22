@@ -52,20 +52,3 @@ We hold old pkgs (disappeared from the mirrors) for another 2 weeks as snapshots
 | `/ipns/pkg.pacman.store/arch/x86_64/default/db/` | current Pacman databases for ArchLinux  (all standard repos + testing/staging) |
 | `/ipns/old.pkg.pacman.store/arch/x86_64/default` | list-file of snapshots of the Pacman pkgs for ArchLinux with ISO-8601-Timestamp (all standard repos + testing/staging/unstable) |
 | `/ipns/iso.pacman.store/arch/x86_64/default/` | current ArchLinux ISO+bootstrap images |
-| `/ipns/iso.pacman.store/manjaro/x86_64/` | current Manjaro ISO images |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
