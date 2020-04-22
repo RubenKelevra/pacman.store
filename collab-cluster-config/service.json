@@ -14,25 +14,31 @@
       "grace_period": "2m"
     },
     "state_sync_interval": "5m0s",
-    "pin_recover_interval": "12m0s",
-    "monitor_ping_interval": "15s",
-    "peer_watch_interval": "5s",
-    "mdns_interval": "0",
+    "pin_recover_interval": "10m0s",
+    "monitor_ping_interval": "60s",
+    "peer_watch_interval": "60s",
+    "mdns_interval": "3600s",
     "disable_repinning": false,
     "follower_mode": true,
     "peer_addresses": [
       "/ip6/2a03:4000:34:5c2::f3/udp/18556/quic/p2p/12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf",
       "/ip6/2a03:4000:34:5c2::f3/tcp/18556/p2p/12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf",
       "/ip4/194.59.205.143/udp/18556/quic/p2p/12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf",
-      "/ip4/194.59.205.143/tcp/18556/p2p/12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf"
+      "/ip4/194.59.205.143/tcp/18556/p2p/12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf",
+      "/ip4/94.176.233.122/udp/18556/quic/p2p/12D3KooWRUayEaCReaqQiUPRs3CBjtkQd7XgXN5fFThGXSeQQnze",
+      "/ip4/94.176.233.122/tcp/18556/p2p/12D3KooWRUayEaCReaqQiUPRs3CBjtkQd7XgXN5fFThGXSeQQnze",
+      "/ip6/2a02:7b40:5eb0:e97a::1/udp/18556/quic/p2p/12D3KooWRUayEaCReaqQiUPRs3CBjtkQd7XgXN5fFThGXSeQQnze",
+      "/ip6/2a02:7b40:5eb0:e97a::1/tcp/18556/p2p/12D3KooWRUayEaCReaqQiUPRs3CBjtkQd7XgXN5fFThGXSeQQnze"
     ]
   },
   "consensus": {
     "crdt": {
       "cluster_name": "pacman.store",
       "trusted_peers": [
-        "12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf"
-      ]
+        "12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf",
+        "12D3KooWL3V95pdTwumVCqbxWzuyCud3DqawJBi7koGos1iLwESQ"
+      ],
+      "rebroadcast_interval": "10s"
     }
   },
   "api": {},
@@ -40,9 +46,9 @@
     "ipfshttp": {
       "node_multiaddress": "/ip4/127.0.0.1/tcp/5001",
       "connect_swarms_delay": "30s",
-      "ipfs_request_timeout": "10m0s",
-      "pin_timeout": "48h0m0s",
-      "unpin_timeout": "48h0m0s",
+      "ipfs_request_timeout": "5m0s",
+      "pin_timeout": "1m0s",
+      "unpin_timeout": "1m0s",
       "repogc_timeout": "24h0m0s",
       "unpin_disable": false
     }
@@ -50,11 +56,11 @@
   "pin_tracker": {
     "maptracker": {
       "max_pin_queue_size": 20000,
-      "concurrent_pins": 15
+      "concurrent_pins": 1
     },
     "stateless": {
       "max_pin_queue_size": 1000000,
-      "concurrent_pins": 10
+      "concurrent_pins": 1
     }
   },
   "monitor": {
@@ -65,11 +71,11 @@
   },
   "informer": {
     "disk": {
-      "metric_ttl": "1m",
+      "metric_ttl": "5m",
       "metric_type": "freespace"
     },
     "numpin": {
-      "metric_ttl": "2m"
+      "metric_ttl": "5m"
     }
   },
   "observations": {},
@@ -79,8 +85,8 @@
         "dir": "",
         "value_dir": "",
         "sync_writes": true,
-        "table_loading_mode": 2,
-        "value_log_loading_mode": 2,
+        "table_loading_mode": 0,
+        "value_log_loading_mode": 0,
         "num_versions_to_keep": 1,
         "max_table_size": 67108864,
         "level_size_multiplier": 10,
