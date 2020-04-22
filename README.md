@@ -39,18 +39,12 @@ ISO and bootstrap files are also stored on the cluster:
 
 [ArchLinux ISO/bootstrap images](http://iso.pacman.store/arch/x86_64/default/)
 
-## Find an old pkg
-
-We hold old pkgs (disappeared from the mirrors) for another 2 weeks as snapshots in the cluster. Older pkgs or snapshots might not be accessible any longer. This depends on the garbage collections on the cluster-members and how long other clients in the network hold the files.
-
-[pkg archive](http://old.pkg.pacman.store/) (access might be slow)
-
 ---
 
 | IPFS-URL | Content |
 | - | - |
 | `/ipns/cluster.pacman.store` | cluster setup domain which holds the config file |
-| `/ipns/pkg.pacman.store/arch/x86_64/default/` | current Pacman pkgs for ArchLinux (all standard repos + testing/staging) |
+| `/ipns/pkg.pacman.store/arch/x86_64/default/` | regular mirror (plus `cache` and `db` subfolders) |
+| `/ipns/pkg.pacman.store/arch/x86_64/default/cache/` | current Pacman pkgs for ArchLinux (all standard repos + testing/staging) |
 | `/ipns/pkg.pacman.store/arch/x86_64/default/db/` | current Pacman databases for ArchLinux  (all standard repos + testing/staging) |
-| `/ipns/old.pkg.pacman.store/arch/x86_64/default` | list-file of snapshots of the Pacman pkgs for ArchLinux with ISO-8601-Timestamp (all standard repos + testing/staging/unstable) |
 | `/ipns/iso.pacman.store/arch/x86_64/default/` | current ArchLinux ISO+bootstrap images |
