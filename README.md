@@ -9,7 +9,7 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 ## Cluster members
 
 
-| Server | Location | Datacenter | AS | Provider | 
+| Server | Location | Internet-Provider | AS | Provider | 
 | - | - | - | - | - |
 | `loki.pacman.store` | Nuremberg, Germany | netcup | AS197540 | @RubenKelevra | 
 | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | _third-party_ |
