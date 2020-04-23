@@ -9,12 +9,12 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 ## Cluster members
 
 
-| Server | Location | Internet-Provider | AS | Provider | 
-| - | - | - | - | - |
-| `loki.pacman.store` | Nuremberg, Germany | netcup | AS197540 | @RubenKelevra | 
-| | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | _third-party_ |
-| `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | @RubenKelevra |
-| `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 | @RubenKelevra |
+| Member ID | Server | Location | Internet-Provider | AS | Provider | 
+| - | - | - | - | - | - |
+| `12D3KooWMY6rUug...`  | `loki.pacman.store` | Nuremberg, Germany | netcup | AS197540 | @RubenKelevra | 
+| `12D3KooWQkhWQYp...` | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | _third-party_ |
+| `12D3KooWRUayEaC...` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | @RubenKelevra |
+| `12D3KooWLq4b23D...` | `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 | @RubenKelevra |
 
 
 ## Join the Cluster
