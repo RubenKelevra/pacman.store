@@ -8,12 +8,14 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 
 ## Cluster members
 
+
 | Server | Location | Provider | AS | 
-| - | - |
+| - | - | - | - |
 | `loki.pacman.store` | Nuremberg, Germany | netcup | AS197540 | 
 | _third-party_ | Guthrie, Oklahoma | Cox Communications Inc. | AS22773 |
 | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 |
 | `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 |
+
 
 ## Join the Cluster
 
