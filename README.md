@@ -15,6 +15,7 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 | `12D3KooWQkhWQYp...` | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | @teknomunk |
 | `12D3KooWRUayEaC...` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | @RubenKelevra |
 | `12D3KooWLq4b23D...` | `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 | @RubenKelevra |
+| `12D3KooWNxyey9M...` | | ~ Tokyo, Japan | | AS7506 | _third party_ 
 
 
 ## Join the Cluster
