@@ -83,8 +83,6 @@ cluster_replication_max="10"
 loki="12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf"
 vidar="12D3KooWRUayEaCReaqQiUPRs3CBjtkQd7XgXN5fFThGXSeQQnze"
 
-
-
 #### END CONFIG
 
 # get lock or exit
@@ -289,9 +287,12 @@ if [ "$RECOVER" -eq 0 ]; then
 
 	rsync_cmd \
 		--include="/community/os/${arch_id}/community.db" \
+		--include="/community/os/${arch_id}/community.links" \
+		--include="/community/os/${arch_id}/community.files" \
+		--include="/community/os/${arch_id}/community.abs" \
+		--exclude="/community/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/community/os/${arch_id}/*.db" \
 		--exclude="/community/os/${arch_id}/community.db*" \
-		--exclude="/community/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/community/os/${arch_id}/community.links*" \
 		--exclude="/community/os/${arch_id}/community.files*" \
 		--exclude="/community/os/${arch_id}/community.abs*" \
@@ -300,9 +301,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/community/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/community/os/${arch_id}/*" \
 		--include="/community-staging/os/${arch_id}/community-staging.db" \
+		--include="/community-staging/os/${arch_id}/community-staging.links" \
+		--include="/community-staging/os/${arch_id}/community-staging.files" \
+		--include="/community-staging/os/${arch_id}/community-staging.abs" \
+		--exclude="/community-staging/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/community-staging/os/${arch_id}/*.db" \
 		--exclude="/community-staging/os/${arch_id}/community-staging.db*" \
-		--exclude="/community-staging/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/community-staging/os/${arch_id}/community-staging.links*" \
 		--exclude="/community-staging/os/${arch_id}/community-staging.files*" \
 		--exclude="/community-staging/os/${arch_id}/community-staging.abs*" \
@@ -311,9 +315,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/community-staging/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/community-staging/os/${arch_id}/*" \
 		--include="/community-testing/os/${arch_id}/community-testing.db" \
+		--include="/community-testing/os/${arch_id}/community-testing.links" \
+		--include="/community-testing/os/${arch_id}/community-testing.files" \
+		--include="/community-testing/os/${arch_id}/community-testing.abs" \
+		--exclude="/community-testing/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/community-testing/os/${arch_id}/*.db" \
 		--exclude="/community-testing/os/${arch_id}/community-testing.db*" \
-		--exclude="/community-testing/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/community-testing/os/${arch_id}/community-testing.links*" \
 		--exclude="/community-testing/os/${arch_id}/community-testing.files*" \
 		--exclude="/community-testing/os/${arch_id}/community-testing.abs*" \
@@ -322,9 +329,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/community-testing/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/community-testing/os/${arch_id}/*" \
 		--include="/core/os/${arch_id}/core.db" \
+		--include="/core/os/${arch_id}/core.links" \
+		--include="/core/os/${arch_id}/core.files" \
+		--include="/core/os/${arch_id}/core.abs" \
+		--exclude="/core/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/core/os/${arch_id}/*.db" \
 		--exclude="/core/os/${arch_id}/core.db*" \
-		--exclude="/core/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/core/os/${arch_id}/core.links*" \
 		--exclude="/core/os/${arch_id}/core.files*" \
 		--exclude="/core/os/${arch_id}/core.abs*" \
@@ -333,9 +343,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/core/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/core/os/${arch_id}/*" \
 		--include="/extra/os/${arch_id}/extra.db" \
+		--include="/extra/os/${arch_id}/extra.links" \
+		--include="/extra/os/${arch_id}/extra.files" \
+		--include="/extra/os/${arch_id}/extra.abs" \
+		--exclude="/extra/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/extra/os/${arch_id}/*.db" \
 		--exclude="/extra/os/${arch_id}/extra.db*" \
-		--exclude="/extra/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/extra/os/${arch_id}/extra.links*" \
 		--exclude="/extra/os/${arch_id}/extra.files*" \
 		--exclude="/extra/os/${arch_id}/extra.abs*" \
@@ -344,9 +357,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/extra/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/extra/os/${arch_id}/*" \
 		--include="/gnome-unstable/os/${arch_id}/gnome-unstable.db" \
+		--include="/gnome-unstable/os/${arch_id}/gnome-unstable.links" \
+		--include="/gnome-unstable/os/${arch_id}/gnome-unstable.files" \
+		--include="/gnome-unstable/os/${arch_id}/gnome-unstable.abs" \
+		--exclude="/gnome-unstable/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/gnome-unstable/os/${arch_id}/*.db" \
 		--exclude="/gnome-unstable/os/${arch_id}/gnome-unstable.db*" \
-		--exclude="/gnome-unstable/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/gnome-unstable/os/${arch_id}/gnome-unstable.links*" \
 		--exclude="/gnome-unstable/os/${arch_id}/gnome-unstable.files*" \
 		--exclude="/gnome-unstable/os/${arch_id}/gnome-unstable.abs*" \
@@ -355,9 +371,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/gnome-unstable/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/gnome-unstable/os/${arch_id}/*" \
 		--include="/kde-unstable/os/${arch_id}/kde-unstable.db" \
+		--include="/kde-unstable/os/${arch_id}/kde-unstable.links" \
+		--include="/kde-unstable/os/${arch_id}/kde-unstable.files" \
+		--include="/kde-unstable/os/${arch_id}/kde-unstable.abs" \
+		--exclude="/kde-unstable/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/kde-unstable/os/${arch_id}/*.db" \
 		--exclude="/kde-unstable/os/${arch_id}/kde-unstable.db*" \
-		--exclude="/kde-unstable/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/kde-unstable/os/${arch_id}/kde-unstable.links*" \
 		--exclude="/kde-unstable/os/${arch_id}/kde-unstable.files*" \
 		--exclude="/kde-unstable/os/${arch_id}/kde-unstable.abs*" \
@@ -366,9 +385,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/kde-unstable/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/kde-unstable/os/${arch_id}/*" \
 		--include="/multilib/os/${arch_id}/multilib.db" \
+		--include="/multilib/os/${arch_id}/multilib.links" \
+		--include="/multilib/os/${arch_id}/multilib.files" \
+		--include="/multilib/os/${arch_id}/multilib.abs" \
+		--exclude="/multilib/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/multilib/os/${arch_id}/*.db" \
 		--exclude="/multilib/os/${arch_id}/multilib.db*" \
-		--exclude="/multilib/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/multilib/os/${arch_id}/multilib.links*" \
 		--exclude="/multilib/os/${arch_id}/multilib.files*" \
 		--exclude="/multilib/os/${arch_id}/multilib.abs*" \
@@ -377,9 +399,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/multilib/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/multilib/os/${arch_id}/*" \
 		--include="/multilib-staging/os/${arch_id}/multilib-staging.db" \
+		--include="/multilib-staging/os/${arch_id}/multilib-staging.links" \
+		--include="/multilib-staging/os/${arch_id}/multilib-staging.files" \
+		--include="/multilib-staging/os/${arch_id}/multilib-staging.abs" \
+		--exclude="/multilib-staging/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/multilib-staging/os/${arch_id}/*.db" \
 		--exclude="/multilib-staging/os/${arch_id}/multilib-staging.db*" \
-		--exclude="/multilib-staging/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/multilib-staging/os/${arch_id}/multilib-staging.links*" \
 		--exclude="/multilib-staging/os/${arch_id}/multilib-staging.files*" \
 		--exclude="/multilib-staging/os/${arch_id}/multilib-staging.abs*" \
@@ -388,9 +413,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/multilib-staging/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/multilib-staging/os/${arch_id}/*" \
 		--include="/multilib-testing/os/${arch_id}/multilib-testing.db" \
+		--include="/multilib-testing/os/${arch_id}/multilib-testing.links" \
+		--include="/multilib-testing/os/${arch_id}/multilib-testing.files" \
+		--include="/multilib-testing/os/${arch_id}/multilib-testing.abs" \
+		--exclude="/multilib-testing/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/multilib-testing/os/${arch_id}/*.db" \
 		--exclude="/multilib-testing/os/${arch_id}/multilib-testing.db*" \
-		--exclude="/multilib-testing/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/multilib-testing/os/${arch_id}/multilib-testing.links*" \
 		--exclude="/multilib-testing/os/${arch_id}/multilib-testing.files*" \
 		--exclude="/multilib-testing/os/${arch_id}/multilib-testing.abs*" \
@@ -399,9 +427,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/multilib-testing/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/multilib-testing/os/${arch_id}/*" \
 		--include="/staging/os/${arch_id}/staging.db" \
+		--include="/staging/os/${arch_id}/staging.links" \
+		--include="/staging/os/${arch_id}/staging.files" \
+		--include="/staging/os/${arch_id}/staging.abs" \
+		--exclude="/staging/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/staging/os/${arch_id}/*.db" \
 		--exclude="/staging/os/${arch_id}/staging.db*" \
-		--exclude="/staging/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/staging/os/${arch_id}/staging.links*" \
 		--exclude="/staging/os/${arch_id}/staging.files*" \
 		--exclude="/staging/os/${arch_id}/staging.abs*" \
@@ -410,9 +441,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--include="/staging/os/${arch_id}/*-any.pkg.*" \
 		--exclude="/staging/os/${arch_id}/*" \
 		--include="/testing/os/${arch_id}/testing.db" \
+		--include="/testing/os/${arch_id}/testing.links" \
+		--include="/testing/os/${arch_id}/testing.files" \
+		--include="/testing/os/${arch_id}/testing.abs" \
+		--exclude="/testing/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/testing/os/${arch_id}/*.db" \
 		--exclude="/testing/os/${arch_id}/testing.db*" \
-		--exclude="/testing/os/${arch_id}/*.pkg.*.sig" \
 		--exclude="/testing/os/${arch_id}/testing.links*" \
 		--exclude="/testing/os/${arch_id}/testing.files*" \
 		--exclude="/testing/os/${arch_id}/testing.abs*" \
@@ -451,7 +485,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 
 	#deleted files
 	while IFS= read -r -d $'\n' deleted_file; do
-		if [[ $deleted_file = *'.pkg.'* ]]; then #that's a pkg
+		if [[ $deleted_file = *'.pkg.'* || $deleted_file = *'.files' || $deleted_file = *'.abs' || $deleted_file = *'.links' ]]; then #that's a pkg
 			pkg_name=$(echo "$deleted_file" | cut -d'/' -f4)
 			pkg_repo_folder=$(echo "$deleted_file" | cut -d'/' -f1)
 			pkg_dest_path="/$ipfs_repo_folder/$pkg_repo_folder/$pkg_name"
@@ -505,7 +539,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 
 	#changed files
 	while IFS= read -r -d $'\n' changed_file; do
-		if [[ $changed_file = *'.pkg.'* ]]; then #that's a pkg
+		if [[ $changed_file = *'.pkg.'* || $changed_file = *'.files' || $changed_file = *'.abs' || $changed_file = *'.links' ]]; then #that's a pkg
 			echo "Warning: the pkg file '$changed_file' was changed on mirror, this is unexpected!" >&2
 			pkg_name=$(echo "$changed_file" | cut -d'/' -f4)
 			pkg_repo_folder=$(echo "$changed_file" | cut -d'/' -f1)
@@ -599,7 +633,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 
 	#new files
 	while IFS= read -r -d $'\n' new_file; do
-		if [[ $new_file = *'.pkg.'* ]]; then #that's a pkg
+		if [[ $new_file = *'.pkg.'* || $new_file = *'.files' || $new_file = *'.abs' || $new_file = *'.links' ]]; then #that's a pkg
 			pkg_name=$(echo "$new_file" | cut -d'/' -f4)
 			pkg_repo_folder=$(echo "$new_file" | cut -d'/' -f1)
 			pkg_folder_path="$ipfs_repo_folder/$pkg_repo_folder"
@@ -688,7 +722,7 @@ else # FULL_ADD is set - full add mechanism
 			#ipfs files cp "/ipfs/$lastupdate_cid" "$lastupdate_dest_path"
 			#unset lastupdate_folder_path lastupdate_timestamp lastupdate_cid lastupdate_dest_path
 		fi
-		if [[ $filename = *'.pkg.'* ]]; then #that's a pkg
+		if [[ $filename = *'.pkg.'* || $filename = *'.files' || $filename = *'.abs' || $filename = *'.links' ]]; then #that's a pkg
 			pkg_name=$(echo "$filename" | cut -d'/' -f5)
 			pkg_repo_folder=$(echo "$filename" | cut -d'/' -f2)
 			pkg_folder_path="$ipfs_repo_folder/$pkg_repo_folder"
