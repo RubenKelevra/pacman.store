@@ -1,5 +1,7 @@
 # pacman.store
 
+**Current status and any announcements as well as a maintaince log can be found [here](https://github.com/RubenKelevra/pacman.store/wiki/Status,-Announcements-&-Maintenance)**
+
 The domain [pkg.pacman.store](http://pkg.pacman.store) offers pkgs for Pacman you can mount to access it as Pacman cache through your local IPFS daemon. All files accessed this way will be downloaded to your IPFS cache and shared with the network.
 
 If you run on multiple machines in your local network IPFS will exchange the files locally rather than downloading the same file multiple times from the internet.
