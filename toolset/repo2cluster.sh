@@ -33,6 +33,7 @@ set -e
 # - more than twice the storage currently in the repo (deduplicated)
 # - "$ipfs_mount" and "$ipns_mount" needs to be unmounted to run this script
 # - need to be run with the same user account which runs the ipfs daemon and the ipfs-cluster-service daemon
+# - directory sharding deactivated in IPFS
 
 ### config ###
 
@@ -77,32 +78,40 @@ ipns_mount='/mnt/ipns'
 # folder where the ipfs is mounted
 ipfs_mount='/mnt/ipfs'
 
-cluster_replication_min="2"
-cluster_replication_max="10"
+# json for the cluster
+ipfs_cluster_service_file="bafkreih2ee52pz5ruxzfi4kofe6i3wnbhmn3sscghrwfeejdkov4f6rpz4"
 
-loki="12D3KooWMY6rUugH6M2vF2qhp75P2RZuy34UNuyTzDDaoMYnCEuf"
-vidar="12D3KooWRUayEaCReaqQiUPRs3CBjtkQd7XgXN5fFThGXSeQQnze"
+#how long a folder-type will be pinned on the cluster
+cluster_pin_pkgfolder_expire="30d"
+#how long a pkg folder will be pinned on the cluster
+cluster_pin_isofolder_expire="180d"
 
 #### END CONFIG
 
 # get lock or exit
-exec 9>"${lock}"
+exec 9> "${lock}"
 flock -n 9 || exit
 
 # local functions
 
-function fail {
+function fail() {
 	[ -n "$3" ] && [ "$3" == '-n' ] && printf '\n'
 	[ -n "$3" ] && [ "$3" == '-2n' ] && printf '\n\n'
-    printf 'Error: %s\n' "$1" >&2
-    exit "${2-1}"
+	printf 'Error: %s; Errorcode: %s\n' "$1" "$2" >&2
+	exit 1
+}
+
+function warn() {
+	[ -n "$2" ] && [ "$2" == '-n' ] && printf '\n'
+	[ -n "$2" ] && [ "$2" == '-2n' ] && printf '\n\n'
+	printf 'Warning: %s\n' "$1" >&2
 }
 
 function rsync_cmd() {
-	local -a cmd=(rsync -rtlH -LK --safe-links --delete-excluded --delete --delete-during --inplace "--log-file=${rsync_log}" "--timeout=600" "--contimeout=60" -p \
-		 --no-motd)
+	local -a cmd=(rsync -rtlH -LK --safe-links --delete-excluded --delete --delete-during --inplace "--log-file=${rsync_log}" "--timeout=600" "--contimeout=60" -p
+		--no-motd)
 
-	if stty &>/dev/null; then
+	if stty &> /dev/null; then
 		cmd+=(-h -v --progress)
 	else
 		cmd+=(--quiet)
@@ -111,44 +120,47 @@ function rsync_cmd() {
 	"${cmd[@]}" "$@"
 }
 
-function pin_rootfolder_to_cluster() {
+function pin_folder_direct_to_cluster() {
 	# expect 1: to be valid cid
-	# expect 2: to be the usual name of a folder
-	# expect 3: to be a timestamp
-
-	local _cluster_replication_min="$cluster_replication_min"
-	local _cluster_replication_max="$cluster_replication_max"
-	local _expire="$cluster_pin_rootfolder_expire"
+	# expect 2: to be either pkg or iso
+	# expect 3: to be the usual name of a folder
+	# expect 4: to be a iso-8601-seconds timestamp
 
 	local _cid="$1"
-	local _name="$2"
-	local _timestamp="$3"
+	local _type="$2"
+	local _name="$3"
+	local _timestamp="$4"
 
-	[ -z "$_cid" ] && fail "pin_rootfolder_to_cluster: cid was empty" 230
-	[ -z "$_name" ] && fail "pin_rootfolder_to_cluster: name was empty. CID: $_cid" 231
-	[ -z "$_timestamp" ] && fail "pin_rootfolder_to_cluster: timestamp was empty. CID: $_cid" 232
+	[ -z "$_cid" ] && fail "pin_folder_direct_to_cluster: cid was empty" 230
+	[ -z "$_type" ] && fail "pin_folder_direct_to_cluster: type was empty. CID: $_cid" 231
+	[ -z "$_name" ] && fail "pin_folder_direct_to_cluster: name was empty. CID: $_cid" 232
+	[ -z "$_timestamp" ] && fail "pin_folder_direct_to_cluster: timestamp was empty. CID: $_cid" 233
+
+	if [ "$_type" == "pkg" ]; then
+		local _expire="$cluster_pin_pkgfolder_expire"
+	elif [ "$_type" == "iso" ]; then
+		local _expire="$cluster_pin_isofolder_expire"
+	else
+		fail "pin_folder_direct_to_cluster: unexpected folder type identifier. CID: $_cid" 234
+	fi
 
 	_name="$_name frozen@$_timestamp"
 
-	if ! ipfs-cluster-ctl pin add --no-status --expire-in "$_expire" --name "$_name" --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_cid" > /dev/null; then
-		fail "ipfs-cluster-ctl returned an error while running pin_rootfolder_to_cluster on the cid: '$_cid', name: '$_name'" 214
+	if ! ipfs-cluster-ctl pin add --mode 'direct' --no-status --expire-in "$_expire" --name "$_name" --replication='-1' "$_cid" > /dev/null; then
+		fail "ipfs-cluster-ctl returned an error while running pin_folder_direct_to_cluster on the cid: '$_cid', name: '$_name'" 235
 	fi
 	return 0
 }
 
-function add_expiredate_to_clusterpin() {
+function rm_clusterpin() {
 	local _cid="$1"
 
 	if ! ipfs-cluster-ctl pin rm --no-status "$_cid" > /dev/null; then
-		echo "Warning: ipfs-cluster-ctl returned an error while removing a cluster pin: cid: '$_cid'"
+		fail "ipfs-cluster-ctl returned an error while removing a cluster pin: cid: '$_cid'" 237
 	fi
-
-	return 0
 }
 
 function add_file_to_cluster() {
-	local _cluster_replication_min="$cluster_replication_min"
-	local _cluster_replication_max="$cluster_replication_max"
 	local _new_cid=""
 
 	if [ "$1" == "pkg" ]; then
@@ -175,11 +187,11 @@ function add_file_to_cluster() {
 	fi
 
 	if [ ! -f "$_filepath" ]; then
-		echo "Warning: Skipping file because it could not be located: '$_filepath'"  >&2
+		warn "Skipping file because it could not be located: '$_filepath'"
 		return 1
 	fi
 
-	if ! _new_cid=$(ipfs-cluster-ctl add --local --cid-version 1 --allocations "$loki,$vidar" --quieter --name "$_name" --replication-min="$_cluster_replication_min" --replication-max="$_cluster_replication_max" "$_filepath"); then
+	if ! _new_cid=$(ipfs-cluster-ctl add --local --cid-version 1 --quieter --name "$_name" --replication='-1' "$_filepath"); then
 		fail "ipfs-cluster-ctl returned an error while adding a file to the cluster filetype: '$1' name: '$_name' filepath: '$_filepath'" 201
 	fi
 
@@ -214,8 +226,6 @@ fi
 [ -z "$dist_id" ] && fail "distribution identifier config string is empty" 20
 [ -z "$arch_id" ] && fail "architecture identifier config string is empty" 21
 [ -z "$repo_id" ] && fail "repository identifier config string is empty" 22
-[ -z "$cluster_replication_min" ] && fail "cluster replication max config string is empty" 26
-[ -z "$cluster_replication_max" ] && fail "cluster replication min config string is empty" 27
 [ -z "$ipfs_iso_folder" ] && fail "iso folder (IPFS) config string is empty" 28
 
 [ -d "$ipns_mount" ] || fail "ipns mount dir could not be located" 50
@@ -247,14 +257,14 @@ fi
 if [ $FULL_ADD -eq 1 ]; then
 	echo "creating empty ipfs subfolder (down to db) for pkg..."
 	ipfs files mkdir -p --cid-version 1 "/$ipfs_db_folder" > /dev/null 2>&1 || fail "ipfs subfolder (down to db) for pkg couldn't be created" 101 -n
-elif  ! ipfs files stat "/$ipfs_db_folder" > /dev/null 2>&1; then
+elif ! ipfs files stat "/$ipfs_db_folder" > /dev/null 2>&1; then
 	fail "ipfs subfolder (down to db) does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 301 -n
 fi
 
 if [ $FULL_ADD -eq 1 ]; then
 	echo "creating empty ipfs folder for pkg cache..."
 	ipfs files mkdir -p --cid-version 1 "/$ipfs_pkg_cache_folder" > /dev/null 2>&1 || fail "ipfs folder for pkg cache couldn't be created" 101 -n
-elif  ! ipfs files stat "/$ipfs_pkg_cache_folder" > /dev/null 2>&1; then
+elif ! ipfs files stat "/$ipfs_pkg_cache_folder" > /dev/null 2>&1; then
 	fail "ipfs folder for pkg cache does not exist, make sure to clear the cluster pins, remove all folders and run with --force-full-add again" 301 -n
 fi
 
@@ -270,7 +280,7 @@ fi
 #   force a rsync and a ipfs add of all files again, to ensure were up to date
 if [ $FULL_ADD -eq 0 ]; then
 	if [ -f "$rsync_log" ]; then
-		echo "Warning: Last sync with ipfs incomplete, reread the last transmission log" >&2
+		warn "Last sync with ipfs incomplete, reread the last transmission log"
 		RECOVER=1
 	fi
 else
@@ -281,7 +291,7 @@ fi
 if [ "$RECOVER" -eq 0 ]; then
 
 	# only run when there are changes
-	if [[ -f "${rsync_target}lastupdate" ]] && diff -b <(curl -Ls "$lastupdate_url") "${rsync_target}lastupdate" >/dev/null; then
+	if [[ -f "${rsync_target}lastupdate" ]] && diff -b <(curl -Ls "$lastupdate_url") "${rsync_target}lastupdate" > /dev/null; then
 		[ $FULL_ADD -eq 1 ] || exit 0 # only exit here if we should not do a full add
 	fi
 
@@ -459,12 +469,12 @@ if [ "$RECOVER" -eq 0 ]; then
 		--exclude='*.torrent' \
 		--exclude='/other' \
 		--exclude='/sources' \
-		--exclude='/lastsync' \
 		--exclude='/iso/latest' \
 		--exclude='/iso/archboot' \
 		--exclude='/iso/*/arch' \
 		--include='/iso/*' \
 		--exclude='/pool' \
+		--include='/lastsync' \
 		--include='/lastupdate' \
 		"${rsync_url}" \
 		"${rsync_target}"
@@ -478,28 +488,27 @@ else #delete rsync log (we won't use it anyway)
 	sync
 fi
 
-
 if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 
 	#parsing rsync log
 
 	#deleted files
 	while IFS= read -r -d $'\n' deleted_file; do
-		if [[ $deleted_file = *'.pkg.'* || $deleted_file = *'.files' || $deleted_file = *'.abs' || $deleted_file = *'.links' ]]; then #that's a pkg
+		if [[ $deleted_file == *'.pkg.'* || $deleted_file == *'.files' || $deleted_file == *'.abs' || $deleted_file == *'.links' ]]; then #that's a pkg
 			pkg_name=$(echo "$deleted_file" | cut -d'/' -f4)
 			pkg_repo_folder=$(echo "$deleted_file" | cut -d'/' -f1)
 			pkg_dest_path="/$ipfs_repo_folder/$pkg_repo_folder/$pkg_name"
 			pkg_pacmanstore_dest_path="/$ipfs_pkg_cache_folder/$pkg_name"
-			if ! pkg_old_cid=$(ipfs files stat --hash "$pkg_dest_path" 2>/dev/null ); then
-				echo "Warning: the pkg file '$deleted_file' was already deleted on IPFS" >&2
-				if ! pkg_old_cid=$(ipfs files stat --hash "$pkg_pacmanstore_dest_path" 2>/dev/null ); then
-					echo "Warning: the pkg file '$deleted_file' was already deleted in pkg cache folder on IPFS" >&2
+			if ! pkg_old_cid=$(ipfs files stat --hash "$pkg_dest_path" 2> /dev/null); then
+				warn "the pkg file '$deleted_file' was already deleted on IPFS"
+				if ! pkg_old_cid=$(ipfs files stat --hash "$pkg_pacmanstore_dest_path" 2> /dev/null); then
+					warn "the pkg file '$deleted_file' was already deleted in pkg cache folder on IPFS"
 					continue
 				fi
 			fi
-			add_expiredate_to_clusterpin "$pkg_old_cid" 'pkg' "$pkg_repo_folder" "$pkg_name"
+			rm_clusterpin "$pkg_old_cid" # 'pkg' "$pkg_repo_folder" "$pkg_name"
 
-			ipfs files rm "$pkg_dest_path" || true & # ignore if the file doesn't exist
+			ipfs files rm "$pkg_dest_path" || true &           # ignore if the file doesn't exist
 			ipfs files rm "$pkg_pacmanstore_dest_path" || true # ignore if the file doesn't exist
 			unset pkg_name pkg_dest_path pkg_old_cid pkg_repo_folder pkg_pacmanstore_dest_path
 
@@ -507,14 +516,14 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			iso_file_name=$(echo "$deleted_file" | cut -d'/' -f3)
 			iso_file_folder=$(echo "$deleted_file" | cut -d'/' -f2)
 			iso_dest_path="/$ipfs_iso_folder/$distarchrepo_path/$iso_file_folder/$iso_file_name"
-			if ! iso_old_cid=$(ipfs files stat --hash "$iso_dest_path" 2>/dev/null ); then
-				echo "Warning: the file in iso/ '$deleted_file' was already deleted on IPFS" >&2
+			if ! iso_old_cid=$(ipfs files stat --hash "$iso_dest_path" 2> /dev/null); then
+				warn "the file in iso/ '$deleted_file' was already deleted on IPFS"
 				continue
 			fi
 			if [ -z "$iso_file_name" ]; then # that's the empty folder
 				ipfs files rm -r "$iso_dest_path"
 			else
-				add_expiredate_to_clusterpin "$iso_old_cid" 'iso' "$iso_file_folder" "$iso_file_name"
+				rm_clusterpin "$iso_old_cid" # 'iso' "$iso_file_folder" "$iso_file_name"
 				ipfs files rm "$iso_dest_path"
 			fi
 			unset iso_file_name iso_file_folder iso_dest_path iso_old_cid
@@ -523,70 +532,71 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			db_repo_name=$(echo "$deleted_file" | cut -d'/' -f1)
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
 			db_dest_path_pkg="/$ipfs_repo_folder/$db_repo_name/${db_repo_name}.db"
-			if ! db_old_cid=$(ipfs files stat --hash "$db_dest_path" 2>/dev/null ); then
-				echo "Warning: the .db-file '$deleted_file' was already deleted on IPFS" >&2
+			if ! db_old_cid=$(ipfs files stat --hash "$db_dest_path" 2> /dev/null); then
+				warn "the .db-file '$deleted_file' was already deleted on IPFS"
 				continue
 			fi
-			add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
+			rm_clusterpin "$db_old_cid" # 'db' "$db_repo_name"
 			ipfs files rm "$db_dest_path"
 			ipfs files rm "$db_dest_path_pkg" || true
 			unset db_dest_path db_dest_path_pkg db_repo_name db_old_cid
 
 		else
-			echo "Warning: Couldn't process deleted file '$deleted_file', unknown file type"  >&2
+			warn "Couldn't process deleted file '$deleted_file', unknown file type"
 		fi
 	done < <(grep ' *deleting' "${rsync_log}" | awk '{ print $5 }' | grep -v '^lastupdate$')
 
 	#changed files
 	while IFS= read -r -d $'\n' changed_file; do
-		if [[ $changed_file = *'.pkg.'* || $changed_file = *'.files' || $changed_file = *'.abs' || $changed_file = *'.links' ]]; then #that's a pkg
-			echo "Warning: the pkg file '$changed_file' was changed on mirror, this is unexpected!" >&2
+		if [[ $changed_file == *'.pkg.'* || $changed_file == *'.files' || $changed_file == *'.abs' || $changed_file == *'.links' ]]; then #that's a pkg
+			if [[ $changed_file == *'.pkg.'* ]]; then #that's a pkg
+				warn "the pkg file '$changed_file' was changed on mirror, this is unexpected!"
+			fi
 			pkg_name=$(echo "$changed_file" | cut -d'/' -f4)
 			pkg_repo_folder=$(echo "$changed_file" | cut -d'/' -f1)
 			pkg_folder_path="$ipfs_repo_folder/$pkg_repo_folder"
 			if ! ipfs files stat "/$pkg_folder_path" > /dev/null 2>&1; then
-				echo "Warning: Changed file's ($changed_file) folder wasn't existing, creating a new folder" >&2
+				warn "Changed file's ($changed_file) folder wasn't existing, creating a new folder"
 				ipfs files mkdir -p --cid-version 1 "/$pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$pkg_folder_path" 1002 -n
 			fi
 
 			if ! pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_repo_folder" "$pkg_name"); then
-				echo "Warning: rsync log inconsistent! changed file '$changed_file' could not be located, skipping" >&2
-				continue
+				fail "rsync log inconsistent! changed file '$changed_file' could not be located, skipping" 1003
 			fi
 			pkg_dest_path="/$pkg_folder_path/$pkg_name"
 			pkg_pacmanstore_dest_path="/$ipfs_pkg_cache_folder/$pkg_name"
 			if ! pkg_old_cid=$(ipfs files stat --hash "$pkg_dest_path"); then
-				echo "Warning: ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file" >&2
-			else #add expire date to old pin
+				warn "ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file"
+			else #remove old pin
 				if [ "$pkg_cid" == "$pkg_old_cid" ]; then
-					echo "Warning: changed file got the same content as the old one. Old CID: '$pkg_old_cid' path: '$pkg_dest_path'. SKIPPING EXPIRING PIN" >&2
+					warn "changed file got the same content as the old one. Old CID: '$pkg_old_cid' path: '$pkg_dest_path'. SKIPPING EXPIRING PIN"
 				else
-					add_expiredate_to_clusterpin "$pkg_old_cid" 'pkg' "$pkg_repo_folder" "$pkg_name"
+					rm_clusterpin "$pkg_old_cid" # 'pkg' "$pkg_repo_folder" "$pkg_name"
 				fi
 				ipfs files rm "$pkg_dest_path"
 			fi
 			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path" > /dev/null 2>&1
-			ipfs files rm "$pkg_pacmanstore_dest_path" > /dev/null 2>&1 || echo "Warning: Changed pkg $pkg_name haven't existed in pkg cache folder, ADDING"  >&2
+			ipfs files rm "$pkg_pacmanstore_dest_path" > /dev/null 2>&1 || warn "Changed pkg $pkg_name haven't existed in pkg cache folder, ADDING"
 			ipfs files cp "/ipfs/$pkg_cid" "$pkg_pacmanstore_dest_path" > /dev/null 2>&1
 			unset pkg_name pkg_repo_folder pkg_folder_path pkg_cid pkg_dest_path pkg_pacmanstore_dest_path
 
 		elif [ "${changed_file:0:4}" == 'iso/' ]; then #that's everything in iso/
-			echo "Warning: the file in /iso '$changed_file' was changed on mirror, this is unexpected!" >&2
+			warn "the file in /iso '$changed_file' was changed on mirror, this is unexpected!"
 			iso_file_name=$(echo "$changed_file" | cut -d'/' -f3)
 			iso_file_folder=$(echo "$changed_file" | cut -d'/' -f2)
 			iso_dest_path="/$ipfs_iso_folder/$distarchrepo_path/$iso_file_folder/$iso_file_name"
 			if ! iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name"); then
-				echo "Warning: rsync log inconsistent! changed file '$changed_file' could not be located, skipping" >&2
+				warn "rsync log inconsistent! changed file '$changed_file' could not be located, skipping"
 				continue
 			fi
 			if ! iso_old_cid=$(ipfs files stat --hash "$iso_dest_path"); then
-				echo "Warning: ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file" >&2
+				warn "ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file"
 			else
 				if [ "$iso_cid" == "$iso_old_cid" ]; then
-					echo "Warning: changed file got the same content as the old one. Old CID: '$iso_old_cid' path: '$iso_dest_path'. SKIPPING" >&2
+					warn "changed file got the same content as the old one. Old CID: '$iso_old_cid' path: '$iso_dest_path'. SKIPPING"
 					continue
 				fi
-				add_expiredate_to_clusterpin "$iso_old_cid" 'iso' "$iso_file_folder" "$iso_file_name"
+				rm_clusterpin "$iso_old_cid" # 'iso' "$iso_file_folder" "$iso_file_name"
 				ipfs files rm "$iso_dest_path"
 			fi
 			ipfs files cp "/ipfs/$iso_cid" "$iso_dest_path"
@@ -597,14 +607,14 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
 			db_dest_path_pkg="/$ipfs_repo_folder/$db_repo_name/${db_repo_name}.db"
 			if ! db_cid=$(add_file_to_cluster 'db' "$db_repo_name"); then
-				echo "Warning: rsync log inconsistent! changed file '$changed_file' could not be located, skipping" >&2
+				warn "rsync log inconsistent! changed file '$changed_file' could not be located, skipping"
 				continue
 			fi
 			if ! db_old_cid=$(ipfs files stat --hash "$db_dest_path"); then
-				echo "Warning: ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file" >&2
+				warn "ifps inconsistent! changed file '$changed_file' could not be located, adding as a new file"
 			else
 				if [ "$db_cid" == "$db_old_cid" ]; then
-					echo "Warning: changed file got the same content as the old one. Old CID: '$db_old_cid' path: '$db_dest_path'. SKIPPING" >&2
+					warn "changed file got the same content as the old one. Old CID: '$db_old_cid' path: '$db_dest_path'. SKIPPING"
 					# ensure copy in repo folder is the same
 					db_old_cid_pkg=$(ipfs files stat --hash "$db_dest_path_pkg") || true
 					if [ "$db_old_cid" != "$db_old_cid_pkg" ]; then
@@ -613,27 +623,27 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 					fi
 					continue
 				fi
-				add_expiredate_to_clusterpin "$db_old_cid" 'db' "$db_repo_name"
+				rm_clusterpin "$db_old_cid" # 'db' "$db_repo_name"
 				ipfs files rm "$db_dest_path"
 				ipfs files rm "$db_dest_path_pkg" || true
 			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path"
 			db_pkg_folder_path="/$ipfs_repo_folder/$db_repo_name"
 			if ! ipfs files stat "/$db_pkg_folder_path" > /dev/null 2>&1; then
-				echo "Warning: Changed db file's ($changed_file) repo folder wasn't existing, creating a new folder" >&2
+				warn "Changed db file's ($changed_file) repo folder wasn't existing, creating a new folder"
 				ipfs files mkdir -p --cid-version 1 "/$db_pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$db_pkg_folder_path" 1000 -n
 			fi
 			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg"
 			unset db_repo_name db_dest_path db_dest_path_pkg db_old_cid db_old_cid_pkg db_cid db_pkg_folder_path
 
 		else
-			echo "Warning: Couldn't process changed file '$changed_file', unknown file type"  >&2
+			warn "Couldn't process changed file '$changed_file', unknown file type"
 		fi
 	done < <(grep -v ' >f+++++++++' "${rsync_log}" | grep ' >f' | awk '{ print $5 }' | grep -v '^lastupdate$')
 
 	#new files
 	while IFS= read -r -d $'\n' new_file; do
-		if [[ $new_file = *'.pkg.'* || $new_file = *'.files' || $new_file = *'.abs' || $new_file = *'.links' ]]; then #that's a pkg
+		if [[ $new_file == *'.pkg.'* || $new_file == *'.files' || $new_file == *'.abs' || $new_file == *'.links' ]]; then #that's a pkg
 			pkg_name=$(echo "$new_file" | cut -d'/' -f4)
 			pkg_repo_folder=$(echo "$new_file" | cut -d'/' -f1)
 			pkg_folder_path="$ipfs_repo_folder/$pkg_repo_folder"
@@ -641,7 +651,7 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				ipfs files mkdir -p --cid-version 1 "/$pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$pkg_folder_path" 1000 -n
 			fi
 			if ! pkg_cid=$(add_file_to_cluster 'pkg' "$pkg_repo_folder" "$pkg_name"); then
-				echo "Warning: rsync log inconsistent! new file '$new_file' could not be located, skipping" >&2
+				warn "rsync log inconsistent! new file '$new_file' could not be located, skipping"
 				continue
 			fi
 			pkg_dest_path="/$pkg_folder_path/$pkg_name"
@@ -649,9 +659,9 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$pkg_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path" > /dev/null 2>&1 || echo "Warning: New pkg file $pkg_name already existed on IPFS"  >&2
+			ipfs files cp "/ipfs/$pkg_cid" "$pkg_dest_path" > /dev/null 2>&1 || warn "New pkg file $pkg_name already existed on IPFS"
 			if ipfs files rm "$pkg_pacmanstore_dest_path" > /dev/null 2>&1; then
-				echo "Warning: New pkg file $pkg_name already existed in pkg cache folder, replacing with new version"  >&2
+				warn "New pkg file $pkg_name already existed in pkg cache folder, replacing with new version"
 			fi
 			ipfs files cp "/ipfs/$pkg_cid" "$pkg_pacmanstore_dest_path" > /dev/null 2>&1
 			unset pkg_name pkg_repo_folder pkg_folder_path pkg_cid pkg_dest_path pkg_pacmanstore_dest_path
@@ -664,38 +674,36 @@ if [ $FULL_ADD -eq 0 ]; then #diff update mechanism
 				ipfs files mkdir -p --cid-version 1 "/$iso_folder_path" > /dev/null 2>&1 || fail "ipfs folder for iso files could not be created: /$iso_folder_path" 1001 -n
 			fi
 			if ! iso_cid=$(add_file_to_cluster 'iso' "$iso_file_folder" "$iso_file_name"); then
-				echo "Warning: rsync log inconsistent! new file '$new_file' could not be located, skipping" >&2
-				continue
+				fail "rsync log inconsistent! new file '$new_file' could not be located, skipping" 1014
 			fi
 			iso_dest_path="/$iso_folder_path/$iso_file_name"
 			if [ "$RECOVER" -eq 1 ]; then
 				ipfs files rm "$iso_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$iso_cid" "$iso_dest_path" > /dev/null 2>&1 || echo "Warning: New iso file $iso_file_name already existed on IPFS"  >&2
+			ipfs files cp "/ipfs/$iso_cid" "$iso_dest_path" > /dev/null 2>&1 || warn "New iso file $iso_file_name already existed on IPFS"
 			unset iso_file_name iso_file_folder iso_folder_path iso_cid iso_dest_path
 
 		elif [ "${new_file: -3}" == '.db' ]; then # that's a database file
 			db_repo_name=$(echo "$new_file" | cut -d'/' -f1)
 			if ! db_cid=$(add_file_to_cluster 'db' "$db_repo_name"); then
-				echo "Warning: rsync log inconsistent! new file '$new_file' could not be located, skipping" >&2
-				continue
+				fail "rsync log inconsistent! new file '$new_file' could not be located, skipping" 1025
 			fi
 			db_dest_path="/$ipfs_db_folder/${db_repo_name}.db"
 			db_dest_path_pkg="/$ipfs_repo_folder/$db_repo_name/${db_repo_name}.db"
 			if [ "$RECOVER" -eq 1 ]; then
-				ipfs files rm "$db_dest_path" > /dev/null 2>&1 || true # ignore if the file doesn't exist
+				ipfs files rm "$db_dest_path" > /dev/null 2>&1 || true     # ignore if the file doesn't exist
 				ipfs files rm "$db_dest_path_pkg" > /dev/null 2>&1 || true # ignore if the file doesn't exist
 			fi
-			ipfs files cp "/ipfs/$db_cid" "$db_dest_path" > /dev/null 2>&1 || echo "Warning: New db file $db_repo_name already existed on IPFS"  >&2
+			ipfs files cp "/ipfs/$db_cid" "$db_dest_path" > /dev/null 2>&1 || warn "New db file $db_repo_name already existed on IPFS"
 			db_pkg_folder_path="/$ipfs_repo_folder/$db_repo_name"
 			if ! ipfs files stat "/$db_pkg_folder_path" > /dev/null 2>&1; then
 				ipfs files mkdir -p --cid-version 1 "/$db_pkg_folder_path" > /dev/null 2>&1 || fail "ipfs folder for pkg could not be created: /$db_pkg_folder_path" 1000 -n
 			fi
-			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg" > /dev/null 2>&1 || echo "Warning: New db file $db_repo_name already existed on IPFS in repo folder"  >&2
+			ipfs files cp "/ipfs/$db_cid" "$db_dest_path_pkg" > /dev/null 2>&1 || warn "New db file $db_repo_name already existed on IPFS in repo folder"
 			unset db_repo_name db_cid db_dest_path db_dest_path_pkg pkg_folder_path
 
 		else
-			echo "Warning: Couldn't process new file '$new_file', unknown file type"  >&2
+			warn "Couldn't process new file '$new_file', unknown file type"
 
 		fi
 	done < <(grep ' >f+++++++++' "${rsync_log}" | awk '{ print $5 }' | grep -v '^lastupdate$')
@@ -706,11 +714,11 @@ else # FULL_ADD is set - full add mechanism
 	no_of_adds=1
 
 	while IFS= read -r -d $'\0' filename; do
-		if [[ $filename = *"/~"* ]]; then
-			echo "Warning: Skipped file with '/~' in path: $filename"  >&2
+		if [[ $filename == *"/~"* ]]; then
+			warn "Skipped file with '/~' in path: $filename"
 			continue
-		elif [[ $filename = *"/."* ]]; then
-			echo "Warning: Skipped hidden file/folder: $filename"  >&2
+		elif [[ $filename == *"/."* ]]; then
+			warn "Skipped hidden file/folder: $filename"
 			continue
 		elif [ "$filename" == "./lastupdate" ]; then
 			continue
@@ -722,7 +730,7 @@ else # FULL_ADD is set - full add mechanism
 			#ipfs files cp "/ipfs/$lastupdate_cid" "$lastupdate_dest_path"
 			#unset lastupdate_folder_path lastupdate_timestamp lastupdate_cid lastupdate_dest_path
 		fi
-		if [[ $filename = *'.pkg.'* || $filename = *'.files' || $filename = *'.abs' || $filename = *'.links' ]]; then #that's a pkg
+		if [[ $filename == *'.pkg.'* || $filename == *'.files' || $filename == *'.abs' || $filename == *'.links' ]]; then #that's a pkg
 			pkg_name=$(echo "$filename" | cut -d'/' -f5)
 			pkg_repo_folder=$(echo "$filename" | cut -d'/' -f2)
 			pkg_folder_path="$ipfs_repo_folder/$pkg_repo_folder"
@@ -736,9 +744,9 @@ else # FULL_ADD is set - full add mechanism
 			if ! ipfs files cp "/ipfs/$pkg_cid" "$pkg_pacmanstore_dest_path" > /dev/null 2>&1; then
 				pkg_old_cache_cid=$(ipfs files stat --hash "$pkg_pacmanstore_dest_path")
 				if [ "$pkg_cid" == "$pkg_old_cache_cid" ]; then
-					echo "Warning: new pkg file $pkg_name already existed in pkg cache folder, but CID match, IGNORING" >&2
+					warn "new pkg file $pkg_name already existed in pkg cache folder, but CID match, IGNORING"
 				else
-					echo "Warning: Conflicting package name, pkg file $pkg_name already existed in pkg cache folder and CID missmatch - deleting cache entry" >&2
+					warn "Conflicting package name, pkg file $pkg_name already existed in pkg cache folder and CID missmatch - deleting cache entry"
 					ipfs files rm "$pkg_pacmanstore_dest_path"
 				fi
 			fi
@@ -770,10 +778,10 @@ else # FULL_ADD is set - full add mechanism
 			unset db_repo_name db_cid db_dest_path db_dest_path_pkg
 
 		else
-			echo "Warning: Couldn't process file '$filename', unknown file type"  >&2
+			warn "Couldn't process file '$filename', unknown file type"
 		fi
-		(( no_of_adds % 100 )) || echo "$no_of_adds files processed..."
-		(( no_of_adds++ ))
+		((no_of_adds % 100)) || echo "$no_of_adds files processed..."
+		((no_of_adds++))
 	done < <(find . -type f -print0)
 fi
 
@@ -781,20 +789,30 @@ timestamp="$(date --utc -Iseconds)"
 
 printf "\n:: sync completed, start archiving and publishing @ %s\n" "$timestamp"
 
-
 #get new rootfolder CIDs
 ipfs_pkg_folder_cid=$(ipfs files stat --hash "/$ipfs_pkg_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
-ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder")  || fail 'iso folder (IPFS) CID could not be determined after update is completed' 402
+ipfs_iso_folder_cid=$(ipfs files stat --hash "/$ipfs_iso_folder") || fail 'iso folder (IPFS) CID could not be determined after update is completed' 402
 
 # Pin all folders recursive on the cluster for $cluster_pin_rootfolder_expire (for distributed lookup of folders, while independent of the file-lifetime in the cluster)
 #pin_rootfolder_to_cluster "$ipfs_pkg_folder_cid" "$ipfs_pkg_folder" "$timestamp"
 #pin_rootfolder_to_cluster "$ipfs_iso_folder_cid" "$ipfs_iso_folder" "$timestamp"
 
+echo -ne "start publishing new cids to DHT..."
+ipfs dht provide "$ipfs_pkg_folder_cid" > /dev/null || warn 'Repo folder (IPFS) could not be published to dht after update\n' -n
+ipfs dht provide "$ipfs_iso_folder_cid" > /dev/null || warn 'ISO folder (IPFS) could not be published to dht after update\n' -n
+ipfs dht provide "$ipfs_cluster_service_file" > /dev/null || warn 'cluster-definition (IPFS) could not be published to dht after update\n' -n
+
 echo -ne "start publishing new ipns..."
 # publish new ipns records
-ipfs name publish --timeout 3m --resolve=false --allow-offline --ttl '1m' --lifetime '96h' --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" > /dev/null || printf '\nWarning: Repo folder (IPFS) IPNS could not be published after update\n' >&2
-ipfs name publish --timeout 3m --resolve=false --allow-offline --ttl '1m' --lifetime '96h' --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" > /dev/null || printf '\nWarning: ISO folder (IPFS) IPNS could not be published after update\n' >&2
-ipfs name publish --timeout 3m --resolve=false --allow-offline --ttl '2h' --lifetime '96h' --key="cluster.pacman.store" "/ipfs/bafkreih2ee52pz5ruxzfi4kofe6i3wnbhmn3sscghrwfeejdkov4f6rpz4" > /dev/null || printf '\nWarning: ISO folder (IPFS) IPNS could not be published after update\n' >&2
+if ! ipfs name publish --timeout 3m --resolve=false --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_pkg_folder" "/ipfs/$ipfs_pkg_folder_cid" > /dev/null; then
+	warn 'Repo folder (IPFS) IPNS could not be published after update\n' -n
+fi
+if ! ipfs name publish --timeout 3m --resolve=false --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_iso_folder" "/ipfs/$ipfs_iso_folder_cid" > /dev/null; then
+	warn 'ISO folder (IPFS) IPNS could not be published after update\n' -n
+fi
+if ! ipfs name publish --timeout 3m --resolve=false --allow-offline --ttl '2h' --lifetime '96h' --key="cluster.pacman.store" "/ipfs/$ipfs_cluster_service_file" > /dev/null; then
+	warn 'ISO folder (IPFS) IPNS could not be published after update\n' -n
+fi
 
 printf '\n:: operation successfully completed @ %s\n' "$(date -Iseconds)"
 
