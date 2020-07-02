@@ -18,6 +18,17 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 | `12D3KooWNxyey9M...` | | ~ Tokyo, Japan | | AS7506 | _third party_ 
 
 
+## Import Server uptime (since 2020-07-02)
+
+| Service | Status | 
+| - | - | 
+| IPv6 | <img src="https://app.statuscake.com/button/index.php?Track=lqm087FDpT&Days=1000&Design=2" /> | 
+| IPv6 IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=rpf1GbKSJ0&Days=1000&Design=2" /> |
+| IPv6 IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=Z1f3cyQUvw&Days=1000&Design=2" /> |
+| IPv4 | <img src="https://app.statuscake.com/button/index.php?Track=mdwVReU662&Days=1000&Design=2" /> |
+| IPv4 IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=dpSNJkhpBi&Days=1000&Design=2" /> |
+| IPv4 IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=WxV3J9md1R&Days=1000&Design=2" /> |
+
 ## Join the Cluster
 
 If you want to join and contribute bandwidth and hard drive space, feel free to do so. The repo-size is about 70 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
