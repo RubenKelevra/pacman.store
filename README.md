@@ -24,12 +24,9 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 | Service | Status | 
 | - | - | 
 | IPv6 | <img src="https://app.statuscake.com/button/index.php?Track=lqm087FDpT&Days=1000&Design=2" /> |
-| IPv6 ssh-Port | <img src="https://app.statuscake.com/button/index.php?Track=dPUvHrsllm&Days=1000&Design=2" /> |
-| IPv6 IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=rpf1GbKSJ0&Days=1000&Design=2" /> |
-| IPv6 IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=Z1f3cyQUvw&Days=1000&Design=2" /> |
 | IPv4 | <img src="https://app.statuscake.com/button/index.php?Track=mdwVReU662&Days=1000&Design=2" /> |
-| IPv4 IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=dpSNJkhpBi&Days=1000&Design=2" /> |
-| IPv4 IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=WxV3J9md1R&Days=1000&Design=2" /> |
+| IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=dpSNJkhpBi&Days=1000&Design=2" /> |
+| IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=WxV3J9md1R&Days=1000&Design=2" /> |
 
 ## Join the Cluster
 
