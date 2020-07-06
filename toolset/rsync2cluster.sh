@@ -320,7 +320,7 @@ if [ $CREATE -eq 1 ]; then
 	else
 		fail "ipfs folder did already exist" 101 -n
 	fi
-elif ! ipfs files stat "/$ipfs_folder" > /dev/null 2>&1; then
+elif ! ipfs_api files stat "/$ipfs_folder" > /dev/null 2>&1; then
 	fail "configured ipfs folder does not exist in mfs, to import existing folder use '--create' flag" 300 -n
 fi
 echo "done"
@@ -509,14 +509,14 @@ fi
 printf "\n:: sync completed, start publishing @ %s\n" "$(get_timestamp)"
 
 #get new rootfolder CIDs
-ipfs_mfs_folder_cid=$(ipfs files stat --hash "/$ipfs_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
+ipfs_mfs_folder_cid=$(ipfs_api files stat --hash "/$ipfs_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
 
 # Pin all folders recursive on the cluster for $cluster_pin_rootfolder_expire (for distributed lookup of folders, while independent of the file-lifetime in the cluster)
 #pin_rootfolder_to_cluster "$ipfs_pkg_folder_cid" "$ipfs_pkg_folder" "$timestamp"
 #pin_rootfolder_to_cluster "$ipfs_iso_folder_cid" "$ipfs_iso_folder" "$timestamp"
 
 echo -ne ":: publishing new root-cid to DHT..."
-ipfs dht provide "$ipfs_mfs_folder_cid" > /dev/null || warn 'Repo folder (IPFS) could not be published to dht after update\n' -n
+ipfs_api dht provide "$ipfs_mfs_folder_cid" > /dev/null || warn 'Repo folder (IPFS) could not be published to dht after update\n' -n
 
 echo -ne "\n:: adding folder to cluster-pinset..."
 
@@ -524,7 +524,7 @@ add_clusterpin "$ipfs_mfs_folder_cid" "$(get_frozen_name "$ipfs_folder")" "defau
 
 echo -ne "\n:: publishing new ipns record..."
 # publish new ipns records
-if ! ipfs name publish --timeout 3m --resolve=false --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_ipns_name" "/ipfs/$ipfs_mfs_folder_cid" > /dev/null; then
+if ! ipfs_api name publish --timeout 3m --resolve=false --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_ipns_name" "/ipfs/$ipfs_mfs_folder_cid" > /dev/null; then
 	fail 'Repo folder (IPFS) IPNS could not be published after update' 998 -n
 fi
 printf '\n:: operation successfully completed @ %s\n' "$(get_timestamp)"
