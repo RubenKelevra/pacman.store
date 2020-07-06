@@ -255,7 +255,7 @@ function ipfs_mfs_add_file() {
 	[ -z "$1" ] && fail "ipfs_mfs_add_file() was called with an empty first argument" 280
 	# expect a mfs destination path
 	[ -z "$2" ] && fail "ipfs_mfs_add_file() was called with an empty second argument" 281
-	[ -n "$1" ] && fail "ipfs_mfs_add_file() was called with a path to a file which didn't exist: '$1'" 282
+	[ ! -f "$1" ] && fail "ipfs_mfs_add_file() was called with a path to a file which didn't exist: '$1'" 282
 	local _cid=""
 	
 	if ! _cid=$(ipfs_api add --chunker "$ipfs_chunker" --hash "$ipfs_hash" --cid-version "$ipfs_cid" --quieter "$1"); then
