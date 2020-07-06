@@ -215,7 +215,7 @@ function add_clusterpin() {
 function rewrite_log_path() {
 	[ -z "$1" ] && fail "rewrite_log_path() was called with an empty argument" 274
  	#search and replace
-	output=(echo "$1" | sed 's/\/os\/x86_64\//\//')
+	output=$(echo "$1" | sed 's/\/os\/x86_64\//\//')
 	
 	#echo return string
 	echo "$output"
@@ -468,7 +468,7 @@ else # CREATE is set - full add mechanism from filesystem (without parsing an rs
 		if [[ $filename == *"/~"* ]]; then
 			warn "Skipped file with '/~' in path: $filename"
 			continue
-		else [[ $filename == *"/."* ]]; then
+		elif [[ $filename == *"/."* ]]; then
 			warn "Skipped hidden file/folder: $filename"
 			continue
 		fi
