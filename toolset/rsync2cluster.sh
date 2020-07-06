@@ -131,12 +131,14 @@ function ipfs_api() {
 	local -a cmd=(ipfs --api="$ipfs_api_host")
 	
 	"${cmd[@]}" "$@"
+	return $?
 }
 
 function ipfs-cluster-ctl_api() {
 	local -a cmd=(ipfs-cluster-ctl --host "$cluster_api_host")
 	
 	"${cmd[@]}" "$@"
+	return $?
 }
 
 ### Not used; not maintained
