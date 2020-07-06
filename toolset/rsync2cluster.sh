@@ -516,7 +516,7 @@ ipfs_mfs_folder_cid=$(ipfs_api files stat --hash "/$ipfs_folder") || fail 'repo 
 #pin_rootfolder_to_cluster "$ipfs_iso_folder_cid" "$ipfs_iso_folder" "$timestamp"
 
 echo -ne ":: publishing new root-cid to DHT..."
-ipfs_api dht provide "$ipfs_mfs_folder_cid" > /dev/null || warn 'Repo folder (IPFS) could not be published to dht after update\n' -n
+ipfs_api dht provide --timeout 3m "$ipfs_mfs_folder_cid" > /dev/null || warn 'Repo folder (IPFS) could not be published to dht after update\n' -n
 
 echo -ne "\n:: adding folder to cluster-pinset..."
 
