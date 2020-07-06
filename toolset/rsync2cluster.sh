@@ -207,7 +207,7 @@ function add_clusterpin() {
 		fi
 		return
 	fi
-	if ! ipfs-cluster-ctl_api pin add --no-status --name "$_name" --mode "$_mode" --replication-min "$_replication_min" --replication-max "$_replication_max" "$_cid" >/dev/null 2>&1; then
+	if ! ipfs-cluster-ctl_api pin add --no-status --name "$_name" --mode "$_mode" --replication-min="$_replication_min" --replication-max="$_replication_max" "$_cid" >/dev/null 2>&1; then
 		fail "ipfs-cluster-ctl returned an error while pinning cid '$_cid', name: '$_name'" 201
 	fi
 }
