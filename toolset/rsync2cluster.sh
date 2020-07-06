@@ -202,7 +202,7 @@ function add_clusterpin() {
 	[ "$_mode" != "recursive" ] && [ "$_mode" != "direct" ] && fail "add_clusterpin() was called with a unexpected pinning mode '$_mode'"
 	
 	if [ -n "$_timeout" ]; then
-		if ! ipfs-cluster-ctl_api pin add --no-status --name "$_name" --expire-in "$_timeout" --mode "$_mode" --replication-min "$_replication_min" --replication-max "$_replication_max" "$_cid" >/dev/null 2>&1; then
+		if ! ipfs-cluster-ctl_api pin add --no-status --name "$_name" --expire-in "$_timeout" --mode "$_mode" --replication-min="$_replication_min" --replication-max="$_replication_max" "$_cid" >/dev/null 2>&1; then
 			fail "ipfs-cluster-ctl returned an error while pinning cid '$_cid', name: '$_name'" 201
 		fi
 		return
