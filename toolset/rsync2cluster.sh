@@ -63,7 +63,8 @@ cluster_api_host="/ip4/127.0.0.1/tcp/9094"
 default_cluster_replication_min="-1"
 default_cluster_replication_max="-1"
 
-default_cluster_pin_expire="30d"
+#default_cluster_pin_expire="30d"
+default_cluster_pin_expire="2592000s" #workaround for broken parsing in 0.13
 
 # directory where rsync should target (needs to end with a slash)
 rsync_target="${HOME}/$ipfs_folder/"
