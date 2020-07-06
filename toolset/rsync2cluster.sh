@@ -46,7 +46,7 @@ set -e
 [ -z "${HOME}" ] && fail "the system variable \$HOME was empty" 26
 
 # ipfs-mfs folder
-ipfs_folder='x86_64.archlinux.pkg.pacman.store'
+ipfs_folder='x86-64.archlinux.pkg.pacman.store'
 
 # key name and settings for publishing the ipns
 ipfs_ipns_name="$ipfs_folder"
