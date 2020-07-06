@@ -350,7 +350,11 @@ if [ "$RECOVER" -eq 0 ]; then
 		# exit here if we should do a delta update but there's nothing to do
 		[ "$CREATE" -eq 0 ] && exit 0
 	fi
+	
 	printf '\n:: starting rsync operation @ %s\n' "$(get_timestamp)"
+	
+	#use timestamp of the rsync call as "frozen name"
+	cluster_pin_frozen_name=$(get_frozen_name "$ipfs_folder")
 	
 	rsync_main_cmd --exclude='/pool' "${rsync_source}" "${rsync_target}"
 fi
@@ -523,7 +527,11 @@ ipfs_api dht provide --timeout 3m "$ipfs_mfs_folder_cid" > /dev/null || warn 'Re
 
 echo -ne "\n:: adding folder to cluster-pinset..."
 
-add_clusterpin "$ipfs_mfs_folder_cid" "$(get_frozen_name "$ipfs_folder")" "default" || fail "Repo folder (IPFS) could not be published on the cluster-pinset; CID '$ipfs_mfs_folder_cid'" 999 -n
+if [ -z "$cluster_pin_frozen_name" ]; then #we haven't run rsync; use current time
+	cluster_pin_frozen_name=$(get_frozen_name "$ipfs_folder")
+fi
+
+add_clusterpin "$ipfs_mfs_folder_cid" "$cluster_pin_frozen_name" "default" || fail "Repo folder (IPFS) could not be published on the cluster-pinset; CID '$ipfs_mfs_folder_cid'" 999 -n
 
 echo -ne "\n:: publishing new ipns record..."
 # publish new ipns records
