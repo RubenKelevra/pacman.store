@@ -307,7 +307,9 @@ nul_str='config string is empty'
 [ -z "$ipfs_cid" ] && fail "ipfs cid $nul_str" 30
 
 # check/create directories
-[ ! -d "${rsync_target}" ] && mkdir -p "${rsync_target}" || fail "creation of rsync target directory failed" 39
+if [ ! -d "${rsync_target}" ]; then
+	mkdir -p "${rsync_target}" || fail "creation of rsync target directory failed" 39
+fi
 
 #check mfs
 
