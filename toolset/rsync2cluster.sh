@@ -267,10 +267,13 @@ function ipfs_mfs_add_file() {
 	
 }
 
-#create lock file if it doesn't exist
-if [ ! -f "${lock}" ]; then
-	touch "${lock}" || fail "could not create non-existing lock file" 1044
-fi
+function create_lock_path() {
+	local lockpath=$(echo "${lock}" | rev | cut -d"/" -f2-  | rev)
+	mkdir -p "$lockpath" || fail "could not create folder for lock file" 1044
+}
+
+#create lock file path if it doesn't exist
+create_lock_path
 
 # get lock or exit
 exec 9> "${lock}"
