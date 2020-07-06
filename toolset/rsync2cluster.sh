@@ -260,9 +260,9 @@ function ipfs_mfs_add_file() {
 	
 	if ! _cid=$(ipfs_api add --chunker "$ipfs_chunker" --hash "$ipfs_hash" --cid-version "$ipfs_cid" --quieter "$1"); then
 		fail "ipfs_mfs_add_file() could not add the file '$1' to ipfs" 283
-	elif ! ipfs_api files cp "$_cid" "$2" >/dev/null 2>&1; then
+	elif ! ipfs_api files cp "/ipfs/$_cid" "$2" >/dev/null 2>&1; then
 		fail "ipfs_mfs_add_file() could not copy the file '$1' to the mfs location '$2'. CID: '$_cid'" 284
-	elif ! ipfs_api pin rm "$_cid" >/dev/null 2>&1; then
+	elif ! ipfs_api pin rm "/ipfs/$_cid" >/dev/null 2>&1; then
 		fail "ipfs_mfs_add_file() could not unpin the temporarily pinned file '$1'. CID: '$_cid'" 285
 	fi
 	
