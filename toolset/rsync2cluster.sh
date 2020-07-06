@@ -86,10 +86,6 @@ rsync_log_archive="${HOME}/rsync2cluster/${ipfs_folder}_archive.log"
 
 #### END CONFIG
 
-# get lock or exit
-exec 9> "${lock}"
-flock -n 9 || exit
-
 # local functions
 
 function fail() {
@@ -270,6 +266,15 @@ function ipfs_mfs_add_file() {
 	fi
 	
 }
+
+#create lock file if it doesn't exist
+if [ ! -f "${lock}" ]; then
+	touch "${lock}" || fail "could not create non-existing lock file" 1044
+fi
+
+# get lock or exit
+exec 9> "${lock}"
+flock -n 9 || exit
 
 # state variables
 CREATE=0
