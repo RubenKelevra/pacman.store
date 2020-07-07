@@ -545,7 +545,6 @@ echo -ne ":: publishing new root-cid to DHT..."
 ipfs_api dht provide --timeout 3m "$ipfs_mfs_folder_cid" > /dev/null || warn 'Repo folder (IPFS) could not be published to dht after update\n' -n
 
 echo -ne "\n:: adding folder to cluster-pinset..."
-
 if [ -z "$cluster_pin_frozen_name" ]; then #we haven't run rsync; use current time
 	cluster_pin_frozen_name=$(get_frozen_name "$ipfs_folder")
 fi
@@ -553,7 +552,6 @@ fi
 add_clusterpin "$ipfs_mfs_folder_cid" "$cluster_pin_frozen_name" "default" || fail "Repo folder (IPFS) could not be published on the cluster-pinset; CID '$ipfs_mfs_folder_cid'" 999 -n
 
 echo -ne "\n:: publishing new ipns record..."
-# publish new ipns records
 if ! ipfs_api name publish --timeout 3m --resolve=false --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_ipns_name" "/ipfs/$ipfs_mfs_folder_cid" > /dev/null; then
 	fail 'Repo folder (IPFS) IPNS could not be published after update' 998 -n
 fi
