@@ -495,7 +495,7 @@ if [ $CREATE -eq 0 ]; then #diff update mechanism
 				fail "rsync target variable was unexpectedly empty" 489
 			fi
 		fi
-	done < <(grep -v 'WARNING:' "${rsync_log}")
+	done < <(grep 'WARNING:' "${rsync_log}")
 	
 	unset print_warning
 
