@@ -79,10 +79,10 @@ lastupdate_url='https://mirror.f4st.host/archlinux/lastupdate'
 lock="${HOME}/.rsync2cluster/$ipfs_folder.lock"
 
 # current logfile path
-rsync_log="${HOME}/rsync2cluster/$ipfs_folder.log"
+rsync_log="${HOME}/.rsync2cluster/$ipfs_folder.log"
 
 # rsync log archive
-rsync_log_archive="${HOME}/rsync2cluster/${ipfs_folder}_archive.log"
+rsync_log_archive="${HOME}/.rsync2cluster/${ipfs_folder}_archive.log"
 
 #### END CONFIG
 
@@ -268,12 +268,27 @@ function ipfs_mfs_add_file() {
 }
 
 function create_lock_path() {
-	local lockpath=$(echo "${lock}" | rev | cut -d"/" -f2-  | rev)
-	mkdir -p "$lockpath" || fail "could not create folder for lock file" 1044
+	local lock_path=""
+	lock_path=$(get_path_wo_fn "${lock}")
+	mkdir -p "$lock_path" || fail "could not create folder for lock file" 1044
 }
 
-#create lock file path if it doesn't exist
+function create_log_path() {
+	local log_path=""
+	log_path=$(get_path_wo_fn "${rsync_log}")
+	mkdir -p "$log_path" || fail "could not create folder for lock file" 1044
+}
+
+function create_log_archive_path() {
+	local log_archive_path=""
+	log_archive_path=$(get_path_wo_fn "${rsync_log_archive}")
+	mkdir -p "$log_archive_path" || fail "could not create folder for lock file" 1044
+}
+
+#create folders for log and lock if they don't exist
 create_lock_path
+create_log_path
+create_log_archive_path
 
 # get lock or exit
 exec 9> "${lock}"
