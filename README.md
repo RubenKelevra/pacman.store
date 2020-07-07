@@ -2,7 +2,7 @@
 
 **Current status and any announcements as well as a maintaince log can be found [here](https://github.com/RubenKelevra/pacman.store/wiki/Status,-Announcements-&-Maintenance)**
 
-The domain [pkg.pacman.store](http://pkg.pacman.store) offers pkgs for Pacman you can mount to access it as Pacman cache or Pacman mirror through your local IPFS daemon. All files accessed this way will be downloaded to your IPFS cache and shared with the network.
+Under the domain pacman.store are [package mirrors](https://wiki.archlinux.org/index.php/Pacman#Repositories_and_mirrors) provided via the [IPFS-Network](https://ipfs.io). If you choose this as your mirror, Pacman will download the files from a local http-proxy and the accessed files will be shared with the IPFS-Network.
 
 If you run on multiple machines in your local network IPFS will exchange the files locally rather than downloading the same file multiple times from the internet.
 
@@ -11,18 +11,28 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 ## Cluster members
 
 
-| Member ID | Server | Location | Internet-Provider | AS | Provider | 
+| Member ID | Server | Location | Internet-Provider | AS | Provider |
 | - | - | - | - | - | - |
-| `12D3KooWMY6rUug...`  | `loki.pacman.store` | Nuremberg, Germany | netcup | AS197540 | @RubenKelevra | 
-| `12D3KooWQkhWQYp...` | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | @teknomunk |
-| `12D3KooWRUayEaC...` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | @RubenKelevra |
-| `12D3KooWLq4b23D...` | `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 | @RubenKelevra |
-| `12D3KooWNxyey9M...` | | ~ Tokyo, Japan | | AS7506 | _third party_ 
+| `12D3KooWDM4BGmk...` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `123...` | `loki.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `123...` | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | [@teknomunk](https://github.com/teknomunk) |
+| `123...` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `123...` | `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `123...` | | ~ Tokyo, Japan | | AS7506 | _anonymous_
 
+
+## Import Server uptime (since 2020-07-02)
+
+| Service | Status |
+| - | - |
+| IPv6 | <img src="https://app.statuscake.com/button/index.php?Track=lqm087FDpT&Days=1000&Design=2" /> |
+| IPv4 | <img src="https://app.statuscake.com/button/index.php?Track=mdwVReU662&Days=1000&Design=2" /> |
+| IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=dpSNJkhpBi&Days=1000&Design=2" /> |
+| IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=WxV3J9md1R&Days=1000&Design=2" /> |
 
 ## Join the Cluster
 
-If you want to join and contribute bandwidth and hard drive space, feel free to do so. The repo-size is about 70 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
+If you want to join and contribute bandwidth and disk space, feel free to do so. The repo-size is about 70 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
 
 The default storage size for IPFS needs to be altered in the config file.
 
@@ -32,17 +42,16 @@ Details how to join the cluster are available on the [collab cluster](https://co
 
 *tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://aur.archlinux.org/packages/ipfs-cluster-bin/), then run:
 
-```ipfs-cluster-follow pacman.store run --init cluster.pacman.store```
+```ipfs-cluster-follow pkg.pacman.store run --init cluster.pkg.pacman.store```
 
 ## Use the pkg cache with Pacman
 
-### Webgateway method:
 Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each of your systems, you need set it up and and start it as a service.
 
 Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
 ```
 # IPFS
-Server = http://127.0.0.1:8080/ipns/pkg.pacman.store/arch/$arch/default/$repo
+Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 ```
 
 Since directory lookups may be slower over IPNS, you may need to set the pacman option `--disable-download-timeout` for fetching dbs or packages.
@@ -55,14 +64,12 @@ If you have any questions, feel free to ask in the [IPFS-chat on matrix](https:/
 
 ISO and bootstrap files are also stored on the cluster:
 
-[ArchLinux ISO/bootstrap images](http://iso.pacman.store/arch/x86_64/default/)
+[ArchLinux ISO/bootstrap images](http://x86-64.archlinux.pkg.pacman.store/iso)
 
 ---
 
 | IPFS-URL | Content |
 | - | - |
-| `/ipns/cluster.pacman.store` | cluster setup domain which holds the config file |
-| `/ipns/pkg.pacman.store/arch/x86_64/default/` | regular mirror (plus `cache` and `db` subfolders) |
-| `/ipns/pkg.pacman.store/arch/x86_64/default/cache/` | current Pacman pkgs for ArchLinux (all standard repos + testing/staging) |
-| `/ipns/pkg.pacman.store/arch/x86_64/default/db/` | current Pacman databases for ArchLinux  (all standard repos + testing/staging) |
-| `/ipns/iso.pacman.store/arch/x86_64/default/` | current ArchLinux ISO+bootstrap images |
+| `/ipns/cluster.pkg.pacman.store` | cluster setup domain which holds the config file |
+| `/ipns/x86-64.archlinux.pkg.pacman.store/` | regular mirror (without '/os/x86_64/' subfolders in path) |
+| `/ipns/x86-64.archlinux.pkg.pacman.store/iso/` | current ArchLinux ISO+bootstrap images |
