@@ -9,20 +9,20 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 ## Cluster members
 
 
-| Member ID | Server | Location | Internet-Provider | AS | Provider | 
+| Member ID | Server | Location | Internet-Provider | AS | Provider |
 | - | - | - | - | - | - |
-| `12D3KooWDM4BGmk...` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) | 
-| `123...` | `loki.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) | 
+| `12D3KooWDM4BGmk...` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `123...` | `loki.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) |
 | `123...` | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | [@teknomunk](https://github.com/teknomunk) |
 | `123...` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | [@RubenKelevra](https://github.com/@RubenKelevra) |
 | `123...` | `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 | [@RubenKelevra](https://github.com/@RubenKelevra) |
-| `123...` | | ~ Tokyo, Japan | | AS7506 | _anonymous_ 
+| `123...` | | ~ Tokyo, Japan | | AS7506 | _anonymous_
 
 
 ## Import Server uptime (since 2020-07-02)
 
-| Service | Status | 
-| - | - | 
+| Service | Status |
+| - | - |
 | IPv6 | <img src="https://app.statuscake.com/button/index.php?Track=lqm087FDpT&Days=1000&Design=2" /> |
 | IPv4 | <img src="https://app.statuscake.com/button/index.php?Track=mdwVReU662&Days=1000&Design=2" /> |
 | IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=dpSNJkhpBi&Days=1000&Design=2" /> |
