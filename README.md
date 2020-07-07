@@ -1,5 +1,7 @@
 # pacman.store
 
+**Current status and any announcements as well as a maintaince log can be found [here](https://github.com/RubenKelevra/pacman.store/wiki/Status,-Announcements-&-Maintenance)**
+
 Under the domain pacman.store are [package mirrors](https://wiki.archlinux.org/index.php/Pacman#Repositories_and_mirrors) provided via the [IPFS-Network](https://ipfs.io). If you choose this as your mirror, Pacman will download the files from a local http-proxy and the accessed files will be shared with the IPFS-Network.
 
 If you run on multiple machines in your local network IPFS will exchange the files locally rather than downloading the same file multiple times from the internet.
@@ -53,6 +55,10 @@ Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 ```
 
 Since directory lookups may be slower over IPNS, you may need to set the pacman option `--disable-download-timeout` for fetching dbs or packages.
+
+## FAQ
+
+If you have any questions, feel free to ask in the [IPFS-chat on matrix](https://riot.im/app/#/room/#ipfs:matrix.org), after consulting the [FAQ](https://github.com/RubenKelevra/pacman.store/wiki/FAQ)
 
 ## Get an ISO/bootstrap image from IPFS
 
