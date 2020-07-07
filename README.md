@@ -44,13 +44,12 @@ Details how to join the cluster are available on the [collab cluster](https://co
 
 ## Use the pkg cache with Pacman
 
-### Webgateway method:
 Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each of your systems, you need set it up and and start it as a service.
 
 Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
 ```
 # IPFS
-Server = http://127.0.0.1:8080/ipns/pkg.pacman.store/arch/$arch/default/$repo
+Server = http://x86-64.archlinux.pkg.pacman.store.localhost.ipns:8080/$repo
 ```
 
 Since directory lookups may be slower over IPNS, you may need to set the pacman option `--disable-download-timeout` for fetching dbs or packages.
@@ -59,14 +58,12 @@ Since directory lookups may be slower over IPNS, you may need to set the pacman 
 
 ISO and bootstrap files are also stored on the cluster:
 
-[ArchLinux ISO/bootstrap images](http://iso.pacman.store/arch/x86_64/default/)
+[ArchLinux ISO/bootstrap images](http://x86-64.archlinux.pkg.pacman.store/iso)
 
 ---
 
 | IPFS-URL | Content |
 | - | - |
-| `/ipns/cluster.pacman.store` | cluster setup domain which holds the config file |
-| `/ipns/pkg.pacman.store/arch/x86_64/default/` | regular mirror (plus `cache` and `db` subfolders) |
-| `/ipns/pkg.pacman.store/arch/x86_64/default/cache/` | current Pacman pkgs for ArchLinux (all standard repos + testing/staging) |
-| `/ipns/pkg.pacman.store/arch/x86_64/default/db/` | current Pacman databases for ArchLinux  (all standard repos + testing/staging) |
-| `/ipns/iso.pacman.store/arch/x86_64/default/` | current ArchLinux ISO+bootstrap images |
+| `/ipns/cluster.pkg.pacman.store` | cluster setup domain which holds the config file |
+| `/ipns/x86-64.archlinux.pkg.pacman.store/` | regular mirror (without '/os/x86_64/' subfolders in path) |
+| `/ipns/x86-64.archlinux.pkg.pacman.store/iso/` | current ArchLinux ISO+bootstrap images |
