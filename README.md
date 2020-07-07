@@ -40,7 +40,7 @@ Details how to join the cluster are available on the [collab cluster](https://co
 
 *tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://aur.archlinux.org/packages/ipfs-cluster-bin/), then run:
 
-```ipfs-cluster-follow pacman.store run --init cluster.pacman.store```
+```ipfs-cluster-follow pkg.pacman.store run --init cluster.pkg.pacman.store```
 
 ## Use the pkg cache with Pacman
 
