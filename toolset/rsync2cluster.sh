@@ -121,14 +121,7 @@ function rsync_main_cmd() {
 	echo "0" > "$rsync_log"  || fail "no file write-access for rsync log file" 1952
 	rm "$rsync_log" || fail "no delete-access for rsync log file" 1953
 	
-	local -a cmd=(rsync -rtlH -LK --safe-links --delete-excluded --delete --delete-during --inplace "--log-file=$rsync_log" "--timeout=600" "--contimeout=60" -p
-		--no-motd)
-	
-	if stty &> /dev/null; then
-		cmd+=(-h -v --progress)
-	else
-		cmd+=(--quiet)
-	fi
+	local -a cmd=(rsync -rtlH -LK --safe-links --delete-excluded --delete --delete-during --inplace "--log-file=$rsync_log" "--timeout=600" "--contimeout=60" -p --no-motd --quiet)
 	
 	"${cmd[@]}" "$@"
 }
