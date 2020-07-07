@@ -49,7 +49,7 @@ Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each of your syst
 Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
 ```
 # IPFS
-Server = http://x86-64.archlinux.pkg.pacman.store.localhost.ipns:8080/$repo
+Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 ```
 
 Since directory lookups may be slower over IPNS, you may need to set the pacman option `--disable-download-timeout` for fetching dbs or packages.
