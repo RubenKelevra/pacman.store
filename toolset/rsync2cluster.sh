@@ -112,7 +112,16 @@ function get_frozen_name() {
 }
 
 function rsync_main_cmd() {
-	local -a cmd=(rsync -rtlH -LK --safe-links --delete-excluded --delete --delete-during --inplace "--log-file=${rsync_log}" "--timeout=600" "--contimeout=60" -p
+	local log_file_folder=""
+	
+	log_file_folder=$(get_path_wo_fn "$rsync_log")
+	[ ! -d "$log_file_folder" ] && fail "the log folder for rsync couldn't not be located" 1950
+	[ -f "$rsync_log" ] && fail "the rsync log file does already exist" 1951
+	touch "$rsync_log" || fail "no file create-access for rsync log file" 1952
+	echo "0" > "$rsync_log"  || fail "no file write-access for rsync log file" 1952
+	rm "$rsync_log" || fail "no delete-access for rsync log file" 1953
+	
+	local -a cmd=(rsync -rtlH -LK --safe-links --delete-excluded --delete --delete-during --inplace "--log-file=$rsync_log" "--timeout=600" "--contimeout=60" -p
 		--no-motd)
 	
 	if stty &> /dev/null; then
