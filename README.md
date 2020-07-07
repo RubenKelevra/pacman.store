@@ -1,6 +1,6 @@
 # pacman.store
 
-The domain [pkg.pacman.store](http://pkg.pacman.store) offers pkgs for Pacman you can mount to access it as Pacman cache through your local IPFS daemon. All files accessed this way will be downloaded to your IPFS cache and shared with the network.
+Under the domain pacman.store are [package mirrors](https://wiki.archlinux.org/index.php/Pacman#Repositories_and_mirrors) provided via the [IPFS-Network](https://ipfs.io). If you choose this as your mirror, Pacman will download the files from a local http-proxy and the accessed files will be shared with the IPFS-Network.
 
 If you run on multiple machines in your local network IPFS will exchange the files locally rather than downloading the same file multiple times from the internet.
 
