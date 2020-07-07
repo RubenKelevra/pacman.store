@@ -541,10 +541,6 @@ printf "\n:: sync completed, start publishing @ %s\n" "$(get_timestamp)"
 #get new rootfolder CIDs
 ipfs_mfs_folder_cid=$(ipfs_api files stat --hash "/$ipfs_folder") || fail 'repo folder (IPFS) CID could not be determined after update is completed' 400
 
-# Pin all folders recursive on the cluster for $cluster_pin_rootfolder_expire (for distributed lookup of folders, while independent of the file-lifetime in the cluster)
-#pin_rootfolder_to_cluster "$ipfs_pkg_folder_cid" "$ipfs_pkg_folder" "$timestamp"
-#pin_rootfolder_to_cluster "$ipfs_iso_folder_cid" "$ipfs_iso_folder" "$timestamp"
-
 echo -ne ":: publishing new root-cid to DHT..."
 ipfs_api dht provide --timeout 3m "$ipfs_mfs_folder_cid" > /dev/null || warn 'Repo folder (IPFS) could not be published to dht after update\n' -n
 
