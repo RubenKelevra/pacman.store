@@ -394,6 +394,8 @@ fi
 
 if [ $CREATE -eq 0 ]; then #diff update mechanism
 	printf '\n:: start parsing rsync log @ %s\n' "$(get_timestamp)"
+	
+	[ ! -f "${rsync_log}" ] && fail "could not locate rsync log" 1999
 
 	#deleted files
 	while IFS= read -r -d $'\n' log_path; do
