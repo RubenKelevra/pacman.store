@@ -300,12 +300,13 @@ flock -n 9 || exit
 CREATE=0
 RECOVER=0
 NOIPNS=0
-
+NOCLUSTER=0
 
 # argument definition
 cmd_flags=(
    "create"
    "no-ipns"
+   "no-cluster"
 )
 
 #help message
@@ -335,6 +336,9 @@ while true; do
 		--no-ipns)
 			NOIPNS=1
 			;;
+		--no-cluster)
+			NOCLUSTER=1
+			;;
 		--)
 			shift
 			break
@@ -359,10 +363,12 @@ if [ "$NOIPNS" -eq 0 ]; then
 	[ -z "$ipfs_ipns_ttl" ] && fail "ipfs ipns ttl $nul_str" 20
 	[ -z "$ipfs_ipns_lifetime" ] && fail "ipfs ipns lifetime $nul_str" 21
 fi
-[ -z "$default_cluster_replication_min" ] && fail "ipfs-cluster minimal replication $nul_str" 22
-[ -z "$default_cluster_replication_max" ] && fail "ipfs-cluster maximal replication $nul_str" 23
-[ -z "$default_cluster_pin_expire" ] && fail "ipfs-cluster pin expire $nul_str" 24
-[ -z "$cluster_api_host" ] && fail "ipfs-cluster minimal replication $nul_str" 25
+if [ "$NOCLUSTER" -eq 0 ]; then
+	[ -z "$default_cluster_replication_min" ] && fail "ipfs-cluster minimal replication $nul_str" 22
+	[ -z "$default_cluster_replication_max" ] && fail "ipfs-cluster maximal replication $nul_str" 23
+	[ -z "$default_cluster_pin_expire" ] && fail "ipfs-cluster pin expire $nul_str" 24
+	[ -z "$cluster_api_host" ] && fail "ipfs-cluster minimal replication $nul_str" 25
+fi
 [ -z "$ipfs_api_host" ] && fail "ipfs api-host $nul_str" 27
 [ -z "$ipfs_chunker" ] && fail "ipfs chunker $nul_str" 28
 [ -z "$ipfs_hash" ] && fail "ipfs hash algorithm $nul_str" 29
@@ -412,8 +418,10 @@ if [ "$RECOVER" -eq 0 ]; then
 	
 	printf '\n:: starting rsync operation @ %s\n' "$(get_timestamp)"
 	
-	#use timestamp of the rsync call as "frozen name"
-	cluster_pin_frozen_name=$(get_frozen_name "$ipfs_folder")
+	if [ "$NOCLUSTER" -eq 0 ]; then
+		#use timestamp of the rsync call as "frozen name"
+		cluster_pin_frozen_name=$(get_frozen_name "$ipfs_folder")
+	fi
 	
 	rsync_main_cmd --exclude='/pool' "${rsync_source}" "${rsync_target}"
 fi
@@ -583,13 +591,15 @@ echo -ne ":: publishing new root-cid to DHT..."
 ipfs_api dht provide --timeout 3m "$ipfs_mfs_folder_cid" > /dev/null || warn 'Repo folder (IPFS) could not be published to dht after update\n' -n
 echo "done."
 
-echo -ne ":: adding folder to cluster-pinset..."
-if [ -z "$cluster_pin_frozen_name" ]; then #we haven't run rsync; use current time
-	cluster_pin_frozen_name=$(get_frozen_name "$ipfs_folder")
-fi
-echo "done."
+if [ "$NOCLUSTER" -eq 0 ]; then
+	echo -ne ":: adding folder to cluster-pinset..."
+	if [ -z "$cluster_pin_frozen_name" ]; then #we haven't run rsync; use current time
+		cluster_pin_frozen_name=$(get_frozen_name "$ipfs_folder")
+	fi
+	echo "done."
 
-add_clusterpin "$ipfs_mfs_folder_cid" "$cluster_pin_frozen_name" "default" || fail "Repo folder (IPFS) could not be published on the cluster-pinset; CID '$ipfs_mfs_folder_cid'" 999 -n
+	add_clusterpin "$ipfs_mfs_folder_cid" "$cluster_pin_frozen_name" "default" || fail "Repo folder (IPFS) could not be published on the cluster-pinset; CID '$ipfs_mfs_folder_cid'" 999 -n
+fi
 
 if [ "$NOIPNS" -eq 0 ]; then
 	echo -ne ":: publishing new ipns record..."
