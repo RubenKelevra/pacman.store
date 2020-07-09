@@ -1,0 +1,4 @@
+[submodule "toolset"]
+	path = toolset
+	url = https://github.com/RubenKelevra/rsync2ipfs-cluster.git
+	tag = v0.1
