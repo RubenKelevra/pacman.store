@@ -363,7 +363,7 @@ fi
 [ -z "$default_cluster_replication_max" ] && fail "ipfs-cluster maximal replication $nul_str" 23
 [ -z "$default_cluster_pin_expire" ] && fail "ipfs-cluster pin expire $nul_str" 24
 [ -z "$cluster_api_host" ] && fail "ipfs-cluster minimal replication $nul_str" 25
-[ -z "$ipfs_api_host" ] && fail "ipfs ipns lifetime $nul_str" 27
+[ -z "$ipfs_api_host" ] && fail "ipfs api-host $nul_str" 27
 [ -z "$ipfs_chunker" ] && fail "ipfs chunker $nul_str" 28
 [ -z "$ipfs_hash" ] && fail "ipfs hash algorithm $nul_str" 29
 [ -z "$ipfs_cid" ] && fail "ipfs cid $nul_str" 30
