@@ -215,7 +215,7 @@ function add_clusterpin() {
 
 function rewrite_log_path() {
 	[ -z "$1" ] && fail "rewrite_log_path() was called with an empty argument" 274
- 	#search and replace
+	#search and replace
 	output=$(echo "$1" | sed 's/\/os\/x86_64\//\//')
 	
 	#echo return string
@@ -299,17 +299,49 @@ flock -n 9 || exit
 # state variables
 CREATE=0
 RECOVER=0
+NOIPNS=0
 
-# simple one argument decoding
 
-if [ -n "$1" ]; then
-	if [ "$1" == '--create' ]; then
-		echo "import local directory..."
-		CREATE=1
-	else
-		fail "unexpected first argument" 150
-	fi
+# argument definition
+cmd_flags=(
+   "create"
+   "no-ipns"
+)
+
+#help message
+usage() {
+	echo "Usage: $0$(printf " [--%s]" "${cmd_flags[@]}")" 1>&2
+	exit 1
+}
+
+# argument decoding
+if ! opts=$(getopt \
+   --longoptions "$(printf "%s," "${cmd_flags[@]}")" \
+   --name "$(basename "$0")" \
+   --options "" \
+   -- "$@"
+); then
+	usage
 fi
+
+eval set --$opts
+
+while true; do
+	case "$1" in
+		--create)
+			echo "import local directory..."
+			CREATE=1
+			;;
+		--no-ipns)
+			NOIPNS=1
+			;;
+		--)
+			shift
+			break
+			;;
+	esac
+	shift
+done
 
 # check config
 
@@ -322,9 +354,11 @@ nul_str='config string is empty'
 [ -z "$rsync_source" ] && fail "rsync url $nul_str" 16
 [ -z "$lastupdate_url" ] && fail "lastupdate url $nul_str" 17
 [ -z "$ipfs_folder" ] && fail "ipfs mfs folder $nul_str" 18
-[ -z "$ipfs_ipns_name" ] && fail "ipfs ipns name $nul_str" 19
-[ -z "$ipfs_ipns_ttl" ] && fail "ipfs ipns ttl $nul_str" 20
-[ -z "$ipfs_ipns_lifetime" ] && fail "ipfs ipns lifetime $nul_str" 21
+if [ "$NOIPNS" -eq 0 ]; then
+	[ -z "$ipfs_ipns_name" ] && fail "ipfs ipns name $nul_str" 19
+	[ -z "$ipfs_ipns_ttl" ] && fail "ipfs ipns ttl $nul_str" 20
+	[ -z "$ipfs_ipns_lifetime" ] && fail "ipfs ipns lifetime $nul_str" 21
+fi
 [ -z "$default_cluster_replication_min" ] && fail "ipfs-cluster minimal replication $nul_str" 22
 [ -z "$default_cluster_replication_max" ] && fail "ipfs-cluster maximal replication $nul_str" 23
 [ -z "$default_cluster_pin_expire" ] && fail "ipfs-cluster pin expire $nul_str" 24
@@ -557,11 +591,13 @@ echo "done."
 
 add_clusterpin "$ipfs_mfs_folder_cid" "$cluster_pin_frozen_name" "default" || fail "Repo folder (IPFS) could not be published on the cluster-pinset; CID '$ipfs_mfs_folder_cid'" 999 -n
 
-echo -ne ":: publishing new ipns record..."
-if ! ipfs_api name publish --timeout 3m --resolve=false --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_ipns_name" "/ipfs/$ipfs_mfs_folder_cid" > /dev/null; then
-	fail 'Repo folder (IPFS) IPNS could not be published after update' 998 -n
+if [ "$NOIPNS" -eq 0 ]; then
+	echo -ne ":: publishing new ipns record..."
+	if ! ipfs_api name publish --timeout 3m --resolve=false --allow-offline --ttl '5m' --lifetime '96h' --key="$ipfs_ipns_name" "/ipfs/$ipfs_mfs_folder_cid" > /dev/null; then
+		fail 'Repo folder (IPFS) IPNS could not be published after update' 998 -n
+	fi
+	echo "done."
 fi
-echo "done."
 
 printf ':: operation successfully completed @ %s\n' "$(get_timestamp)"
 
