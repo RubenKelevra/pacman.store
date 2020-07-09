@@ -353,9 +353,9 @@ nul_str='config string is empty'
 
 [ -z "$rsync_target" ] && fail "rsync target dir $nul_str" 10
 [ -z "$lock" ] && fail "lock file $nul_str" 12
-[ -z "$rsync_log" ] && fail "rsync file $nul_str" 13
+[ -z "$rsync_log" ] && fail "rsync log-file $nul_str" 13
 [ -z "$rsync_log_archive" ] && fail "rsync log archive file $nul_str" 14
-[ -z "$rsync_source" ] && fail "rsync url $nul_str" 16
+[ -z "$rsync_source" ] && fail "rsync source url $nul_str" 16
 [ -z "$lastupdate_url" ] && fail "lastupdate url $nul_str" 17
 [ -z "$ipfs_folder" ] && fail "ipfs mfs folder $nul_str" 18
 if [ "$NOIPNS" -eq 0 ]; then
@@ -367,7 +367,7 @@ if [ "$NOCLUSTER" -eq 0 ]; then
 	[ -z "$default_cluster_replication_min" ] && fail "ipfs-cluster minimal replication $nul_str" 22
 	[ -z "$default_cluster_replication_max" ] && fail "ipfs-cluster maximal replication $nul_str" 23
 	[ -z "$default_cluster_pin_expire" ] && fail "ipfs-cluster pin expire $nul_str" 24
-	[ -z "$cluster_api_host" ] && fail "ipfs-cluster minimal replication $nul_str" 25
+	[ -z "$cluster_api_host" ] && fail "ipfs-cluster api-host $nul_str" 25
 fi
 [ -z "$ipfs_api_host" ] && fail "ipfs api-host $nul_str" 27
 [ -z "$ipfs_chunker" ] && fail "ipfs chunker $nul_str" 28
