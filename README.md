@@ -30,7 +30,7 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 | IPv6 | <img src="https://app.statuscake.com/button/index.php?Track=lqm087FDpT&Days=1000&Design=2" /> |
 | IPv4 | <img src="https://app.statuscake.com/button/index.php?Track=mdwVReU662&Days=1000&Design=2" /> |
 | IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=dpSNJkhpBi&Days=1000&Design=2" /> |
-| IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=WxV3J9md1R&Days=1000&Design=2" /> |
+| IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=W6VTSzFRsc&Days=1000&Design=2" /> |
 
 ## Join the Cluster
 
