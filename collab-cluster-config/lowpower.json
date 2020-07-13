@@ -1,0 +1,98 @@
+{
+  "cluster": {
+    "secret": "b78c6133e5b32c52d7f67269f876545d2085d86525a8c7c3384b122597baf42e",
+    "leave_on_shutdown": false,
+    "listen_multiaddress": [
+      "/ip4/0.0.0.0/tcp/16587",
+      "/ip6/::/tcp/16587"
+    ],
+    "enable_relay_hop": false,
+    "connection_manager": {
+      "high_water": 50,
+      "low_water": 45,
+      "grace_period": "2m"
+    },
+    "state_sync_interval": "5m0s",
+    "ipfs_sync_interval": "2m",
+    "pin_recover_interval": "12m0s",
+    "monitor_ping_interval": "30s",
+    "peer_watch_interval": "30s",
+    "follower_mode": true,
+    "mdns_interval": "0",
+    "disable_repinning": false,
+    "peer_addresses": [
+      "/ip4/45.83.104.156/tcp/16587/p2p/12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx",
+      "/ip6/2a03:4000:46:26e:b42e:2bff:fe07:c3fb/tcp/16587/p2p/12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx",
+      "/ip4/94.176.233.122/tcp/16587/p2p/12D3KooWJnEkuYkoWgfGBjQXE6bvn6Y53GmjwuC2vk7d2Xxk9xM5",
+      "/ip6/2a02:7b40:5eb0:e97a::1/tcp/16587/p2p/12D3KooWJnEkuYkoWgfGBjQXE6bvn6Y53GmjwuC2vk7d2Xxk9xM5",
+      "/ip4/140.238.249.171/tcp/16587/p2p/12D3KooWN9pSnzmE57cN4XDoYPRs1htjSRF2ig528kwb3VRrvf1Z"
+    ]
+  },
+  "consensus": {
+    "crdt": {
+      "cluster_name": "pkg.pacman.store",
+      "trusted_peers": [
+        "12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx",
+        "12D3KooWL3V95pdTwumVCqbxWzuyCud3DqawJBi7koGos1iLwESQ"
+      ],
+      "rebroadcast_interval": "10s",
+      "peerset_metric": "ping"
+    }
+  },
+  "ipfs_connector": {
+    "ipfshttp": {
+      "node_multiaddress": "/ip4/127.0.0.1/tcp/5001",
+      "connect_swarms_delay": "30s",
+      "ipfs_request_timeout": "5m0s",
+      "pin_timeout": "1m",
+      "unpin_timeout": "30m",
+      "repogc_timeout": "24h0m0s",
+      "unpin_disable": false
+    }
+  },
+  "pin_tracker": {
+    "stateless": {
+      "max_pin_queue_size": 1000000,
+      "concurrent_pins": 1
+    }
+  },
+  "monitor": {
+    "pubsubmon": {
+      "check_interval": "15s",
+      "failure_threshold": 3
+    }
+  },
+  "informer": {
+    "disk": {
+      "metric_ttl": "30s",
+      "metric_type": "freespace"
+    }
+  },
+  "observations": {},
+  "datastore": {
+    "badger": {
+      "badger_options": {
+        "dir": "",
+        "value_dir": "",
+        "sync_writes": true,
+        "table_loading_mode": 0,
+        "value_log_loading_mode": 0,
+        "num_versions_to_keep": 1,
+        "max_table_size": 67108864,
+        "level_size_multiplier": 10,
+        "max_levels": 7,
+        "value_threshold": 32,
+        "num_memtables": 5,
+        "num_level_zero_tables": 5,
+        "num_level_zero_tables_stall": 10,
+        "level_one_size": 268435456,
+        "value_log_file_size": 1073741823,
+        "value_log_max_entries": 1000000,
+        "num_compactors": 2,
+        "compact_l_0_on_close": false,
+        "read_only": false,
+        "truncate": true
+      }
+    }
+  }
+}
