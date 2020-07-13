@@ -6,7 +6,7 @@
       "/ip4/0.0.0.0/tcp/16587",
       "/ip6/::/tcp/16587"
     ],
-    "enable_relay_hop": false,
+    "enable_relay_hop": true,
     "connection_manager": {
       "high_water": 120,
       "low_water": 100,
