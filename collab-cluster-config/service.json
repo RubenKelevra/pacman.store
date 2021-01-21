@@ -53,7 +53,7 @@
   "pin_tracker": {
     "stateless": {
       "max_pin_queue_size": 1000000,
-      "concurrent_pins": 5
+      "concurrent_pins": 1
     }
   },
   "monitor": {
