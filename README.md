@@ -55,6 +55,10 @@ Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
 Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 ```
 
+It is recommended to turn pubsub on, with the gossipsub router for low latency download starts.
+
+This need the flags --enable-pubsub-experiment --enable-namesys-pubsub on the ipfs-daemon and the Pubsub-Router in the config need to be set to `gossipsub`.
+
 Since directory lookups may be slower over IPNS, you may need to set the pacman option `--disable-download-timeout` for fetching dbs or packages.
 
 ## FAQ
