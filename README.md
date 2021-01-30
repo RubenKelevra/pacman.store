@@ -15,10 +15,10 @@ The data is hold and shared by a collaborative cluster, where everyone can parti
 
 | Member ID | Server | Location | Internet-Provider | AS | Provider |
 | - | - | - | - | - | - |
-| `12D3KooWDM4BGmk...` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) |
 | `123...` | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | [@teknomunk](https://github.com/teknomunk) |
-| `123...` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | [@RubenKelevra](https://github.com/@RubenKelevra) |
-| `12D3KooWN9pSnzm...` | `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `12D3KooWJnEkuYkoWgfGBjQXE6bvn6Y53GmjwuC2vk7d2Xxk9xM5` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `12D3KooWKSDCCB1Aw5jV4UoVxcnoCA1rAbjAKKys5KbZqJCsNaFM` | `heimdal.pacman.store` | Mumbai, India | Oracle Corporation | AS31898 | [@RubenKelevra](https://github.com/@RubenKelevra) |
 | `123...` | | ~ Tokyo, Japan | | AS7506 | _anonymous_
 
 
