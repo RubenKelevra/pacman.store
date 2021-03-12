@@ -45,6 +45,10 @@ Details how to join the cluster are available on the [collab cluster](https://co
 
 ```ipfs-cluster-follow pkg.pacman.store run --init cluster.pkg.pacman.store```
 
+On low power machines use the following command:
+
+```ipfs-cluster-follow pkg.pacman.store run --init lowpower.cluster.pkg.pacman.store```
+
 ## Use the pkg cache with Pacman
 
 Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each of your systems, you need set it up and and start it as a service.
