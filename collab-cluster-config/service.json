@@ -23,8 +23,8 @@
     "peer_addresses": [
       "/ip4/45.83.104.156/tcp/16587/p2p/12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx",
       "/ip6/2a03:4000:46:26e:b42e:2bff:fe07:c3fb/tcp/16587/p2p/12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx",
-      "/ip4/94.176.233.122/tcp/16587/p2p/12D3KooWJnEkuYkoWgfGBjQXE6bvn6Y53GmjwuC2vk7d2Xxk9xM5",
-      "/ip6/2a02:7b40:5eb0:e97a::1/tcp/16587/p2p/12D3KooWJnEkuYkoWgfGBjQXE6bvn6Y53GmjwuC2vk7d2Xxk9xM5",
+      "/ip4/94.176.233.122/tcp/16587/p2p/12D3KooWGCSifNrJPZPfEdhAjRtxCW2dukiqQEqg4RAV6hE2jgbA",
+      "/ip6/2a02:7b40:5eb0:e97a::1/tcp/16587/p2p/12D3KooWGCSifNrJPZPfEdhAjRtxCW2dukiqQEqg4RAV6hE2jgbA",
       "/ip4/140.238.249.171/tcp/16587/p2p/12D3KooWN9pSnzmE57cN4XDoYPRs1htjSRF2ig528kwb3VRrvf1Z",
       "/dns4/luflosi.de/udp/4001/quic/p2p/12D3KooWBqQrnTqx9Wp89p2bD1hrwmXYJQ5x1fDfigRCfZJGKQfr"
     ]
