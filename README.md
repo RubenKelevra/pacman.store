@@ -63,8 +63,6 @@ It is recommended to turn pubsub on, with the gossipsub router for low latency d
 
 This need the flags --enable-pubsub-experiment --enable-namesys-pubsub on the ipfs-daemon and the Pubsub-Router in the config need to be set to `gossipsub`.
 
-Since directory lookups may be slower over IPNS, you may need to set the pacman option `--disable-download-timeout` for fetching dbs or packages.
-
 ## FAQ
 
 If you have any questions, feel free to ask in the [IPFS-chat on matrix](https://riot.im/app/#/room/#ipfs:matrix.org), after consulting the [FAQ](https://github.com/RubenKelevra/pacman.store/wiki/FAQ)
