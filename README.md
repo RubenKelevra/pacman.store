@@ -15,11 +15,11 @@ The data is hold and shared by a collaborative cluster, which is provided by vol
 
 | Member ID | Server | Location | Internet-Provider | AS | Provider |
 | - | - | - | - | - | - |
-| `12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/RubenKelevra) |
 | `123...` | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | [@teknomunk](https://github.com/teknomunk) |
-| `12D3KooWGCSifNrJPZPfEdhAjRtxCW2dukiqQEqg4RAV6hE2jgbA` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | [@RubenKelevra](https://github.com/@RubenKelevra) |
+| `12D3KooWGCSifNrJPZPfEdhAjRtxCW2dukiqQEqg4RAV6hE2jgbA` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | [@RubenKelevra](https://github.com/RubenKelevra) |
 | `123...` | | ~ Tokyo, Japan | | AS7506 | _anonymous_ |
-| `12D3KooWBqQrnTqx9Wp89p2bD1hrwmXYJQ5x1fDfigRCfZJGKQfr` | `luflosi.de` | Saarland, Germany | VSE NET GmbH | AS9063 | [@Luflosi](https://github.com/@Luflosi) |
+| `12D3KooWBqQrnTqx9Wp89p2bD1hrwmXYJQ5x1fDfigRCfZJGKQfr` | `luflosi.de` | Saarland, Germany | VSE NET GmbH | AS9063 | [@Luflosi](https://github.com/Luflosi) |
 
 
 ## Import Server uptime (since 2020-07-02)
