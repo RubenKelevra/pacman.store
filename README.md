@@ -8,7 +8,7 @@ Under the domain pacman.store are [package mirrors](https://wiki.archlinux.org/i
 
 If you run on multiple machines in your local network IPFS will exchange the files locally rather than downloading the same file multiple times from the internet.
 
-The data is hold and shared by a collaborative cluster, which is provided by volunteers.
+The data is held and shared by a collaborative cluster, which is provided by volunteers.
 
 ## Cluster members
 
