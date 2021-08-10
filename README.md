@@ -57,6 +57,8 @@ Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
 ```
 # IPFS
 Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
+# The endeavouros repo
+Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo
 ```
 
 It is recommended to turn pubsub on, with the gossipsub router for low latency download starts.
