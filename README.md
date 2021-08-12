@@ -96,7 +96,7 @@ ISO and bootstrap files are also stored on the cluster:
 | IPFS-URL | Content |
 | - | - |
 | `/ipns/cluster.pkg.pacman.store` | cluster setup domain which holds the config file |
-| `/ipns/x86-64.archlinux.pkg.pacman.store/` | regular archlinux mirror (without '/os/x86_64/' subfolders in path) |
+| `/ipns/x86-64.archlinux.pkg.pacman.store/` | regular archlinux mirror<br>(without '/os/x86_64/' subfolders in path) |
 | `/ipns/x86-64.archlinux.pkg.pacman.store/iso/` | current ArchLinux ISO+bootstrap images |
 | `/ipns/endeavouros.pkg.pacman.store/` | regular Endeavouros mirror |
-| `/ipns/manjaro.pkg.pacman.store/` | regular Manjaro mirror (without staging/unstable/testing) |
+| `/ipns/manjaro.pkg.pacman.store/` | regular Manjaro mirror<br>(without staging/unstable/testing) |
