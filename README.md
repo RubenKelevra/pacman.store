@@ -74,7 +74,18 @@ Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo
 
 ```
 # IPFS
-Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/repo/$repo
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
+```
+
+### Manjaro (ARM)
+
+```
+# IPFS
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$arch
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$arch
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$arch
 ```
 
 It is recommended to turn pubsub on, with the gossipsub router for low latency download starts.
