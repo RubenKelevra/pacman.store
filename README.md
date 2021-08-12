@@ -54,11 +54,27 @@ On low power machines use the following command:
 Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each of your systems, you need set it up and and start it as a service.
 
 Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
+
+### Archlinux
 ```
 # IPFS
 Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
-# The endeavouros repo
+Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
+Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
+```
+
+### Endeavouros
+
+```
+# IPFS
 Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo
+```
+
+### Manjaro
+
+```
+# IPFS
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/repo/$repo
 ```
 
 It is recommended to turn pubsub on, with the gossipsub router for low latency download starts.
@@ -80,5 +96,7 @@ ISO and bootstrap files are also stored on the cluster:
 | IPFS-URL | Content |
 | - | - |
 | `/ipns/cluster.pkg.pacman.store` | cluster setup domain which holds the config file |
-| `/ipns/x86-64.archlinux.pkg.pacman.store/` | regular mirror (without '/os/x86_64/' subfolders in path) |
+| `/ipns/x86-64.archlinux.pkg.pacman.store/` | regular archlinux mirror (without '/os/x86_64/' subfolders in path) |
 | `/ipns/x86-64.archlinux.pkg.pacman.store/iso/` | current ArchLinux ISO+bootstrap images |
+| `/ipns/endeavouros.pkg.pacman.store/` | regular Endeavouros mirror |
+| `/ipns/manjaro.pkg.pacman.store/` | regular Manjaro mirror (without staging/unstable/testing) |
