@@ -65,9 +65,21 @@ Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 
 ### Endeavouros
 
+
 ```
 # IPFS
-Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo
+Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
+Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
+Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
+```
+
+And additionally in `/etc/pacman.d/endeavouros-mirrorlist`
+
+```
+# IPFS
+Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arch
+Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arch
+Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arch
 ```
 
 ### Manjaro
