@@ -22,14 +22,14 @@ The data is held and shared by a collaborative cluster, which is provided by vol
 | `12D3KooWBqQrnTqx9Wp89p2bD1hrwmXYJQ5x1fDfigRCfZJGKQfr` | `luflosi.de` | Saarland, Germany | VSE NET GmbH | AS9063 | [@Luflosi](https://github.com/Luflosi) |
 
 
-## Import Server uptime (since 2020-07-02)
+## Import Server uptime (last 2 month)
 
 | Service | Status |
 | - | - |
-| IPv6 | <img src="https://app.statuscake.com/button/index.php?Track=lqm087FDpT&Days=1000&Design=2" /> |
-| IPv4 | <img src="https://app.statuscake.com/button/index.php?Track=mdwVReU662&Days=1000&Design=2" /> |
-| IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=dpSNJkhpBi&Days=1000&Design=2" /> |
-| IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=W6VTSzFRsc&Days=1000&Design=2" /> |
+| IPv6 | <img src="https://app.statuscake.com/button/index.php?Track=lqm087FDpT&Days=60&Design=2" /> |
+| IPv4 | <img src="https://app.statuscake.com/button/index.php?Track=mdwVReU662&Days=60&Design=2" /> |
+| IPFS-Port | <img src="https://app.statuscake.com/button/index.php?Track=dpSNJkhpBi&Days=60&Design=2" /> |
+| IPFS-Cluster-Port | <img src="https://app.statuscake.com/button/index.php?Track=W6VTSzFRsc&Days=60&Design=2" /> |
 
 ## Join the Cluster
 
