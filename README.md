@@ -33,7 +33,7 @@ The data is held and shared by a collaborative cluster, which is provided by vol
 
 ## Join the Cluster
 
-If you want to join and contribute bandwidth and disk space, feel free to do so. The repo-size is about 70 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
+If you want to join and contribute bandwidth and disk space, feel free to do so. The repo-size is about 280 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
 
 The default storage size for IPFS needs to be altered in the config file.
 
