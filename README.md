@@ -10,6 +10,17 @@ If you run on multiple machines in your local network IPFS will exchange the fil
 
 The data is held and shared by a collaborative cluster, which is provided by volunteers.
 
+## Pacman config
+
+It makes sense to set the parallel downloads to two and disable the download timeout, to avoid unneccesary aborts if ipfs needs initially a bit more time to find the right peers in the network (especially on high latency internet connections).
+
+Add the following lines to your pacman config (misc config section):
+
+```
+DisableDownloadTimeout
+ParallelDownloads = 2
+```
+
 ## Cluster members
 
 
