@@ -1,4 +1,4 @@
-**The toolset has been split off and is now [here](https://github.com/RubenKelevra/rsync2ipfs-cluster.git) available.**
+_The toolset has been split off and is now [here](https://github.com/RubenKelevra/rsync2ipfs-cluster.git) available._
 
 # pacman.store
 
