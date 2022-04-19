@@ -30,9 +30,9 @@ I recommend enabling the build-in router module gossipsub which accelerates the 
 # su ipfs -c /bin/bash -c "ipfs config Pubsub.Router gossipsub"
 ```
 
-Note: If you don't use my AUR package go-ipfs-git, make sure to modify your service file to include `--enable-pubsub-experiment`, `--enable-namesys-pubsub`, and `--enable-gc` on the ipfs-daemon.
-`--enable-pubsub-experiment --enable-namesys-pubsub` will speedup name-lookups
-`--enable-gc` runs the garbage collection automatically, otherwise IPFS will never clean up its storage
+_Note: If you don't use my AUR package go-ipfs-git, make sure to modify your service file to include `--enable-pubsub-experiment`, `--enable-namesys-pubsub`, and `--enable-gc` on the ipfs-daemon._
+- _`--enable-pubsub-experiment --enable-namesys-pubsub` will speedup name-lookups_
+- _`--enable-gc` runs the garbage collection automatically, otherwise IPFS will never clean up its storage_
 
 Ipfs uses by default up to 10 GB of disk space in /var/lib/ipfs. If you want to lower or increase this value, you can do this by:
 
