@@ -1,8 +1,8 @@
-**The toolset has been split off, and is now [here](https://github.com/RubenKelevra/rsync2ipfs-cluster.git) available.**
+**The toolset has been split off and is now [here](https://github.com/RubenKelevra/rsync2ipfs-cluster.git) available.**
 
 # pacman.store
 
-**Current status and any announcements as well as a maintaince log can be found [here](https://github.com/RubenKelevra/pacman.store/wiki/Status,-Announcements-&-Maintenance)**
+**Current status and any announcements, as well as a maintenance log, can be found [here](https://github.com/RubenKelevra/pacman.store/wiki/Status,-Announcements-&-Maintenance)**
 
 Under the domain pacman.store are [package mirrors](https://wiki.archlinux.org/index.php/Pacman#Repositories_and_mirrors) provided via the [IPFS-Network](https://ipfs.io). If you choose this as your mirror, Pacman will download the files from a local http-proxy and the accessed files will be shared with the IPFS-Network.
 
@@ -14,7 +14,7 @@ The data is held and shared by a collaborative cluster, which is provided by vol
 
 ### Install IPFS as a service:
 
-Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each of your systems - I recommend my AUR package [go-ipfs-git](https://aur.archlinux.org/packages/go-ipfs-git) which uses the hardended service file.
+Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each of your systems - I recommend my AUR package [go-ipfs-git](https://aur.archlinux.org/packages/go-ipfs-git) which uses the hardened service file.
 
 Start the service with:
 
@@ -24,11 +24,15 @@ Start the service with:
 
 ### IPFS configuration
 
-I recommend to enable the build-in router module gossipsub which accellerates the lookup of names, like "pacman.store" significantly:
+I recommend enabling the build-in router module gossipsub which accelerates the lookup of names, like "pacman.store" significantly:
 
 ```console
 # su ipfs -c /bin/bash -c "ipfs config Pubsub.Router gossipsub"
 ```
+
+Note: If you don't use my AUR package go-ipfs-git, make sure to modify your service file to include `--enable-pubsub-experiment`, `--enable-namesys-pubsub`, and `--enable-gc` on the ipfs-daemon.
+`--enable-pubsub-experiment --enable-namesys-pubsub` will speedup name-lookups
+`--enable-gc` runs the garbage collection automatically, otherwise IPFS will never clean up its storage
 
 Ipfs uses by default up to 10 GB of disk space in /var/lib/ipfs. If you want to lower or increase this value, you can do this by:
 
@@ -44,7 +48,7 @@ After changing the settings you need to restart the daemon with
 
 ### General Pacman config
 
-It makes sense to set the parallel downloads to two and disable the download timeout, to avoid unneccesary aborts if ipfs needs initially a bit more time to find the right peers in the network (especially on high latency internet connections).
+It makes sense to set the parallel downloads to two and disable the download timeout, to avoid unnecessary aborts if ipfs needs initially a bit more time to find the right peers in the network (especially on high latency internet connections).
 
 Add the following lines to your pacman config (misc config section):
 
@@ -57,7 +61,7 @@ ParallelDownloads = 2
 
 
 
-Then add the following to your `/etc/pacman.d/mirrorlist` as first entry:
+Then add the following to your `/etc/pacman.d/mirrorlist` as the first entry:
 
 ### Archlinux
 ```
@@ -104,10 +108,6 @@ Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$a
 Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$arch
 ```
 
-It is recommended to turn pubsub on, with the gossipsub router for low latency download starts.
-
-This need the flags --enable-pubsub-experiment --enable-namesys-pubsub on the ipfs-daemon and the Pubsub-Router in the config need to be set to `gossipsub`.
-
 
 
 ## Cluster members
@@ -133,15 +133,15 @@ This need the flags --enable-pubsub-experiment --enable-namesys-pubsub on the ip
 
 ## Join the Cluster
 
-If you want to join and contribute bandwidth and disk space, feel free to do so. The repo-size is about 280 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
+If you want to join and contribute bandwidth and disk space, feel free to do so. The repo size is about 280 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
 
 The default storage size for IPFS needs to be altered in the config file.
 
-If you're running your cluster follower on a computer with a static ip or a static domain name: Feel free to add it to the list of ```peer_addresses``` in the JSON config files, found in [collab-cluster-config](./collab-cluster-config). Then send a pull request.
+If you're running your cluster follower on a computer with a static IP or a static domain name: Feel free to add it to the list of ```peer_addresses``` in the JSON config files, found in [collab-cluster-config](./collab-cluster-config). Then send a pull request.
 
-Details how to join the cluster are available on the [collab cluster](https://collab.ipfscluster.io/) website.
+Details on how to join the cluster are available on the [collab cluster](https://collab.ipfscluster.io/) website.
 
-*tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may needs to be adjusted. You need [ipfs-cluster-follow](https://aur.archlinux.org/packages/ipfs-cluster-bin/), then run:
+*tl;dr:* You need a locally running IPFS node. Your IPFS *StorageMax* setting may need to be adjusted. You need [ipfs-cluster-follow](https://aur.archlinux.org/packages/ipfs-cluster-bin/), then run:
 
 ```console
 ipfs-cluster-follow pkg.pacman.store run --init cluster.pkg.pacman.store
