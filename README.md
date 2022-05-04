@@ -59,11 +59,9 @@ ParallelDownloads = 2
 
 ### Repositories
 
+#### Archlinux
 
-
-Then add the following to your `/etc/pacman.d/mirrorlist` as the first entry:
-
-### Archlinux
+Add to the top of `/etc/pacman.d/mirrorlist`:
 ```
 # IPFS
 Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
@@ -71,9 +69,29 @@ Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 ```
 
-### Endeavouros
+#### Chaotic-AUR
 
+Add to the top of `/etc/pacman.d/chaotic-mirrorlist`:
+```
+# IPFS
+Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
+Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
+Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
+```
 
+#### ALHP
+
+Add to the top of `/etc/pacman.d/alhp-mirrorlist`:
+```
+# IPFS
+Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
+Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
+Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
+```
+
+#### Endeavouros
+
+Add to the top of `/etc/pacman.d/mirrorlist`:
 ```
 # IPFS
 Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
@@ -81,7 +99,7 @@ Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 ```
 
-And additionally in `/etc/pacman.d/endeavouros-mirrorlist`
+Add to the top of `/etc/pacman.d/endeavouros-mirrorlist`
 
 ```
 # IPFS
@@ -90,8 +108,9 @@ Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arc
 Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arch
 ```
 
-### Manjaro
+#### Manjaro
 
+Add to the top of `/etc/pacman.d/mirrorlist`:
 ```
 # IPFS
 Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
@@ -99,8 +118,9 @@ Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
 Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
 ```
 
-### Manjaro (ARM)
+#### Manjaro (ARM)
 
+Add to the top of `/etc/pacman.d/mirrorlist`:
 ```
 # IPFS
 Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$arch
