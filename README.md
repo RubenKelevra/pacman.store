@@ -153,7 +153,7 @@ Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$a
 
 ## Join the Cluster
 
-If you want to join and contribute bandwidth and disk space, feel free to do so. The repo size is about 280 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
+If you want to join and contribute bandwidth and disk space, feel free to do so. The repo size is about 430 GB. Since the data is rotating quite quickly it's recommended to enable the Garbage Collector with `--enable-gc` for your IPFS-Daemon.
 
 The default storage size for IPFS needs to be altered in the config file.
 
@@ -192,3 +192,5 @@ ISO and bootstrap files are also stored on the cluster:
 | `/ipns/x86-64.archlinux.pkg.pacman.store/iso/` | current ArchLinux ISO+bootstrap images |
 | `/ipns/endeavouros.pkg.pacman.store/` | regular Endeavouros mirror |
 | `/ipns/manjaro.pkg.pacman.store/` | regular Manjaro mirror<br>(without staging/unstable/testing) |
+| `/ipns/chaotic-aur.pkg.pacman.store/` | a full chaotic-aur mirror |
+| `/ipns/alhp.archlinux.pkg.pacman.store/` | a mirror of x86_64v2/v3 packages build with -O3 and LTO |
