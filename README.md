@@ -71,7 +71,7 @@ Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
 
 #### Chaotic-AUR
 
-Add to the top of `/etc/pacman.d/chaotic-mirrorlist`:
+After following the regular chaotic-aur installation procedure, add these lines to the top of `/etc/pacman.d/chaotic-mirrorlist`:
 ```
 # IPFS
 Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
@@ -81,7 +81,7 @@ Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
 
 #### ALHP
 
-Add to the top of `/etc/pacman.d/alhp-mirrorlist`:
+After following the regular alhp installation procedure, add these lines to the top of `/etc/pacman.d/alhp-mirrorlist`:
 ```
 # IPFS
 Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
