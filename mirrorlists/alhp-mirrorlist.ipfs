@@ -1,0 +1,9 @@
+# local ipfs gatewayServer = 
+Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
+Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
+Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
+
+# local ipfs gateway without name resolution
+Server = http://127.0.0.1:8080/ipns/alhp.archlinux.pkg.pacman.store/$repo/os/$arch/
+Server = http://127.0.0.1:8080/ipns/alhp.archlinux.pkg.pacman.store/$repo/os/$arch/
+Server = http://127.0.0.1:8080/ipns/alhp.archlinux.pkg.pacman.store/$repo/os/$arch/
