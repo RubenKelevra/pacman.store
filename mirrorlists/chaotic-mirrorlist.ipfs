@@ -1,0 +1,8 @@
+# local ipfs gateway
+Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
+Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
+Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
+# local ipfs gateway without name resolution
+Server = http://127.0.0.1:8080/ipns/chaotic-aur.pkg.pacman.store/$arch
+Server = http://127.0.0.1:8080/ipns/chaotic-aur.pkg.pacman.store/$arch
+Server = http://127.0.0.1:8080/ipns/chaotic-aur.pkg.pacman.store/$arch
