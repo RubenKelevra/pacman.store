@@ -1,0 +1,9 @@
+# local ipfs gateway
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
+Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
+# local ipfs gateway without name resolution
+Server = http://127.0.0.1:8080/ipns/manjaro.pkg.pacman.store/stable/$repo/$arch
+Server = http://127.0.0.1:8080/ipns/manjaro.pkg.pacman.store/stable/$repo/$arch
+Server = http://127.0.0.1:8080/ipns/manjaro.pkg.pacman.store/stable/$repo/$arch
+
