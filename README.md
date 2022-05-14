@@ -61,42 +61,103 @@ ParallelDownloads = 2
 
 #### Archlinux
 
-Add to the top of `/etc/pacman.d/mirrorlist`:
+Install the [Archlinux-IPFS-Mirrorlist](./mirrorlists/mirrorlist.ipfs) file into `/etc/pacman.d/`:
+
+```console
+$ wget https://raw.githubusercontent.com/RubenKelevra/pacman.store/master/mirrorlists/mirrorlist.ipfs
+$ sudo chown root: mirrorlist.ipfs
+$ sudo mv mirrorlist.ipfs /etc/pacman.d/
 ```
-# IPFS
-Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
-Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
-Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
+
+Now add an include line (as first entry) for all regular archlinux repositories. For example
+```ini
+[core]
+Include = /etc/pacman.d/mirrorlist
+```
+becomes
+```ini
+[core]
+Include = /etc/pacman.d/mirrorlist.ipfs
+Include = /etc/pacman.d/mirrorlist
 ```
 
 #### Chaotic-AUR
 
-After following the regular chaotic-aur installation procedure, add these lines to the top of `/etc/pacman.d/chaotic-mirrorlist`:
+Install the [Chaotic-AUR-IPFS-Mirrorlist](./mirrorlists/chaotic-mirrorlist.ipfs) file into `/etc/pacman.d/`:
+
+```console
+$ wget https://raw.githubusercontent.com/RubenKelevra/pacman.store/master/mirrorlists/chaotic-mirrorlist.ipfs
+$ sudo chown root: chaotic-mirrorlist.ipfs
+$ sudo mv chaotic-mirrorlist.ipfs /etc/pacman.d/
 ```
-# IPFS
-Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
-Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
-Server = http://chaotic-aur.pkg.pacman.store.ipns.localhost:8080/$arch
+
+Now add an include line (as first entry) for the Chaotic-Aur repository. For example
+
+```ini
+[chaotic-aur]
+Include = /etc/pacman.d/chaotic-mirrorlist
+```
+
+becomes
+
+```ini
+[chaotic-aur]
+Include = /etc/pacman.d/chaotic-mirrorlist.ipfs
+Include = /etc/pacman.d/chaotic-mirrorlist
 ```
 
 #### ALHP
 
-After following the regular alhp installation procedure, add these lines to the top of `/etc/pacman.d/alhp-mirrorlist`:
-```
-# IPFS
-Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
-Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
-Server = http://alhp.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo/os/$arch/
+Install the [ALHP-IPFS-Mirrorlist](./mirrorlists/alhp-mirrorlist.ipfs) file into `/etc/pacman.d/`:
+
+```console
+$ wget https://raw.githubusercontent.com/RubenKelevra/pacman.store/master/mirrorlists/alhp-mirrorlist.ipfs
+$ sudo chown root: alhp-mirrorlist.ipfs
+$ sudo mv alhp-mirrorlist.ipfs /etc/pacman.d/
 ```
 
-#### Endeavouros
+Now add an include line (as first entry) for all AHLP repositories. For example
 
-Add to the top of `/etc/pacman.d/mirrorlist`:
+```ini
+[core-x86-64-v3]
+Include = /etc/pacman.d/alhp-mirrorlist
 ```
-# IPFS
-Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
-Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
-Server = http://x86-64.archlinux.pkg.pacman.store.ipns.localhost:8080/$repo
+
+becomes
+
+```ini
+[core-x86-64-v3]
+Include = /etc/pacman.d/alhp-mirrorlist.ipfs
+Include = /etc/pacman.d/alhp-mirrorlist
+```
+
+#### EndeavourOS
+
+**First execute the ArchLinux installation instructions above.**
+
+After that install the [Endeavouros-IPFS-Mirrorlist](./mirrorlists/endeavouros-mirrorlist.ipfs) file into `/etc/pacman.d/`:
+
+```console
+$ wget https://github.com/RubenKelevra/pacman.store/blob/master/mirrorlists/endeavouros-mirrorlist.ipfs
+$ sudo chown root: endeavouros-mirrorlist.ipfs
+$ sudo mv endeavouros-mirrorlist.ipfs /etc/pacman.d/
+```
+
+Now add an include line (as first entry) for the EndeavourOS repository. For example
+
+```ini
+[endeavouros]
+SigLevel = PackageRequired
+Include = /etc/pacman.d/endeavouros-mirrorlist
+```
+
+becomes
+
+```ini
+[endeavouros]
+SigLevel = PackageRequired
+Include = /etc/pacman.d/endeavouros-mirrorlist.ipfs
+Include = /etc/pacman.d/endeavouros-mirrorlist
 ```
 
 Add to the top of `/etc/pacman.d/endeavouros-mirrorlist`
@@ -110,24 +171,11 @@ Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arc
 
 #### Manjaro
 
-Add to the top of `/etc/pacman.d/mirrorlist`:
-```
-# IPFS
-Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
-Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
-Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/stable/$repo/$arch
-```
+Follow the ArchLinux installation instructions, but use the `manjaro-mirrorlist.ipfs` with URL `https://github.com/RubenKelevra/pacman.store/blob/master/mirrorlists/manjaro-mirrorlist.ipfs`.
 
 #### Manjaro (ARM)
 
-Add to the top of `/etc/pacman.d/mirrorlist`:
-```
-# IPFS
-Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$arch
-Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$arch
-Server = http://manjaro.pkg.pacman.store.ipns.localhost:8080/arm-stable/$repo/$arch
-```
-
+Follow the ArchLinux installation instructions, but use the `manjaro-arm-mirrorlist.ipfs` with URL `https://github.com/RubenKelevra/pacman.store/blob/master/mirrorlists/manjaro-arm-mirrorlist.ipfs`.
 
 
 ## Cluster members
