@@ -135,11 +135,11 @@ Include = /etc/pacman.d/endeavouros-mirrorlist
 
 #### Manjaro
 
-Follow the ArchLinux installation instructions, but use the `manjaro-mirrorlist.ipfs` with URL `https://github.com/RubenKelevra/pacman.store/blob/master/mirrorlists/manjaro-mirrorlist.ipfs`.
+Follow the ArchLinux installation instructions, but use the [Manjaro-IPFS-Mirrorlist](./mirrorlists/manjaro-mirrorlist.ipfs) with URL `https://github.com/RubenKelevra/pacman.store/blob/master/mirrorlists/manjaro-mirrorlist.ipfs`.
 
 #### Manjaro (ARM)
 
-Follow the ArchLinux installation instructions, but use the `manjaro-arm-mirrorlist.ipfs` with URL `https://github.com/RubenKelevra/pacman.store/blob/master/mirrorlists/manjaro-arm-mirrorlist.ipfs`.
+Follow the ArchLinux installation instructions, but use the [Manjaro-ARM-IPFS-Mirrorlist](./mirrorlists/manjaro-arm-mirrorlist.ipfs) with URL `https://github.com/RubenKelevra/pacman.store/blob/master/mirrorlists/manjaro-arm-mirrorlist.ipfs`.
 
 
 ## Cluster members
