@@ -69,12 +69,7 @@ $ sudo chown root: mirrorlist.ipfs
 $ sudo mv mirrorlist.ipfs /etc/pacman.d/
 ```
 
-Now add an include line (as first entry) for all regular archlinux repositories. For example
-```ini
-[core]
-Include = /etc/pacman.d/mirrorlist
-```
-becomes
+Now add an include line (as first entry) for all regular archlinux repositories. They should look like this:
 ```ini
 [core]
 Include = /etc/pacman.d/mirrorlist.ipfs
@@ -91,14 +86,7 @@ $ sudo chown root: chaotic-mirrorlist.ipfs
 $ sudo mv chaotic-mirrorlist.ipfs /etc/pacman.d/
 ```
 
-Now add an include line (as first entry) for the Chaotic-Aur repository. For example
-
-```ini
-[chaotic-aur]
-Include = /etc/pacman.d/chaotic-mirrorlist
-```
-
-becomes
+Now add an include line (as first entry) for the Chaotic-Aur repository. It should look like this:
 
 ```ini
 [chaotic-aur]
@@ -116,14 +104,7 @@ $ sudo chown root: alhp-mirrorlist.ipfs
 $ sudo mv alhp-mirrorlist.ipfs /etc/pacman.d/
 ```
 
-Now add an include line (as first entry) for all AHLP repositories. For example
-
-```ini
-[core-x86-64-v3]
-Include = /etc/pacman.d/alhp-mirrorlist
-```
-
-becomes
+Now add an include line (as first entry) for all AHLP repositories.  They should look like this:
 
 ```ini
 [core-x86-64-v3]
@@ -143,30 +124,13 @@ $ sudo chown root: endeavouros-mirrorlist.ipfs
 $ sudo mv endeavouros-mirrorlist.ipfs /etc/pacman.d/
 ```
 
-Now add an include line (as first entry) for the EndeavourOS repository. For example
-
-```ini
-[endeavouros]
-SigLevel = PackageRequired
-Include = /etc/pacman.d/endeavouros-mirrorlist
-```
-
-becomes
+Now add an include line (as first entry) for the EndeavourOS repository.  It should look like this:
 
 ```ini
 [endeavouros]
 SigLevel = PackageRequired
 Include = /etc/pacman.d/endeavouros-mirrorlist.ipfs
 Include = /etc/pacman.d/endeavouros-mirrorlist
-```
-
-Add to the top of `/etc/pacman.d/endeavouros-mirrorlist`
-
-```
-# IPFS
-Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arch
-Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arch
-Server = http://endeavouros.pkg.pacman.store.ipns.localhost:8080/repo/$repo/$arch
 ```
 
 #### Manjaro
