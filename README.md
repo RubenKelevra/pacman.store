@@ -14,17 +14,19 @@ The data is held and shared by a collaborative cluster, which is provided by vol
 
 ### Install IPFS as a service:
 
-Install [`ipfs`](https://wiki.archlinux.org/index.php/IPFS) on each of your systems - I recommend my AUR package [go-ipfs-git](https://aur.archlinux.org/packages/go-ipfs-git) which uses the hardened service file.
+Install [`kubo`](https://wiki.archlinux.org/index.php/IPFS) on each of your systems.
 
 Start the service with:
 
 ```console
-# systemctl enable --now ipfs
+# systemctl enable --now ipfs@ipfs
 ```
+
+_Replace user with your local user-account._
 
 ### IPFS configuration
 
-I recommend enabling the build-in router module gossipsub which accelerates the lookup of names, like "pacman.store" significantly:
+I recommend enabling the build-in router module gossipsub, which accelerates the lookup of names, like the used "pacman.store", significantly:
 
 ```console
 # su ipfs -c /bin/bash -c "ipfs config Pubsub.Router gossipsub"
@@ -43,7 +45,7 @@ Ipfs uses by default up to 10 GB of disk space in /var/lib/ipfs. If you want to 
 After changing the settings you need to restart the daemon with 
 
 ```console
-# systemctl restart ipfs
+# systemctl restart ipfs@ipfs
 ```
 
 ### General Pacman config
@@ -147,7 +149,7 @@ Follow the ArchLinux installation instructions, but use the [Manjaro-ARM-IPFS-Mi
 
 | Member ID | Server | Location | Internet-Provider | AS | Provider |
 | - | - | - | - | - | - |
-| `12D3KooWDM4BGmkaxhLtEFbQJekdBHtWHo3ELUL4HE9f4DdNbGZx` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/RubenKelevra) |
+| `12D3KooWASoxFpwwy8JDdu4Tm57mhESsnbFPogam9VVmhR95FGXr` | `odin.pacman.store` | Nuremberg, Germany | netcup | AS197540 | [@RubenKelevra](https://github.com/RubenKelevra) |
 | `123...` | | Guthrie, Oklahoma | Cox Communications Inc | AS22773 | [@teknomunk](https://github.com/teknomunk) |
 | `12D3KooWGCSifNrJPZPfEdhAjRtxCW2dukiqQEqg4RAV6hE2jgbA` | `vidar.pacman.store` | Vilnius, Lithuania | UAB Interneto vizija | AS20080814 | [@RubenKelevra](https://github.com/RubenKelevra) |
 | `123...` | | ~ Tokyo, Japan | | AS7506 | _anonymous_ |
